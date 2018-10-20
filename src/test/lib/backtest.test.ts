@@ -57,77 +57,49 @@ describe("backtest", () => {
         expect(() => backtest(mockStrategy(), new DataFrame<number, IBar>())).to.throw();
     });
 
+    const strategyWithUnconditionalEntry: IStrategy = {
+        entryRule: (bar, dataSeries, enterPosition) => {
+            enterPosition(); // Unconditionally enter position at market price.
+        },
+    };
+
+    const simpleInputSeries = makeDataSeries([
+        { time: "2018/10/20", close: 1 },
+        { time: "2018/10/21", close: 2 },
+        { time: "2018/10/22", close: 3 },
+    ]);
+
+    const longerDataSeries = makeDataSeries([
+        { time: "2018/10/20", close: 1 },
+        { time: "2018/10/21", close: 2 },
+        { time: "2018/10/22", close: 4 },
+        { time: "2018/10/22", close: 5 }, // Enter here on day after the signal.
+        { time: "2018/10/22", close: 6 }, // Exit here.
+    ]);
+
     it('unconditional entry rule with no exit creates single trade', () => {
 
-        const strategy: IStrategy = {
-            entryRule: (dataSeries, enterPosition) => {
-                enterPosition(); // Unconditionally enter position at market price.
-            },
-        };
-
-        const inputData = makeDataSeries([
-            { time: "2018/10/20", close: 1 },
-            { time: "2018/10/21", close: 2 },
-            { time: "2018/10/22", close: 3 },
-        ]);
-       
-        const trades = backtest(strategy, inputData);
+        const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
         expect(trades.count()).to.eql(1);
     });
     
     it('unconditional entry rule enters position on day after signal', () => {
 
-        const strategy: IStrategy = {
-            entryRule: (dataSeries, enterPosition) => {
-                enterPosition(); // Unconditionally enter position at market price.
-            },
-        };
-
-        const inputData = makeDataSeries([
-            { time: "2018/10/20", close: 1 },
-            { time: "2018/10/21", close: 2 },
-            { time: "2018/10/22", close: 3 },
-        ]);
-       
-        const trades = backtest(strategy, inputData);
+        const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
         const singleTrade = trades.first();
         expect(singleTrade.entryTime).to.eql(makeDate("2018/10/21"));
     });
 
     it('enters position at open on day after signal', () => {
 
-        const strategy: IStrategy = {
-            entryRule: (dataSeries, enterPosition) => {
-                enterPosition(); // Unconditionally enter position at market price.
-            },
-        };
-
-        const inputData = makeDataSeries([
-            { time: "2018/10/20", close: 1 },
-            { time: "2018/10/21", close: 2 },
-            { time: "2018/10/22", close: 3 },
-        ]);
-       
-        const trades = backtest(strategy, inputData);
+        const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
         const singleTrade = trades.first();
         expect(singleTrade.entryPrice).to.eql(2);
     });
 
-        it('unconditional entry rule creates single trade that is finalized at end of trading period', () => {
+    it('unconditional entry rule creates single trade that is finalized at end of trading period', () => {
 
-            const strategy: IStrategy = {
-            entryRule: (dataSeries, enterPosition) => {
-                enterPosition(); // Unconditionally enter position at market price.
-            },
-        };
-
-        const inputData = makeDataSeries([
-            { time: "2018/10/20", close: 1 },
-            { time: "2018/10/21", close: 2 },
-            { time: "2018/10/22", close: 3 },
-        ]);
-       
-        const trades = backtest(strategy, inputData);
+        const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
         expect(trades.count()).to.eql(1);
         
         const singleTrade = trades.first();
@@ -136,49 +108,19 @@ describe("backtest", () => {
 
     it('open position is finalized on the last day of the trading period', () => {
 
-        const strategy: IStrategy = {
-            entryRule: (dataSeries, enterPosition) => {
-                enterPosition(); // Unconditionally enter position at market price.
-            },
-        };
-
-        const inputData = makeDataSeries([
-            { time: "2018/10/20", close: 1 },
-            { time: "2018/10/21", close: 2 },
-            { time: "2018/10/22", close: 3 },
-        ]);
-       
-        const trades = backtest(strategy, inputData);
+        const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
         const singleTrade = trades.first();
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/22"));
     });
     
     it('open position is finalized at end of trading period at the closing price', () => {
 
-        const strategy: IStrategy = {
-            entryRule: (dataSeries, enterPosition) => {
-                enterPosition(); // Unconditionally enter position at market price.
-            },
-        };
-
-        const inputData = makeDataSeries([
-            { time: "2018/10/20", close: 1 },
-            { time: "2018/10/21", close: 2 },
-            { time: "2018/10/22", close: 3 },
-        ]);
-       
-        const trades = backtest(strategy, inputData);
+        const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
         const singleTrade = trades.first();
         expect(singleTrade.exitPrice).to.eql(3);
     });
 
     it('profit is computed for trade finalized at end of the trading period', () => {
-
-        const strategy: IStrategy = {
-            entryRule: (dataSeries, enterPosition) => {
-                enterPosition(); // Unconditionally enter position at market price.
-            },
-        };
 
         const inputData = makeDataSeries([
             { time: "2018/10/20", close: 5 },
@@ -186,10 +128,42 @@ describe("backtest", () => {
             { time: "2018/10/22", close: 10 },
         ]);
        
-        const trades = backtest(strategy, inputData);
+        const trades = backtest(strategyWithUnconditionalEntry, inputData);
         const singleTrade = trades.first();
         expect(singleTrade.profit).to.eql(5);
         expect(singleTrade.profitPct).to.eql(100);
         expect(singleTrade.growth).to.eql(2);
+    });
+
+    it("conditional entry can be triggered within the trading period", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: (bar, dataSeries, enterPosition) => {
+                if (bar.close > 3) {
+                    enterPosition(); // Conditional enter when instrument closes above 3.
+                }
+            },
+        };
+
+        const trades = backtest(strategy, longerDataSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.entryTime).to.eql(makeDate("2018/10/22"));
+        expect(singleTrade.entryPrice).to.eql(5);
+    });
+
+    it("conditional entry is not triggered when condition is not met", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: (bar, dataSeries, enterPosition) => {
+                if (bar.close > 10) {
+                    enterPosition(); // Conditional enter when instrument closes above 3.
+                }
+            },
+        };
+
+        const trades = backtest(strategy, longerDataSeries);
+        expect(trades.count()).to.eql(0);
     });
 });

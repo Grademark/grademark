@@ -9,7 +9,7 @@ export type EnterPositionFn = () => void;
 /**
  * Type for a function that defines an entry rule.
  */
-export type EntryRuleFn<IndexT = number> = (dataSeries: IDataFrame<IndexT, IBar>, enterPosition: EnterPositionFn) => void;
+export type EntryRuleFn<IndexT = number> = (curBar: IBar, dataSeries: IDataFrame<IndexT, IBar>, enterPosition: EnterPositionFn) => void;
 
 /**
  * Interface that defines a trading strategy.

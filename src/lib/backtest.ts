@@ -50,7 +50,7 @@ export function backtest<IndexT = number>(strategy: IStrategy<IndexT>, inputSeri
     for (const bar of inputSeries) {
         switch (+positionStatus) { //TODO: + is a work around for TS switch stmt with enum.
             case PositionStatus.None:
-                strategy.entryRule(inputSeries, enterPosition);
+                strategy.entryRule(bar, inputSeries, enterPosition);
                 break;
 
             case PositionStatus.Enter:
