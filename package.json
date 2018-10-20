@@ -1,0 +1,66 @@
+{
+    "name": "grademark",
+    "version": "0.0.1",
+    "description": "API for backtesting trading strategies in JavaScript and TypeScript.",
+    "main": "build/index.js",
+    "types": "build/index.d.ts",
+    "scripts": {
+        "clean": "rm -rf build/*",
+        "build": "tsc",
+        "clean-build": "rm -rf build/* && tsc",
+        "build:watch": "tsc --watch",
+        "clean-build:watch": "rm -rf build/* && tsc --watch",
+        "test": "nyc mocha --opts ./src/test/mocha.opts",
+        "test:watch": "nyc mocha --watch --watch-extensions ts --opts ./src/test/mocha.opts",
+        "prepublishOnly": "tsc"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://ashleydavis@github.com/ashleydavis/grademark.git"
+    },
+    "keywords": [
+        "trading",
+        "backtest",
+        "backtesting",
+        "quantitative",
+        "algorithmic",
+        "JavaScript",
+        "TypeScript"
+    ],
+    "author": "ashley@codecapers.com.au",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/ashleydavis/grademark/issues"
+    },
+    "homepage": "https://github.com/ashleydavis/grademark#readme",
+    "dependencies": {
+        "moment": "2.22.2"
+    },
+    "devDependencies": {
+        "@types/chai": "4.1.6",
+        "@types/mocha": "5.2.5",
+        "@types/node": "10.11.4",
+        "chai": "4.2.0",
+        "mocha": "5.2.0",
+        "nyc": "13.0.1",
+        "source-map-support": "0.5.9",
+        "ts-node": "7.0.1",
+        "typescript": "3.1.1"
+    },
+    "nyc": {
+        "extension": [
+            ".ts"
+        ],
+        "exclude": [
+            "**/*.d.ts",
+            "src/test/**/*",
+            "build/**/*",
+            "docs/**/*",
+            "coverage/**/*"
+        ],
+        "reporter": [
+            "text-summary"
+        ],
+        "all": true
+    }
+}
