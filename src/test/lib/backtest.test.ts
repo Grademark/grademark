@@ -359,4 +359,41 @@ describe("backtest", () => {
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/25"));
         expect(singleTrade.exitPrice).to.eql(6);
     });
+
+    it("can execute multiple trades", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: (bar, dataSeries, enterPosition) => {
+                if ((bar.close - bar.open) > 0) { 
+                    enterPosition(); // Enter on up day.
+                }
+            },
+
+            exitRule: (position, bar, dataSeries, exitPosition) => {
+                if (position.profitPct > 1.5) {
+                    exitPosition(); // Exit on small profit
+                }
+            },
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", open: 1, close: 1 },  // Flat, no signal.
+            { time: "2018/10/21", open: 2, close: 3 },  // Up day, entry signal.
+            { time: "2018/10/22", open: 4, close: 4 },  // Flat, in position.
+            { time: "2018/10/23", open: 5, close: 6 },  // Good profit, exit signal
+            { time: "2018/10/24", open: 9, close: 10 }, // Exit day.
+
+            { time: "2018/10/25", open: 1, close: 1 },  // Flat, no signal.
+            { time: "2018/10/26", open: 2, close: 3 },  // Up day, entry signal.
+            { time: "2018/10/27", open: 4, close: 4 },  // Flat, in position.
+            { time: "2018/10/28", open: 5, close: 6 },  // Good profit, exit signal
+            { time: "2018/10/29", open: 9, close: 10 }, // Exit day.
+
+            { time: "2018/10/30", open: 11, close: 11 }, // Last bar.
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(2);
+    });
+    
 });
