@@ -21,10 +21,10 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 
 ## Coming soon
 
-- Built in stop and loss and computation of risk/rmultiples.
+- Built in stop loss and computation of risk/rmultiples.
 - Conditional buy on price level (intrabar).
-- Paramters
-- Optimization based on permuations of parameters.
+- Parameters
+- Optimization based on permutations of parameters.
 - Analysis
 - Charting equity curves and drawdown
 - Monte Carlo simulation
