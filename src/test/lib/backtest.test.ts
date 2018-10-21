@@ -435,4 +435,49 @@ describe("backtest", () => {
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/24"));
         expect(singleTrade.exitPrice).to.eql(9);
     });
+
+    it("example of caching a custom indicator before doing the backtest", () => {
+        
+        const strategy: IStrategy<CustomBar> = {
+            entryRule: (bar, dataSeries, enterPosition) => {
+                if (bar.goLong > 0) {
+                    enterPosition(); // Enter on custom indicator.
+                }
+            },
+
+            exitRule: (position, bar, dataSeries, exitPosition) => {
+                if (bar.goLong < 1) {
+                    exitPosition(); // Exit on custom indicator.
+                }
+            },
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", open: 1, close: 1 },  // Flat, no signal.
+            { time: "2018/10/21", open: 2, close: 3 },  // Up day, entry signal.
+            { time: "2018/10/22", open: 4, close: 4 },  // Flat, in position.
+            { time: "2018/10/23", open: 5, close: 6 },  // Good profit, exit signal
+            { time: "2018/10/24", open: 9, close: 10 }, // Exit day.
+
+            { time: "2018/10/25", open: 1, close: 1 },  // Flat, no signal.
+            { time: "2018/10/26", open: 2, close: 3 },  // Up day, entry signal.
+            { time: "2018/10/27", open: 4, close: 4 },  // Flat, in position.
+            { time: "2018/10/28", open: 5, close: 6 },  // Good profit, exit signal
+            { time: "2018/10/29", open: 9, close: 10 }, // Exit day.
+
+            { time: "2018/10/30", open: 11, close: 11 }, // Last bar.
+        ]);
+
+        const augumentedInputSeries = inputSeries
+            .generateSeries<CustomBar>(bar => {
+                let goLong = 0;
+                if ((bar.close - bar.open) > 0) { 
+                    goLong = 1; // Entry triggered by an up day.
+                }
+                return { goLong }; // Added new series to dataframe.
+            });
+
+        const trades = backtest(strategy, augumentedInputSeries);
+        expect(trades.count()).to.eql(2);
+    });
 });

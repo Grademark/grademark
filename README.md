@@ -8,6 +8,7 @@ WORK IN PROGRESS
 
 - Single instrument backtest.
 - Define a trading strategy with entry and exit rules.
+- Apply custom indicators to your data series.
 
 ## Coming soon
 
