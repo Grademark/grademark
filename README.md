@@ -14,8 +14,8 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 
 ## Features
 
-- Backtest a trading strategy on a single instrument.
 - Define a trading strategy with entry and exit rules.
+- Backtest a trading strategy on a single instrument.
 - Apply custom indicators to your data series.
 - Specify lookback period.
 
