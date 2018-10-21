@@ -304,4 +304,59 @@ describe("backtest", () => {
         expect(singleTrade.growth).to.eql(2);
     });
     
+    it("can exit based on intra-trade profit", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            exitRule: (position, bar, dataSeries, exitPosition) => {
+                if (position.profitPct <= -50) {
+                    exitPosition(); // Exit at 50% loss
+                }
+            },
+        };
+
+        const inputData = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 },     // Entry day.
+            { time: "2018/10/22", close: 20 },      // Big loss, exit signal.
+            { time: "2018/10/23", close: 10 },      // Exit.
+            { time: "2018/10/24", close: 1 },
+        ]);
+
+        const trades = backtest(strategy, inputData);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
+        expect(singleTrade.exitPrice).to.eql(10);
+    });
+
+    it("can exit position after max holding period", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            exitRule: (position, bar, dataSeries, exitPosition) => {
+                if (position.holdingPeriod >= 3) {
+                    exitPosition(); // Exit after holding for 3 days.
+                }
+            },
+        };
+
+        const inputData = makeDataSeries([
+            { time: "2018/10/20", close: 1 },
+            { time: "2018/10/21", close: 2 },      // Entry day.
+            { time: "2018/10/22", close: 3 },      // 1 day
+            { time: "2018/10/23", close: 4 },      // 2 days
+            { time: "2018/10/24", close: 5 },      // 3 days
+            { time: "2018/10/25", close: 6 },      // Exit day (after 3 days).
+            { time: "2018/10/26", close: 7 },
+        ]);
+
+        const trades = backtest(strategy, inputData);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.exitTime).to.eql(makeDate("2018/10/25"));
+        expect(singleTrade.exitPrice).to.eql(6);
+    });
 });

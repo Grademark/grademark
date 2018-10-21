@@ -1,21 +1,40 @@
 import { ITrade } from "./trade";
 import { IDataFrame, DataFrame } from 'data-forge';
-import { IStrategy, IBar } from "..";
+import { IStrategy, IBar, IPosition } from "..";
 import { assert } from "chai";
-import * as moment from 'moment'; //fio:
 
 /**
- * Finalize a trade that has been exited.
+ * Update an open position for a new bar.
  * 
- * @param trade The trade to finalize.
- * @param exitBar The data the trade was exited.
+ * @param position The position to update.
+ * @param bar The current bar.
  */
-function finalizeTrade(trade: ITrade, exitTime: Date, exitPrice: number) {
-    trade.exitTime = exitTime;
-    trade.exitPrice = exitPrice;
-    trade.profit = trade.exitPrice - trade.entryPrice;
-    trade.profitPct = (trade.profit / trade.entryPrice) * 100;
-    trade.growth = trade.exitPrice / trade.entryPrice;
+function updatePosition(position: IPosition, bar: IBar): void {
+    position.profit = bar.close - position.entryPrice;
+    position.profitPct = (position.profit / position.entryPrice) * 100;
+    position.growth = bar.close / position.entryPrice;
+    position.holdingPeriod += 1;
+}
+
+/**
+ * Close a position that has been exited and produce a trade.
+ * 
+ * @param position The position to close.
+ * @param exitTime The timestamp for the bar when the position was exited.
+ * @param exitPrice The price of the instrument when the position was exited.
+ */
+function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number): ITrade {
+    const profit = exitPrice - position.entryPrice;
+    return {
+        entryTime: position.entryTime,
+        entryPrice: position.entryPrice,
+        exitTime: exitTime,
+        exitPrice: exitPrice,
+        profit: profit,
+        profitPct: (profit / position.entryPrice) * 100,
+        growth: exitPrice / position.entryPrice,
+        holdingPeriod: position.holdingPeriod,
+    };
 }
 
 enum PositionStatus { // Tracks the state of the position across the trading period.
@@ -33,11 +52,20 @@ export function backtest<IndexT = number>(strategy: IStrategy<IndexT>, inputSeri
         throw new Error("Expect input data series to contain at last 1 bar.");
     }
 
+    //
+    // Tracks trades that have been closed.
+    //
     const completedTrades: ITrade[] = [];
     
-
+    //
+    // Status of the position at any give time.
+    //
     let positionStatus: PositionStatus = PositionStatus.None;
-    let trade: ITrade | null = null;
+
+    //
+    // Tracks the currently open position, or set to null when there is no open position.
+    //
+    let openPosition: IPosition | null = null;
 
     /**
      * User calls this function to enter a position on the instrument.
@@ -64,28 +92,34 @@ export function backtest<IndexT = number>(strategy: IStrategy<IndexT>, inputSeri
                 break;
 
             case PositionStatus.Enter:
-                trade = {
+                assert(openPosition === null, "Expected there to be no open position initialised yet!");
+                
+                openPosition = {
                     entryTime: bar.time,
                     entryPrice: bar.open,
-                    exitTime: bar.time, // Not known yet.
-                    exitPrice: bar.open, // Not known yet.
-                    growth: NaN,
-                    profit: NaN,
-                    profitPct: NaN, // TODO: Fill these out later.
+                    growth: 1,
+                    profit: 0,
+                    profitPct: 0,
                     holdingPeriod: 0,
                 };
                 positionStatus = PositionStatus.Position;
                 break;
 
             case PositionStatus.Position:
-                trade!.holdingPeriod += 1;
-                strategy.exitRule({}, bar, inputSeries, exitPosition);
+                assert(openPosition !== null, "Expected open position to already be initialised!");
+
+                updatePosition(openPosition!, bar);
+                strategy.exitRule(openPosition!, bar, inputSeries, exitPosition);
                 break;
 
             case PositionStatus.Exit:
-                finalizeTrade(trade!, bar.time, bar.open);
+                assert(openPosition !== null, "Expected open position to already be initialised!");
+
+                const trade = finalizePosition(openPosition!, bar.time, bar.open);
                 completedTrades.push(trade!);
-                trade = null;
+
+                // Reset to no open position;
+                openPosition = null;
                 positionStatus = PositionStatus.None;
                 break;
                 
@@ -94,11 +128,11 @@ export function backtest<IndexT = number>(strategy: IStrategy<IndexT>, inputSeri
         }
     }
 
-    if (trade) {
+    if (openPosition) {
         // Finalize open position.
         const lastBar = inputSeries.last();
-        finalizeTrade(trade, lastBar.time, lastBar.close);
-        completedTrades.push(trade);
+        const lastTrade = finalizePosition(openPosition, lastBar.time, lastBar.close);
+        completedTrades.push(lastTrade);
     }
 
     return new DataFrame<number, ITrade>(completedTrades);
