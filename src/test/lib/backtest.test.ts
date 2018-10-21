@@ -70,8 +70,8 @@ describe("backtest", () => {
         { time: "2018/10/20", close: 1 },
         { time: "2018/10/21", close: 2 },
         { time: "2018/10/22", close: 4 },
-        { time: "2018/10/22", close: 5 },
-        { time: "2018/10/22", close: 6 },
+        { time: "2018/10/23", close: 5 },
+        { time: "2018/10/24", close: 6 },
     ]);
     
     it("generates no trades when no entry is ever taken", ()  => {
@@ -167,12 +167,44 @@ describe("backtest", () => {
             exitRule: mockExit,
         };
 
-        const trades = backtest(strategy, longerDataSeries);
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 1 },
+            { time: "2018/10/21", close: 2 },
+            { time: "2018/10/22", close: 4 }, // Entry signal.
+            { time: "2018/10/23", close: 5 }, // Entry day.
+            { time: "2018/10/24", close: 6 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
         expect(trades.count()).to.eql(1);
 
         const singleTrade = trades.first();
-        expect(singleTrade.entryTime).to.eql(makeDate("2018/10/22"));
-        expect(singleTrade.entryPrice).to.eql(5);
+        expect(singleTrade.entryTime).to.eql(makeDate("2018/10/23"));
+    });
+
+    it("conditional entry triggers entry at opening price of next bar", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: (bar, dataSeries, enterPosition) => {
+                if (bar.close > 5) {
+                    enterPosition(); // Conditional enter when instrument closes above 3.
+                }
+            },
+
+            exitRule: mockExit,
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", open: 1, close: 2 },
+            { time: "2018/10/21", open: 3, close: 4 },
+            { time: "2018/10/22", open: 5, close: 6 }, // Entry signal day.
+            { time: "2018/10/23", open: 7, close: 8 }, // Entry day.
+            { time: "2018/10/24", open: 9, close: 10 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        const singleTrade = trades.first();
+        expect(singleTrade.entryPrice).to.eql(7);
     });
 
     it("conditional entry is not triggered when condition is not met", () => {
@@ -203,12 +235,44 @@ describe("backtest", () => {
             },
         };
 
-        const trades = backtest(strategy, longerDataSeries);
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 1 },
+            { time: "2018/10/21", close: 2 }, // Entry day.
+            { time: "2018/10/22", close: 4 }, // Exit signal.
+            { time: "2018/10/23", close: 5 }, // Exit day.
+            { time: "2018/10/24", close: 6 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
         expect(trades.count()).to.eql(1);
 
         const singleTrade = trades.first();
-        expect(singleTrade.exitTime).to.eql(makeDate("2018/10/22"));
-        expect(singleTrade.exitPrice).to.eql(5);
+        expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
+    });
+
+    it("exits position with opening price of next bar", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+
+            exitRule: (position, bar, dataSeries, exitPosition) => {
+                if (bar.close > 5) {
+                    exitPosition(); // Exit at next open.
+                }
+            },
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", open: 1, close: 2 },
+            { time: "2018/10/21", open: 3, close: 4 }, // Entry
+            { time: "2018/10/22", open: 5, close: 6 }, // Exits signal day.
+            { time: "2018/10/23", open: 7, close: 8 }, // Exit day.
+            { time: "2018/10/24", open: 9, close: 10 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        const singleTrade = trades.first();
+        expect(singleTrade.exitPrice).to.eql(7);
     });
 
     it("profit is computed for conditionally exited position", () => {
