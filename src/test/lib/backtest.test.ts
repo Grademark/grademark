@@ -480,4 +480,28 @@ describe("backtest", () => {
         const trades = backtest(strategy, augumentedInputSeries);
         expect(trades.count()).to.eql(2);
     });
+
+    it("passes through exception in entry rule", ()  => {
+
+        const badStrategy: IStrategy = { 
+            entryRule: () => {
+                throw new Error("Bad rule!");
+            },
+            exitRule: () => {},
+         };
+
+        expect(() => backtest(badStrategy, simpleInputSeries)).to.throw();
+    });
+    
+    it("passes through exception in exit rule", ()  => {
+
+        const badStrategy: IStrategy = { 
+            entryRule: unconditionalEntry,
+            exitRule: () => {
+                throw new Error("Bad rule!");
+            },
+         };
+
+        expect(() => backtest(badStrategy, simpleInputSeries)).to.throw();
+    });
 });

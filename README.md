@@ -4,6 +4,8 @@ API for backtesting trading strategies in JavaScript and TypeScript.
 
 WORK IN PROGRESS
 
+The API is fairly stable, but there are features yet to be implemented.
+
 ## Features
 
 - Single instrument backtest.
@@ -12,6 +14,8 @@ WORK IN PROGRESS
 
 ## Coming soon
 
+- Built in stop and loss and computation of risk/rmultiples.
+- Conditional buy on price level (intrabar).
 - Paramters
 - Optimization based on permuations of parameters.
 - Analysis
@@ -21,9 +25,9 @@ WORK IN PROGRESS
 
 ## Missing
 
-Due to this being a simple API there is  no support (at least not yet) for:
+Due to this being a simple API there is no support (at least not yet) for:
 
-- fees
-- slippage
-- position sizing
-- testing multiple instruments / portfolio simulation
+- Fees
+- Slippage
+- Position sizing
+- Testing multiple instruments / portfolio simulation / ranking instruments.
