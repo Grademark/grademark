@@ -395,5 +395,44 @@ describe("backtest", () => {
         const trades = backtest(strategy, inputSeries);
         expect(trades.count()).to.eql(2);
     });
+
+    interface CustomBar extends IBar {
+        goLong: number; // Custom indicator, indicates 'buy now'.
+    }
     
+    it("can use custom bar type and enter/exit on computed indicator", () => {
+        
+        const strategy: IStrategy<CustomBar> = {
+            entryRule: (bar, dataSeries, enterPosition) => {
+                if (bar.goLong > 0) {
+                    enterPosition(); // Enter on custom indicator.
+                }
+            },
+
+            exitRule: (position, bar, dataSeries, exitPosition) => {
+                if (bar.goLong < 1) {
+                    exitPosition(); // Exit on custom indicator.
+                }
+            },
+        };
+
+        const bars: CustomBar[] = [
+            { time: makeDate("2018/10/20"), open: 1,  high: 2,  low: 1,  close: 2,  volume: 1, goLong: 0 },
+            { time: makeDate("2018/10/21"), open: 3,  high: 4,  low: 3,  close: 4,  volume: 1, goLong: 1 }, // Entry signal.
+            { time: makeDate("2018/10/22"), open: 5,  high: 6,  low: 5,  close: 6,  volume: 1, goLong: 1 }, // Entry day.
+            { time: makeDate("2018/10/23"), open: 7,  high: 8,  low: 7,  close: 8,  volume: 1, goLong: 0 }, // Exit signal.
+            { time: makeDate("2018/10/24"), open: 9,  high: 10, low: 8,  close: 10, volume: 1, goLong: 0 }, // Exit day.
+            { time: makeDate("2018/10/25"), open: 11, high: 12, low: 11, close: 12, volume: 1, goLong: 0 }, // Last bar.
+        ];
+
+        const inputSeries = new DataFrame<number, CustomBar>(bars);
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.entryTime).to.eql(makeDate("2018/10/22"));
+        expect(singleTrade.entryPrice).to.eql(5);
+        expect(singleTrade.exitTime).to.eql(makeDate("2018/10/24"));
+        expect(singleTrade.exitPrice).to.eql(9);
+    });
 });

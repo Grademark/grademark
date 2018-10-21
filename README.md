@@ -11,7 +11,8 @@ WORK IN PROGRESS
 
 ## Coming soon
 
-- Optimization
+- Paramters
+- Optimization based on permuations of parameters.
 - Analysis
 - Charting equity curves and drawdown
 - Monte Carlo simulation

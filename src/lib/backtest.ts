@@ -47,7 +47,7 @@ enum PositionStatus { // Tracks the state of the position across the trading per
 /**
  * Backtest a trading strategy against a data series and generate a sequence of trades.
  */
-export function backtest<IndexT = number>(strategy: IStrategy<IndexT>, inputSeries: IDataFrame<IndexT, IBar>): IDataFrame<number, ITrade> {
+export function backtest<BarT extends IBar = IBar, IndexT = number>(strategy: IStrategy<BarT, IndexT>, inputSeries: IDataFrame<IndexT, BarT>): IDataFrame<number, ITrade> {
     if (inputSeries.none()) {
         throw new Error("Expect input data series to contain at last 1 bar.");
     }
