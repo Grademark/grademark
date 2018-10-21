@@ -39,6 +39,10 @@ Due to this being a simple API there is no support (at least not yet) for:
 - Position sizing
 - Testing multiple instruments / portfolio simulation / ranking instruments.
 
+## Examples
+
+TODO
+
 ## Installation
 
 TODO
@@ -59,10 +63,10 @@ TODO
 
 TODO
 
-### Running a backtest
+## Running a backtest
 
 TODO
 
-### Visualizating the results
+## Visualizating the results
 
 TODO
