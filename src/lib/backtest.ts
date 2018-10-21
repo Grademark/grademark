@@ -10,9 +10,9 @@ import * as moment from 'moment'; //fio:
  * @param trade The trade to finalize.
  * @param exitBar The data the trade was exited.
  */
-function finalizeTrade(trade: ITrade, exitBar: IBar) {
-    trade.exitTime = exitBar.time;
-    trade.exitPrice = exitBar.open;
+function finalizeTrade(trade: ITrade, exitTime: Date, exitPrice: number) {
+    trade.exitTime = exitTime;
+    trade.exitPrice = exitPrice;
     trade.profit = trade.exitPrice - trade.entryPrice;
     trade.profitPct = (trade.profit / trade.entryPrice) * 100;
     trade.growth = trade.exitPrice / trade.entryPrice;
@@ -83,7 +83,7 @@ export function backtest<IndexT = number>(strategy: IStrategy<IndexT>, inputSeri
                 break;
 
             case PositionStatus.Exit:
-                finalizeTrade(trade!, bar);
+                finalizeTrade(trade!, bar.time, bar.open);
                 completedTrades.push(trade!);
                 trade = null;
                 positionStatus = PositionStatus.None;
@@ -96,7 +96,8 @@ export function backtest<IndexT = number>(strategy: IStrategy<IndexT>, inputSeri
 
     if (trade) {
         // Finalize open position.
-        finalizeTrade(trade, inputSeries.last());
+        const lastBar = inputSeries.last();
+        finalizeTrade(trade, lastBar.time, lastBar.close);
         completedTrades.push(trade);
     }
 

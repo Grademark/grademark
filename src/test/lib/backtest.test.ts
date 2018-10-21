@@ -100,9 +100,15 @@ describe("backtest", () => {
 
     it('enters position at open on day after signal', () => {
 
-        const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", open: 1, close: 2 },
+            { time: "2018/10/21", open: 3, close: 4 }, // Enter position at open on this day.
+            { time: "2018/10/22", open: 5, close: 6 },
+        ]);
+        
+        const trades = backtest(strategyWithUnconditionalEntry, inputSeries);
         const singleTrade = trades.first();
-        expect(singleTrade.entryPrice).to.eql(2);
+        expect(singleTrade.entryPrice).to.eql(3);
     });
 
     it('unconditional entry rule creates single trade that is finalized at end of trading period', () => {
@@ -123,9 +129,15 @@ describe("backtest", () => {
     
     it('open position is finalized at end of trading period at the closing price', () => {
 
-        const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", open: 1, close: 2 },
+            { time: "2018/10/21", open: 3, close: 4 }, // Enter position at open on this day.
+            { time: "2018/10/22", open: 5, close: 6 },
+        ]);
+
+        const trades = backtest(strategyWithUnconditionalEntry, inputSeries);
         const singleTrade = trades.first();
-        expect(singleTrade.exitPrice).to.eql(3);
+        expect(singleTrade.exitPrice).to.eql(6);
     });
 
     it('profit is computed for trade finalized at end of the trading period', () => {
@@ -212,7 +224,7 @@ describe("backtest", () => {
 
         const inputData = makeDataSeries([
             { time: "2018/10/20", close: 1 },
-            { time: "2018/10/21", close: 5},   // Unconditionally enter here.
+            { time: "2018/10/21", close: 5},    // Unconditionally enter here.
             { time: "2018/10/22", close: 6 },   // Exit signal.
             { time: "2018/10/23", close: 10 },  // Exit.
             { time: "2018/10/24", close: 100 }, // Last bar.
@@ -227,4 +239,5 @@ describe("backtest", () => {
         expect(singleTrade.profitPct).to.eql(100);
         expect(singleTrade.growth).to.eql(2);
     });
+    
 });
