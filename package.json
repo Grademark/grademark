@@ -34,6 +34,7 @@
     },
     "homepage": "https://github.com/ashleydavis/grademark#readme",
     "dependencies": {
+        "CBuffer": "^2.0.0",
         "data-forge": "^1.2.6",
         "moment": "2.22.2"
     },

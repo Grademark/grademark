@@ -2,7 +2,7 @@ import { assert, expect } from 'chai';
 import { backtest } from '../../lib/backtest';
 import { DataFrame, IDataFrame } from 'data-forge';
 import { IBar } from '../../lib/bar';
-import { IStrategy, EnterPositionFn } from '../../lib/strategy';
+import { IStrategy, EnterPositionFn, ExitPositionFn } from '../../lib/strategy';
 import * as moment from 'moment';
 
 describe("backtest", () => {
@@ -42,16 +42,17 @@ describe("backtest", () => {
         return new DataFrame<number, IBar>(bars.map(makeBar));
     }
 
+    const mockEntry = () => {};
     const mockExit = () => {};
 
     function mockStrategy(): IStrategy {
         return { 
-            entryRule: () => {},
+            entryRule: mockEntry,
             exitRule: mockExit,
          };
     }
 
-    function unconditionalEntry(bar: IBar, dataSeries: IDataFrame<number, IBar>, enterPosition: EnterPositionFn) {
+    function unconditionalEntry(bar: IBar, lookback: IDataFrame<number, IBar>, enterPosition: EnterPositionFn) {
         enterPosition(); // Unconditionally enter position at market price.
     };
 
@@ -158,7 +159,7 @@ describe("backtest", () => {
     it("conditional entry can be triggered within the trading period", () => {
         
         const strategy: IStrategy = {
-            entryRule: (bar, dataSeries, enterPosition) => {
+            entryRule: (bar, lookback, enterPosition) => {
                 if (bar.close > 3) {
                     enterPosition(); // Conditional enter when instrument closes above 3.
                 }
@@ -185,7 +186,7 @@ describe("backtest", () => {
     it("conditional entry triggers entry at opening price of next bar", () => {
         
         const strategy: IStrategy = {
-            entryRule: (bar, dataSeries, enterPosition) => {
+            entryRule: (bar, lookback, enterPosition) => {
                 if (bar.close > 5) {
                     enterPosition(); // Conditional enter when instrument closes above 3.
                 }
@@ -210,7 +211,7 @@ describe("backtest", () => {
     it("conditional entry is not triggered when condition is not met", () => {
         
         const strategy: IStrategy = {
-            entryRule: (bar, dataSeries, enterPosition) => {
+            entryRule: (bar, lookback, enterPosition) => {
                 if (bar.close > 10) {
                     enterPosition(); // Conditional enter when instrument closes above 3.
                 }
@@ -228,7 +229,7 @@ describe("backtest", () => {
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
 
-            exitRule: (position, bar, dataSeries, exitPosition) => {
+            exitRule: (position, bar, lookback, exitPosition) => {
                 if (bar.close > 3) {
                     exitPosition(); // Exit at next open.
                 }
@@ -255,7 +256,7 @@ describe("backtest", () => {
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
 
-            exitRule: (position, bar, dataSeries, exitPosition) => {
+            exitRule: (position, bar, lookback, exitPosition) => {
                 if (bar.close > 5) {
                     exitPosition(); // Exit at next open.
                 }
@@ -279,7 +280,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            exitRule: (position, bar, dataSeries, exitPosition) => {
+            exitRule: (position, bar, lookback, exitPosition) => {
                 if (bar.close > 3) {
                     exitPosition(); // Exit at next open.
                 }
@@ -308,7 +309,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            exitRule: (position, bar, dataSeries, exitPosition) => {
+            exitRule: (position, bar, lookback, exitPosition) => {
                 if (position.profitPct <= -50) {
                     exitPosition(); // Exit at 50% loss
                 }
@@ -335,7 +336,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            exitRule: (position, bar, dataSeries, exitPosition) => {
+            exitRule: (position, bar, lookback, exitPosition) => {
                 if (position.holdingPeriod >= 3) {
                     exitPosition(); // Exit after holding for 3 days.
                 }
@@ -363,13 +364,13 @@ describe("backtest", () => {
     it("can execute multiple trades", () => {
         
         const strategy: IStrategy = {
-            entryRule: (bar, dataSeries, enterPosition) => {
+            entryRule: (bar, lookback, enterPosition) => {
                 if ((bar.close - bar.open) > 0) { 
                     enterPosition(); // Enter on up day.
                 }
             },
 
-            exitRule: (position, bar, dataSeries, exitPosition) => {
+            exitRule: (position, bar, lookback, exitPosition) => {
                 if (position.profitPct > 1.5) {
                     exitPosition(); // Exit on small profit
                 }
@@ -403,13 +404,13 @@ describe("backtest", () => {
     it("can use custom bar type and enter/exit on computed indicator", () => {
         
         const strategy: IStrategy<CustomBar> = {
-            entryRule: (bar, dataSeries, enterPosition) => {
+            entryRule: (bar, lookback, enterPosition) => {
                 if (bar.goLong > 0) {
                     enterPosition(); // Enter on custom indicator.
                 }
             },
 
-            exitRule: (position, bar, dataSeries, exitPosition) => {
+            exitRule: (position, bar, lookback, exitPosition) => {
                 if (bar.goLong < 1) {
                     exitPosition(); // Exit on custom indicator.
                 }
@@ -439,13 +440,13 @@ describe("backtest", () => {
     it("example of caching a custom indicator before doing the backtest", () => {
         
         const strategy: IStrategy<CustomBar> = {
-            entryRule: (bar, dataSeries, enterPosition) => {
+            entryRule: (bar, lookback, enterPosition) => {
                 if (bar.goLong > 0) {
                     enterPosition(); // Enter on custom indicator.
                 }
             },
 
-            exitRule: (position, bar, dataSeries, exitPosition) => {
+            exitRule: (position, bar, lookback, exitPosition) => {
                 if (bar.goLong < 1) {
                     exitPosition(); // Exit on custom indicator.
                 }
@@ -503,5 +504,56 @@ describe("backtest", () => {
          };
 
         expect(() => backtest(badStrategy, simpleInputSeries)).to.throw();
+    });
+
+    it("can set lookback period and use data series in entry rule", ()  => {
+
+        let lookbackPeriodChecked = false;
+
+        const strategy: IStrategy = { 
+            lookbackPeriod: 2,
+
+            entryRule: (bar: IBar, lookback: IDataFrame<number, IBar>, enterPosition: EnterPositionFn) => {
+                lookbackPeriodChecked = true;
+                expect(lookback.count()).to.eql(2);
+            },
+
+            exitRule: () => {},
+         };
+
+        backtest(strategy, longerDataSeries);
+
+        expect(lookbackPeriodChecked).to.eql(true);
+    });
+
+    it("can set lookback period and use data series in exit rule", ()  => {
+
+        let lookbackPeriodChecked = false;
+
+        const strategy: IStrategy = { 
+            lookbackPeriod: 2,
+
+            entryRule: unconditionalEntry,
+
+            exitRule: (position, bar, lookback, exitPosition) => {
+                lookbackPeriodChecked = true;
+                expect(lookback.count()).to.eql(2);
+            },
+         };
+
+        backtest(strategy, longerDataSeries);
+
+        expect(lookbackPeriodChecked).to.eql(true);
+    });
+
+    it("exception is thrown when there is less data than the lookback period", () => {
+
+        const strategy: IStrategy = { 
+            lookbackPeriod: 30,
+            entryRule: mockEntry,
+            exitRule: mockExit,
+         };
+
+        expect(() => backtest(strategy, simpleInputSeries)).to.throw();
     });
 });

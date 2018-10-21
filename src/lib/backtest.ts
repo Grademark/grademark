@@ -2,6 +2,7 @@ import { ITrade } from "./trade";
 import { IDataFrame, DataFrame } from 'data-forge';
 import { IStrategy, IBar, IPosition } from "..";
 import { assert } from "chai";
+const CBuffer = require('CBuffer');
 
 /**
  * Update an open position for a new bar.
@@ -47,9 +48,14 @@ enum PositionStatus { // Tracks the state of the position across the trading per
 /**
  * Backtest a trading strategy against a data series and generate a sequence of trades.
  */
-export function backtest<BarT extends IBar = IBar, IndexT = number>(strategy: IStrategy<BarT, IndexT>, inputSeries: IDataFrame<IndexT, BarT>): IDataFrame<number, ITrade> {
+export function backtest<BarT extends IBar = IBar, IndexT = number>(strategy: IStrategy<BarT>, inputSeries: IDataFrame<IndexT, BarT>): IDataFrame<number, ITrade> {
     if (inputSeries.none()) {
         throw new Error("Expect input data series to contain at last 1 bar.");
+    }
+
+    const lookbackPeriod = strategy.lookbackPeriod || 1;
+    if (inputSeries.count() < lookbackPeriod) {
+        throw new Error("You have less input data than your lookback period, the size of your input data should be some multiple of your lookback period.");
     }
 
     //
@@ -66,6 +72,11 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(strategy: IS
     // Tracks the currently open position, or set to null when there is no open position.
     //
     let openPosition: IPosition | null = null;
+
+    //
+    // Create a circular buffer to use for the lookback.
+    //
+    const lookbackBuffer = new CBuffer(lookbackPeriod);
 
     /**
      * User calls this function to enter a position on the instrument.
@@ -86,9 +97,15 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(strategy: IS
     }
 
     for (const bar of inputSeries) {
+        lookbackBuffer.push(bar);
+
+        if (lookbackBuffer.length < lookbackPeriod) {
+            continue; // Don't invoke rules until lookback period is satisfied.
+        }
+
         switch (+positionStatus) { //TODO: + is a work around for TS switch stmt with enum.
             case PositionStatus.None:
-                strategy.entryRule(bar, inputSeries, enterPosition);
+                strategy.entryRule(bar, new DataFrame<number, BarT>(lookbackBuffer.data), enterPosition);
                 break;
 
             case PositionStatus.Enter:
@@ -109,7 +126,7 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(strategy: IS
                 assert(openPosition !== null, "Expected open position to already be initialised!");
 
                 updatePosition(openPosition!, bar);
-                strategy.exitRule(openPosition!, bar, inputSeries, exitPosition);
+                strategy.exitRule(openPosition!, bar, new DataFrame<number, BarT>(lookbackBuffer.data), exitPosition);
                 break;
 
             case PositionStatus.Exit:
