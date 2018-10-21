@@ -2,6 +2,7 @@ import { ITrade } from "./trade";
 import { IDataFrame, DataFrame } from 'data-forge';
 import { IStrategy, IBar } from "..";
 import { assert } from "chai";
+import * as moment from 'moment'; //fio:
 
 /**
  * Finalize a trade that has been exited.
@@ -39,12 +40,21 @@ export function backtest<IndexT = number>(strategy: IStrategy<IndexT>, inputSeri
     let trade: ITrade | null = null;
 
     /**
-     * Call this function to take a position on the instrument.
+     * User calls this function to enter a position on the instrument.
      */
     function enterPosition() {
-        assert(positionStatus === PositionStatus.None, "Can only take a position when not already in one.");
+        assert(positionStatus === PositionStatus.None, "Can only enter a position when not already in one.");
 
-        positionStatus = PositionStatus.Enter; // Take position next bar.
+        positionStatus = PositionStatus.Enter; // Enter position next bar.
+    }
+
+    /**
+     * User calls this function to exit a position on the instrument.
+     */
+    function exitPosition() {
+        assert(positionStatus === PositionStatus.Position, "Can only exit a position when we are in a position.");
+
+        positionStatus = PositionStatus.Exit; // Exit position next bar.
     }
 
     for (const bar of inputSeries) {
@@ -69,8 +79,16 @@ export function backtest<IndexT = number>(strategy: IStrategy<IndexT>, inputSeri
 
             case PositionStatus.Position:
                 trade!.holdingPeriod += 1;
+                strategy.exitRule({}, bar, inputSeries, exitPosition);
                 break;
 
+            case PositionStatus.Exit:
+                finalizeTrade(trade!, bar);
+                completedTrades.push(trade!);
+                trade = null;
+                positionStatus = PositionStatus.None;
+                break;
+                
             default:
                 throw new Error("Unexpectes state!");
         }
