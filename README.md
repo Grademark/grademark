@@ -6,9 +6,15 @@ WORK IN PROGRESS
 
 The API is fairly stable, but there are features yet to be implemented.
 
+This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from [Data-Forge Notebook](http://www.data-forge-notebook.com/) (making it easy to plot charts and visualize).
+
+TODO: Add link here to live notebook (mean reversion strategy).
+
+To learn more about working with data in JavaScript please read my book [Data Wrangling with JavaScript](http://bit.ly/2t2cJu2).
+
 ## Features
 
-- Single instrument backtest.
+- Backtest a trading strategy on a single instrument.
 - Define a trading strategy with entry and exit rules.
 - Apply custom indicators to your data series.
 - Specify lookback period.
@@ -32,3 +38,31 @@ Due to this being a simple API there is no support (at least not yet) for:
 - Slippage
 - Position sizing
 - Testing multiple instruments / portfolio simulation / ranking instruments.
+
+## Installation
+
+TODO
+
+## Loading data
+
+TODO
+
+### From REST API
+
+TODO
+
+### From CSV file
+
+TODO
+
+### From MongoDB
+
+TODO
+
+### Running a backtest
+
+TODO
+
+### Visualizating the results
+
+TODO
