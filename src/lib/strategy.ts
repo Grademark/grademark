@@ -15,12 +15,12 @@ export type ExitPositionFn = () => void;
 /**
  * Type for a function that defines an entry rule.
  */
-export type EntryRuleFn<BarT extends IBar = IBar> = (curBar: BarT, dataSeries: IDataFrame<number, BarT>, enterPosition: EnterPositionFn) => void;
+export type EntryRuleFn<BarT extends IBar = IBar> = (enterPosition: EnterPositionFn, curBar: BarT, lookback: IDataFrame<number, BarT>) => void;
 
 /**
  * Type for a function that defines an exigt rule.
  */
-export type ExitRuleFn<BarT extends IBar = IBar> = (position: IPosition, curBar: BarT, dataSeries: IDataFrame<number, BarT>, exitPosition: ExitPositionFn) => void;
+export type ExitRuleFn<BarT extends IBar = IBar> = (exitPosition: ExitPositionFn, position: IPosition, curBar: BarT, lookback: IDataFrame<number, BarT>) => void;
 
 /**
  * Interface that defines a trading strategy.

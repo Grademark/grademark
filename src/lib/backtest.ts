@@ -48,7 +48,11 @@ enum PositionStatus { // Tracks the state of the position across the trading per
 /**
  * Backtest a trading strategy against a data series and generate a sequence of trades.
  */
-export function backtest<BarT extends IBar = IBar, IndexT = number>(strategy: IStrategy<BarT>, inputSeries: IDataFrame<IndexT, BarT>): IDataFrame<number, ITrade> {
+export function backtest<BarT extends IBar = IBar, IndexT = number>(
+    strategy: IStrategy<BarT>, 
+    inputSeries: IDataFrame<IndexT, BarT>): 
+        IDataFrame<number, ITrade> {
+
     if (inputSeries.none()) {
         throw new Error("Expect input data series to contain at last 1 bar.");
     }
@@ -105,7 +109,7 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(strategy: IS
 
         switch (+positionStatus) { //TODO: + is a work around for TS switch stmt with enum.
             case PositionStatus.None:
-                strategy.entryRule(bar, new DataFrame<number, BarT>(lookbackBuffer.data), enterPosition);
+                strategy.entryRule(enterPosition, bar, new DataFrame<number, BarT>(lookbackBuffer.data), );
                 break;
 
             case PositionStatus.Enter:
@@ -126,7 +130,7 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(strategy: IS
                 assert(openPosition !== null, "Expected open position to already be initialised!");
 
                 updatePosition(openPosition!, bar);
-                strategy.exitRule(openPosition!, bar, new DataFrame<number, BarT>(lookbackBuffer.data), exitPosition);
+                strategy.exitRule(exitPosition, openPosition!, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
                 break;
 
             case PositionStatus.Exit:

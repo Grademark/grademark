@@ -52,7 +52,7 @@ describe("backtest", () => {
          };
     }
 
-    function unconditionalEntry(bar: IBar, lookback: IDataFrame<number, IBar>, enterPosition: EnterPositionFn) {
+    function unconditionalEntry(enterPosition: EnterPositionFn, bar: IBar, lookback: IDataFrame<number, IBar>) {
         enterPosition(); // Unconditionally enter position at market price.
     };
 
@@ -159,7 +159,7 @@ describe("backtest", () => {
     it("conditional entry can be triggered within the trading period", () => {
         
         const strategy: IStrategy = {
-            entryRule: (bar, lookback, enterPosition) => {
+            entryRule: (enterPosition, bar) => {
                 if (bar.close > 3) {
                     enterPosition(); // Conditional enter when instrument closes above 3.
                 }
@@ -186,7 +186,7 @@ describe("backtest", () => {
     it("conditional entry triggers entry at opening price of next bar", () => {
         
         const strategy: IStrategy = {
-            entryRule: (bar, lookback, enterPosition) => {
+            entryRule: (enterPosition, bar) => {
                 if (bar.close > 5) {
                     enterPosition(); // Conditional enter when instrument closes above 3.
                 }
@@ -211,7 +211,7 @@ describe("backtest", () => {
     it("conditional entry is not triggered when condition is not met", () => {
         
         const strategy: IStrategy = {
-            entryRule: (bar, lookback, enterPosition) => {
+            entryRule: (enterPosition, bar) => {
                 if (bar.close > 10) {
                     enterPosition(); // Conditional enter when instrument closes above 3.
                 }
@@ -229,7 +229,7 @@ describe("backtest", () => {
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
 
-            exitRule: (position, bar, lookback, exitPosition) => {
+            exitRule: (exitPosition, position, bar) => {
                 if (bar.close > 3) {
                     exitPosition(); // Exit at next open.
                 }
@@ -256,7 +256,7 @@ describe("backtest", () => {
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
 
-            exitRule: (position, bar, lookback, exitPosition) => {
+            exitRule: (exitPosition, position, bar) => {
                 if (bar.close > 5) {
                     exitPosition(); // Exit at next open.
                 }
@@ -280,7 +280,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            exitRule: (position, bar, lookback, exitPosition) => {
+            exitRule: (exitPosition, position, bar) => {
                 if (bar.close > 3) {
                     exitPosition(); // Exit at next open.
                 }
@@ -309,7 +309,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            exitRule: (position, bar, lookback, exitPosition) => {
+            exitRule: (exitPosition, position, bar) => {
                 if (position.profitPct <= -50) {
                     exitPosition(); // Exit at 50% loss
                 }
@@ -336,7 +336,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            exitRule: (position, bar, lookback, exitPosition) => {
+            exitRule: (exitPosition, position, bar) => {
                 if (position.holdingPeriod >= 3) {
                     exitPosition(); // Exit after holding for 3 days.
                 }
@@ -364,13 +364,13 @@ describe("backtest", () => {
     it("can execute multiple trades", () => {
         
         const strategy: IStrategy = {
-            entryRule: (bar, lookback, enterPosition) => {
+            entryRule: (enterPosition, bar) => {
                 if ((bar.close - bar.open) > 0) { 
                     enterPosition(); // Enter on up day.
                 }
             },
 
-            exitRule: (position, bar, lookback, exitPosition) => {
+            exitRule: (exitPosition, position, bar) => {
                 if (position.profitPct > 1.5) {
                     exitPosition(); // Exit on small profit
                 }
@@ -404,13 +404,13 @@ describe("backtest", () => {
     it("can use custom bar type and enter/exit on computed indicator", () => {
         
         const strategy: IStrategy<CustomBar> = {
-            entryRule: (bar, lookback, enterPosition) => {
+            entryRule: (enterPosition, bar) => {
                 if (bar.goLong > 0) {
                     enterPosition(); // Enter on custom indicator.
                 }
             },
 
-            exitRule: (position, bar, lookback, exitPosition) => {
+            exitRule: (exitPosition, position, bar) => {
                 if (bar.goLong < 1) {
                     exitPosition(); // Exit on custom indicator.
                 }
@@ -440,13 +440,13 @@ describe("backtest", () => {
     it("example of caching a custom indicator before doing the backtest", () => {
         
         const strategy: IStrategy<CustomBar> = {
-            entryRule: (bar, lookback, enterPosition) => {
+            entryRule: (enterPosition, bar) => {
                 if (bar.goLong > 0) {
                     enterPosition(); // Enter on custom indicator.
                 }
             },
 
-            exitRule: (position, bar, lookback, exitPosition) => {
+            exitRule: (exitPosition, position, bar) => {
                 if (bar.goLong < 1) {
                     exitPosition(); // Exit on custom indicator.
                 }
@@ -513,7 +513,7 @@ describe("backtest", () => {
         const strategy: IStrategy = { 
             lookbackPeriod: 2,
 
-            entryRule: (bar: IBar, lookback: IDataFrame<number, IBar>, enterPosition: EnterPositionFn) => {
+            entryRule: (enterPosition, bar, lookback) => {
                 lookbackPeriodChecked = true;
                 expect(lookback.count()).to.eql(2);
             },
@@ -535,7 +535,7 @@ describe("backtest", () => {
 
             entryRule: unconditionalEntry,
 
-            exitRule: (position, bar, lookback, exitPosition) => {
+            exitRule: (exitPosition, position, bar, lookback) => {
                 lookbackPeriodChecked = true;
                 expect(lookback.count()).to.eql(2);
             },
