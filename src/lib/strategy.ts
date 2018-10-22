@@ -13,6 +13,12 @@ export type EnterPositionFn = () => void;
 export type ExitPositionFn = () => void;
 
 /**
+ * Compute the stop loss.
+ * Return the maximum value the instrument can change before the stop loss is triggered.
+ */
+export type StopLossFn<BarT extends IBar = IBar> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>) => number;
+
+/**
  * Type for a function that defines an entry rule.
  */
 export type EntryRuleFn<BarT extends IBar = IBar> = (enterPosition: EnterPositionFn, curBar: BarT, lookback: IDataFrame<number, BarT>) => void;
@@ -40,5 +46,10 @@ export interface IStrategy<BarT extends IBar = IBar> {
     /**
      * Defines the rule to exit a position.
      */
-    exitRule: ExitRuleFn<BarT>;
+    exitRule?: ExitRuleFn<BarT>;
+
+    /**
+     * Function that computes stop loss.
+     */
+    stopLoss?: StopLossFn<BarT>;
 }

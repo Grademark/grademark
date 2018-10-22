@@ -119,6 +119,7 @@ describe("backtest", () => {
         
         const singleTrade = trades.first();
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/22"));
+        expect(singleTrade.exitReason).to.eql("finalize");
     });
 
     it('open position is finalized on the last day of the trading period', () => {
@@ -249,6 +250,7 @@ describe("backtest", () => {
 
         const singleTrade = trades.first();
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
+        expect(singleTrade.exitReason).to.eql("exit-rule");
     });
 
     it("exits position with opening price of next bar", () => {
@@ -555,5 +557,73 @@ describe("backtest", () => {
          };
 
         expect(() => backtest(strategy, simpleInputSeries)).to.throw();
+    });
+
+    it("can exit via stop loss", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            stopLoss: entryPrice => entryPrice * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day.
+            { time: "2018/10/22", close: 90 },  // Hold
+            { time: "2018/10/23", close: 70 },  // Stop loss triggered.
+            { time: "2018/10/24", close: 70 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.exitReason).to.eql("stop-loss");
+        expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
+    });
+
+    it("stop loss exits based on intrabar low", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            stopLoss: entryPrice => entryPrice * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day.
+            { time: "2018/10/22", close: 90 },  // Hold
+            { time: "2018/10/23", open: 90, high: 100, low: 30, close: 70 },  // Stop loss triggered.
+            { time: "2018/10/24", close: 70 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.exitPrice).to.eql(80);
+    });
+
+    it("stop loss is not triggered unless there is a significant loss", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            stopLoss: entryPrice => entryPrice * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day
+            { time: "2018/10/22", close: 90 },  // Hold
+            { time: "2018/10/23", close: 85 },  // Hold
+            { time: "2018/10/24", close: 82 },  // Exit
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.exitReason).to.eql("finalize");
+        expect(singleTrade.exitTime).to.eql(makeDate("2018/10/24"));
     });
 });

@@ -24,7 +24,7 @@ function updatePosition(position: IPosition, bar: IBar): void {
  * @param exitTime The timestamp for the bar when the position was exited.
  * @param exitPrice The price of the instrument when the position was exited.
  */
-function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number): ITrade {
+function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number, exitReason: string): ITrade {
     const profit = exitPrice - position.entryPrice;
     return {
         entryTime: position.entryTime,
@@ -35,6 +35,7 @@ function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number
         profitPct: (profit / position.entryPrice) * 100,
         growth: exitPrice / position.entryPrice,
         holdingPeriod: position.holdingPeriod,
+        exitReason: exitReason,
     };
 }
 
@@ -100,6 +101,17 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
         positionStatus = PositionStatus.Exit; // Exit position next bar.
     }
 
+    //
+    // Close the current open position.
+    //
+    function closePosition(bar: BarT, exitPrice: number, exitReason: string) {
+        const trade = finalizePosition(openPosition!, bar.time, exitPrice, exitReason);
+        completedTrades.push(trade!);
+        // Reset to no open position;
+        openPosition = null;
+        positionStatus = PositionStatus.None;
+    }
+
     for (const bar of inputSeries) {
         lookbackBuffer.push(bar);
 
@@ -114,15 +126,22 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
 
             case PositionStatus.Enter:
                 assert(openPosition === null, "Expected there to be no open position initialised yet!");
+
+                const entryPrice = bar.open;
                 
                 openPosition = {
                     entryTime: bar.time,
-                    entryPrice: bar.open,
+                    entryPrice: entryPrice,
                     growth: 1,
                     profit: 0,
                     profitPct: 0,
                     holdingPeriod: 0,
                 };
+
+                if (strategy.stopLoss) {
+                    openPosition.stopDistance = strategy.stopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                }
+
                 positionStatus = PositionStatus.Position;
                 break;
 
@@ -130,29 +149,36 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                 assert(openPosition !== null, "Expected open position to already be initialised!");
 
                 updatePosition(openPosition!, bar);
-                strategy.exitRule(exitPosition, openPosition!, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+
+                if (openPosition!.stopDistance !== undefined) {
+                    const stopPrice = openPosition!.entryPrice - openPosition!.stopDistance!;
+                    if (bar.low <= stopPrice) {
+                        // Exit intrabar due to stop loss.
+                        closePosition(bar, stopPrice, "stop-loss");
+                        break;
+                    }
+                }
+
+                if (strategy.exitRule) {
+                    strategy.exitRule(exitPosition, openPosition!, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                }
                 break;
 
             case PositionStatus.Exit:
                 assert(openPosition !== null, "Expected open position to already be initialised!");
 
-                const trade = finalizePosition(openPosition!, bar.time, bar.open);
-                completedTrades.push(trade!);
-
-                // Reset to no open position;
-                openPosition = null;
-                positionStatus = PositionStatus.None;
+                closePosition(bar, bar.open, "exit-rule");
                 break;
                 
             default:
-                throw new Error("Unexpectes state!");
+                throw new Error("Unexpected state!");
         }
     }
 
     if (openPosition) {
         // Finalize open position.
         const lastBar = inputSeries.last();
-        const lastTrade = finalizePosition(openPosition, lastBar.time, lastBar.close);
+        const lastTrade = finalizePosition(openPosition, lastBar.time, lastBar.close, "finalize");
         completedTrades.push(lastTrade);
     }
 

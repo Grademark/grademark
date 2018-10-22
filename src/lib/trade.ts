@@ -54,4 +54,9 @@ export interface ITrade {
      */
     holdingPeriod: number;
 
+    /**
+     * The reason the position was exited.
+     */
+    exitReason: string;
+
 }

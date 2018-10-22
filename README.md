@@ -18,10 +18,11 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 - Backtest a trading strategy on a single instrument.
 - Apply custom indicators to your data series.
 - Specify lookback period.
+- Built-in intrabar stop loss and risk calculation.
 
 ## Coming soon
 
-- Built in stop loss and computation of risk/rmultiples.
+- Trailing stop loss.
 - Conditional buy on price level (intrabar).
 - Parameters
 - Optimization based on permutations of parameters.
@@ -29,6 +30,7 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 - Charting equity curves and drawdown
 - Monte Carlo simulation
 - Walk-forward backtesting
+- Risk curve
 
 ## Missing
 
@@ -38,6 +40,7 @@ Due to this being a simple API there is no support (at least not yet) for:
 - Slippage
 - Position sizing
 - Testing multiple instruments / portfolio simulation / ranking instruments.
+- Short selling.
 
 ## Examples
 

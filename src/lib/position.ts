@@ -33,4 +33,9 @@ export interface IPosition {
      * Number of bars the position was held for.
      */
     holdingPeriod: number;
+
+    /**
+     * Distance to the stop loss price.
+     */
+    stopDistance?: number;
 }
