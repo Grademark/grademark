@@ -28,7 +28,8 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 
 ## Coming soon
 
-- Trailing stop loss.
+- Intrabar profit target.
+- Intrabar trailing stop loss.
 - Conditional buy on price level (intrabar).
 - Parameters
 - Optimization based on permutations of parameters.
@@ -95,7 +96,7 @@ inputSeries = inputSeries.withSeries("sma", movingAverage); // Integrate moving 
 
 ### Create a strategy
 
-This is a very simple and very naive mean reversion strategy.
+This is a very simple and very naive mean reversion strategy:
 
 ```javascript
 const strategy = {
@@ -120,6 +121,7 @@ Backtest your strategy, then compute and print metrics:
 ```javascript
 const trades = backtest(strategy, inputSeries)
 const analysis = analyze(trades);
+console.log(analysis);
 ```
 
 ## Visualizating the results
