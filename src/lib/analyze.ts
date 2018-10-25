@@ -65,17 +65,29 @@ export interface IAnalysis {
 }
 
 export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<IndexT, ITrade>): IAnalysis {
+
+    let workingCapital = startingCapital;
+    let barCount = 0;
+
+    for (const trade of trades) {
+        workingCapital *= trade.growth;
+        barCount += trade.holdingPeriod;
+    }
+
+    const profit = workingCapital - startingCapital;
+
     const analysis: IAnalysis = {
         startingCapital: startingCapital,
-        finalCapital: startingCapital,
-        profit: 0,
-        profitPct: 0,
-        growth: 1,
-        barCount: 0,
-        maxDrawdown: 0,
-        maxDrawdownPct: 0,
-        maxRisk: undefined,     // Filled out later if stop loss is set.
-        maxRiskPct: undefined,  // Filled out later if stop loss is set.
+        finalCapital: workingCapital,
+        profit: profit,
+        profitPct: (profit / startingCapital) * 100,
+        growth: workingCapital / startingCapital,
+        barCount: barCount,
+        maxDrawdown: 0,         //TODO
+        maxDrawdownPct: 0,      //TODO
+        maxRisk: undefined,     //TODO
+        maxRiskPct: undefined,  //TODO
     };
-    return analysis
+
+    return analysis;
 }
