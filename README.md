@@ -138,7 +138,7 @@ computeEquityCurve(trades)
 
 computeDrawdown(trades)
     .plot()
-    .renderImage("my-equity-curve.png");
+    .renderImage("my-drawdown.png");
 ```
 
 
