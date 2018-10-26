@@ -25,6 +25,7 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 - Specify lookback period.
 - Built-in intrabar stop loss and risk calculation.
 - Compute equity curve and drawdown chart from trades.
+- Throughly covered by automated tests.
 
 ## Coming soon
 
