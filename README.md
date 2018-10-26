@@ -77,7 +77,7 @@ const { backtest, analyze, computeEquityCurve, computeDrawdown } = require('grad
 
 ### Load your data
 
-Use Data-Forge to load and prep your data, make sure your data is sorted in forward chronological order.
+Use [Data-Forge](http://data-forge-js.com/) to load and prep your data, make sure your data is sorted in forward chronological order.
 
 This example loads a CSV file, but feel free to load your data from REST API, database or wherever you want!
 
@@ -89,7 +89,7 @@ let inputSeries = dataForge.readFileSync("STW.csv")
     .setIndex("date")
     .renameSeries({ date: "time" });
 ```
-The example data file is available in the 'Examples' sub-directory of this repo (todo: coming soon).
+The example data file is available in [the example repo](https://github.com/ashleydavis/grademark-first-example).
 
 ### Add indicators
 
