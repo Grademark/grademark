@@ -86,7 +86,7 @@ let inputSeries = dataForge.readFileSync("STW.csv")
     .parseCSV()
     .parseDates("date", "DD/MM/YYYY")
     .parseFloats(["open", "high", "low", "close", "volume"])
-    .setIndex("date")
+    .setIndex("date") // Index so we can later merge on date.
     .renameSeries({ date: "time" });
 ```
 The example data file is available in [the example repo](https://github.com/ashleydavis/grademark-first-example).
@@ -96,10 +96,13 @@ The example data file is available in [the example repo](https://github.com/ashl
 Add whatever indicators and signals you want to your data.
 
 ```javascript
-const movingAverage = inputSeries.deflate(bar => bar.close).sma(30); // 30 day moving average.
-    inputSeries = inputSeries
-        .withSeries("sma", movingAverage)   // Integrate moving average into data based on date.
-        .skip(30)                           // Skip blank sma entries.
+const movingAverage = inputSeries
+    .deflate(bar => bar.close)          // Extract closing price series.
+    .sma(30);                           // 30 day moving average.
+
+inputSeries = inputSeries
+    .withSeries("sma", movingAverage)   // Integrate moving average into data, indexed on date.
+    .skip(30)                           // Skip blank sma entries.
 ```
 
 ### Create a strategy
