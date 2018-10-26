@@ -69,7 +69,7 @@ Instructions here are for JavaScript, but this library is written in TypeScript 
 
 ```javascript
 const dataForge = require('data-forge');
-require('data-forge-fs'); // For loading files.
+//TODO: coming soon - require('data-forge-fs'); // For loading files.
 require('data-forge-indicators'); // For the moving average indicator.
 require('data-forge-plot'); // For rendering charts.
 const { backtest, analyze, computeEquityCurve, computeDrawdown } = require('grademark');
@@ -85,6 +85,7 @@ This example loads a CSV file, but feel free to load your data from REST API, da
 let inputSeries = dataForge.readFileSync("STW.csv")
     .parseCSV()
     .parseDates("date", "DD/MM/YYYY")
+    .parseFloats(["open", "high", "low", "close", "volume"])
     .setIndex("date")
     .renameSeries({ date: "time" });
 ```
@@ -96,7 +97,9 @@ Add whatever indicators and signals you want to your data.
 
 ```javascript
 const movingAverage = inputSeries.deflate(bar => bar.close).sma(30); // 30 day moving average.
-inputSeries = inputSeries.withSeries("sma", movingAverage); // Integrate moving average into data.
+    inputSeries = inputSeries
+        .withSeries("sma", movingAverage)   // Integrate moving average into data based on date.
+        .skip(30)                           // Skip blank sma entries.
 ```
 
 ### Create a strategy
@@ -105,13 +108,13 @@ This is a very simple and very naive mean reversion strategy:
 
 ```javascript
 const strategy = {
-    entryRule: (bar, lookback, enterPosition) => {
+    entryRule: (enterPosition, bar, lookback) => {
         if (bar.close < bar.sma) { // Buy when price is below average.
             enterPosition();
         }
     },
 
-    exitRule: (position, bar, lookback, exitPosition) => {
+    exitRule: (exitPosition, position, bar, lookback) => {
         if (bar.close > bar.sma) {
             exitPosition(); // Sell when price is above average.
         }
@@ -125,7 +128,10 @@ Backtest your strategy, then compute and print metrics:
 
 ```javascript
 const trades = backtest(strategy, inputSeries)
-const analysis = analyze(trades);
+console.log("Made " + trades.count() + " trades!");
+
+const startingCapital = 10000;
+const analysis = analyze(startingCapital, trades);
 console.log(analysis);
 ```
 
@@ -140,7 +146,7 @@ computeEquityCurve(trades)
 
 computeDrawdown(trades)
     .plot()
-    .renderImage("my-drawdown.png");
+    .renderImage("output/my-drawdown.png");
 ```
 
 
