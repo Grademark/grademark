@@ -122,7 +122,7 @@ const strategy = {
 };
 ```
 
-## Running a backtest
+### Running a backtest
 
 Backtest your strategy, then compute and print metrics:
 
@@ -135,7 +135,7 @@ const analysis = analyze(startingCapital, trades);
 console.log(analysis);
 ```
 
-## Visualizating the results
+### Visualizing the results
 
 Visualize the equity curve and drawdown chart for your backtest:
 
