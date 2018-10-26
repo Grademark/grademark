@@ -7,3 +7,4 @@ export { IPosition } from './lib/position';
 export { backtest } from './lib/backtest';
 export { analyze } from './lib/analyze';
 export { computeEquityCurve } from './lib/compute-equity-curve';
+export { computeDrawdown } from './lib/compute-drawdown';

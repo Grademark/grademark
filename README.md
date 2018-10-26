@@ -52,6 +52,8 @@ Due to this being a simple API there is no support (at least not yet) for:
 
 ## Complete examples
 
+For a ready to go example please see the repo [grademark-first-example](https://github.com/ashleydavis/grademark-first-example).
+
 TODO: Coming soon
 TODO: Link to DFN notebook.
 
@@ -93,7 +95,7 @@ The example data file is available in the 'Examples' sub-directory of this repo 
 Add whatever indicators and signals you want to your data.
 
 ```javascript
-const movingAverage = df.deflate(bar => bar.close).sma(30); // 30 day moving average.
+const movingAverage = inputSeries.deflate(bar => bar.close).sma(30); // 30 day moving average.
 inputSeries = inputSeries.withSeries("sma", movingAverage); // Integrate moving average into data.
 ```
 
