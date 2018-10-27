@@ -145,7 +145,7 @@ Visualize the equity curve and drawdown chart for your backtest:
 ```javascript
 computeEquityCurve(trades)
     .plot()
-    .renderImage("my-equity-curve.png");
+    .renderImage("output/my-equity-curve.png");
 
 computeDrawdown(trades)
     .plot()
