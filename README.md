@@ -128,6 +128,10 @@ const strategy = {
             exitPosition(); // Sell when price is above average.
         }
     },
+
+    stopLoss: (entryPrice, latestBar, lookback) => { // Optional intrabar stop loss.
+        return entryPrice * (5/100); // Stop out on 5% loss from entry price.
+    },
 };
 ```
 
