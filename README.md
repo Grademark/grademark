@@ -8,6 +8,20 @@ This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from
 
 To learn more about working with data in JavaScript please read my book [Data Wrangling with JavaScript](http://bit.ly/2t2cJu2).
 
+## Example output
+
+From the Grademark first example here's some example output. Analysis looks like this:
+
+![Analysis of trades screenshot](https://github.com/ashleydavis/grademark-first-example/blob/master/output/analysis-screenshot.png)
+
+Here's one of the charts that visualizes the equity curve:
+
+![Equity curve](https://github.com/ashleydavis/grademark-first-example/blob/master/output/my-equity-curve-pct.png)
+
+Here's another chart, this is a visualization of the drawdown:
+
+![Drawdown](https://github.com/ashleydavis/grademark-first-example/blob/master/output/my-drawdown-pct.png)
+
 ## Pre-requisites
 
 - Make sure your data is sorted in forward chronological order. 
