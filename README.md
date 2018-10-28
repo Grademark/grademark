@@ -8,6 +8,8 @@ This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from
 
 To learn more about working with data in JavaScript please read my book [Data Wrangling with JavaScript](http://bit.ly/2t2cJu2).
 
+For news and updates see my blog [The Data Wrangler](http://www.the-data-wrangler.com/).
+
 ## Example output
 
 From the [Grademark first example](https://github.com/ashleydavis/grademark-first-example) here's some example output. 
