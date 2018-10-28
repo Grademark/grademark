@@ -152,7 +152,7 @@ console.log(analysis);
 
 ### Visualizing the results
 
-Visualize the equity curve and drawdown chart for your backtest:
+Use [Data-Forge Plot](https://github.com/data-forge/data-forge-plot) to visualize the equity curve and drawdown chart from your trading strategy:
 
 ```javascript
 computeEquityCurve(trades)
