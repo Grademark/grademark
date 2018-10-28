@@ -10,7 +10,7 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 
 ## Example output
 
-From the Grademark first example here's some example output. Analysis looks like this:
+From the [Grademark first example](https://github.com/ashleydavis/grademark-first-example) here's some example output. Analysis looks like this:
 
 ![Analysis of trades screenshot](https://github.com/ashleydavis/grademark-first-example/blob/master/output/analysis-screenshot.png)
 
