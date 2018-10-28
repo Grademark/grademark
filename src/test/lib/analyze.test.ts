@@ -70,8 +70,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(100);
         expect(analysis.growth).to.eql(2);
         expect(analysis.barCount).to.eql(5);
-        expect(analysis.maxDrawdown).to.eql(0);
-        expect(analysis.maxDrawdownPct).to.eql(0);
         expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
@@ -99,8 +97,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(-50);
         expect(analysis.growth).to.eql(0.5);
         expect(analysis.barCount).to.eql(4);
-        expect(analysis.maxDrawdown).to.eql(0);
-        expect(analysis.maxDrawdownPct).to.eql(0);
         expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
@@ -143,8 +139,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(500);
         expect(analysis.growth).to.eql(6);
         expect(analysis.barCount).to.eql(15);
-        expect(analysis.maxDrawdown).to.eql(0);
-        expect(analysis.maxDrawdownPct).to.eql(0);
         expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
@@ -187,8 +181,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(-60);
         expect(analysis.growth).to.eql(0.4);
         expect(analysis.barCount).to.eql(15);
-        expect(analysis.maxDrawdown).to.eql(0);
-        expect(analysis.maxDrawdownPct).to.eql(0);
         expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
@@ -231,8 +223,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(0);
         expect(analysis.growth).to.eql(1);
         expect(analysis.barCount).to.eql(15);
-        expect(analysis.maxDrawdown).to.eql(0);
-        expect(analysis.maxDrawdownPct).to.eql(0);
         expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
@@ -275,12 +265,137 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(0);
         expect(analysis.growth).to.eql(1);
         expect(analysis.barCount).to.eql(15);
-        expect(analysis.maxDrawdown).to.eql(0);
-        expect(analysis.maxDrawdownPct).to.eql(0);
         expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
-    //todo: drawdown
+
+    it("single trade with profit has no drawdown", () => {
+
+        const singleTrade: ITrade = {
+            entryTime: makeDate("2018/10/25"),
+            entryPrice: 10,
+            exitTime: makeDate("2018/10/30"),
+            exitPrice: 20,
+            profit: 10,
+            profitPct: 100,
+            growth: 2,
+            risk: undefined,
+            rmultiple: undefined,
+            holdingPeriod: 5,
+            exitReason: "Sell",
+        };
+
+        const analysis = analyze(10, new DataFrame<number, ITrade>([ singleTrade ] ));
+        expect(analysis.maxDrawdown).to.eql(0);
+        expect(analysis.maxDrawdownPct).to.eql(0);
+    });
+
+    it("single trade with loss sets the drawdown to the loss", () => {
+
+        const singleTrade: ITrade = {
+            entryTime: makeDate("2018/10/25"),
+            entryPrice: 10,
+            exitTime: makeDate("2018/10/29"),
+            exitPrice: 5,
+            profit: -5,
+            profitPct: -50,
+            growth: 0.5,
+            risk: undefined,
+            rmultiple: undefined,
+            holdingPeriod: 4,
+            exitReason: "Sell",
+        };
+
+        const analysis = analyze(10, new DataFrame<number, ITrade>([ singleTrade ] ));
+        expect(analysis.maxDrawdown).to.eql(-5);
+        expect(analysis.maxDrawdownPct).to.eql(-50);
+    });
+    
+    it("drawdown from first loss is not override by subsequent profit", () => {
+
+        const trades: ITrade[] = [
+            {
+                entryTime: makeDate("2018/10/25"),
+                entryPrice: 20,
+                exitTime: makeDate("2018/10/30"),
+                exitPrice: 10,
+                profit: -10,
+                profitPct: -50,
+                growth: 0.5,
+                risk: undefined,
+                rmultiple: undefined,
+                holdingPeriod: 5,
+                exitReason: "Sell",
+            },
+            {
+                entryTime: makeDate("2018/11/1"),
+                entryPrice: 10,
+                exitTime: makeDate("2018/11/10"),
+                exitPrice: 20,
+                profit: 10,
+                profitPct: 100,
+                growth: 2,
+                risk: undefined,
+                rmultiple: undefined,
+                holdingPeriod: 10,
+                exitReason: "Sell",
+            },
+        ];
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>(trades));
+        expect(analysis.maxDrawdown).to.eql(-10);
+        expect(analysis.maxDrawdownPct).to.eql(-50);
+    });
+
+    it("drawdown resets on peak", () => {
+
+        const trades: ITrade[] = [
+            {
+                entryTime: makeDate("2018/10/25"),
+                entryPrice: 20,
+                exitTime: makeDate("2018/10/30"),
+                exitPrice: 10,
+                profit: -10,
+                profitPct: -50,
+                growth: 0.5,
+                risk: undefined,
+                rmultiple: undefined,
+                holdingPeriod: 5,
+                exitReason: "Sell",
+            },
+            {
+                entryTime: makeDate("2018/11/1"),
+                entryPrice: 10,
+                exitTime: makeDate("2018/11/10"),
+                exitPrice: 30,
+                profit: 20,
+                profitPct: 200,
+                growth: 3,
+                risk: undefined,
+                rmultiple: undefined,
+                holdingPeriod: 10,
+                exitReason: "Sell",
+            },
+            {
+                entryTime: makeDate("2018/12/1"),
+                entryPrice: 30,
+                exitTime: makeDate("2018/12/5"),
+                exitPrice: 15,
+                profit: -15,
+                profitPct: -50,
+                growth: 0.5,
+                risk: undefined,
+                rmultiple: undefined,
+                holdingPeriod: 5,
+                exitReason: "Sell",
+            },
+        ];
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>(trades));
+        expect(analysis.maxDrawdown).to.eql(-15);
+        expect(analysis.maxDrawdownPct).to.eql(-50);
+    });
+
     //todo: risk
 });

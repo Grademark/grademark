@@ -68,10 +68,25 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
 
     let workingCapital = startingCapital;
     let barCount = 0;
+    let peakCapital = startingCapital;
+    let workingDrawdown = 0;
+    let maxDrawdown = 0;
+    let maxDrawdownPct = 0;
 
     for (const trade of trades) {
         workingCapital *= trade.growth;
         barCount += trade.holdingPeriod;
+
+        if (workingCapital < peakCapital) {
+            workingDrawdown = workingCapital - peakCapital;
+        }
+        else {
+            peakCapital = workingCapital;
+            workingDrawdown = 0; // Reset at the peak.
+        }
+
+        maxDrawdown = Math.min(workingDrawdown, maxDrawdown);
+        maxDrawdownPct = Math.min((maxDrawdown / peakCapital) * 100, maxDrawdownPct);
     }
 
     const profit = workingCapital - startingCapital;
@@ -83,8 +98,8 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
         profitPct: (profit / startingCapital) * 100,
         growth: workingCapital / startingCapital,
         barCount: barCount,
-        maxDrawdown: 0,         //TODO
-        maxDrawdownPct: 0,      //TODO
+        maxDrawdown: maxDrawdown,
+        maxDrawdownPct: maxDrawdownPct,
         maxRisk: undefined,     //TODO
         maxRiskPct: undefined,  //TODO
     };
