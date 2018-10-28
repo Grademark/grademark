@@ -10,15 +10,17 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 
 ## Example output
 
-From the [Grademark first example](https://github.com/ashleydavis/grademark-first-example) here's some example output. Analysis looks like this:
+From the [Grademark first example](https://github.com/ashleydavis/grademark-first-example) here's some example output. 
+
+Analysis of a sequence of trades looks like this:
 
 ![Analysis of trades screenshot](https://github.com/ashleydavis/grademark-first-example/blob/master/output/analysis-screenshot.png)
 
-Here's one of the charts that visualizes the equity curve:
+Here's a chart that visualizes the equity curve for the example strategy:
 
 ![Equity curve](https://github.com/ashleydavis/grademark-first-example/blob/master/output/my-equity-curve-pct.png)
 
-Here's another chart, this is a visualization of the drawdown:
+Here's another chart, this one is a visualization of the drawdown for the example strategy:
 
 ![Drawdown](https://github.com/ashleydavis/grademark-first-example/blob/master/output/my-drawdown-pct.png)
 
