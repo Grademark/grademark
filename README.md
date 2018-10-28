@@ -1,15 +1,10 @@
 # grademark
 
-API for backtesting trading strategies in JavaScript and TypeScript.
+API for backtesting financial trading strategies in JavaScript and TypeScript.
 
-WORK IN PROGRESS
-
-The API is fairly stable, but there are features yet to be implemented.
+WORK IN PROGRESS: The API is fairly stable, but there are features yet to be implemented.
 
 This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from [Data-Forge Notebook](http://www.data-forge-notebook.com/) (making it easy to plot charts and visualize).
-
-TODO: Add link here to live notebook (mean reversion strategy).
-TODO: Include a markdown export in this readme.
 
 To learn more about working with data in JavaScript please read my book [Data Wrangling with JavaScript](http://bit.ly/2t2cJu2).
 
@@ -20,42 +15,38 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 ## Features
 
 - Define a trading strategy with entry and exit rules.
-- Backtest a trading strategy on a single instrument.
-- Apply custom indicators to your data series.
+- Backtest a trading strategy on a single financial instrument.
+- Apply custom indicators to your input data series.
 - Specify lookback period.
-- Built-in intrabar stop loss and risk calculation.
-- Compute equity curve and drawdown chart from trades.
+- Built-in intrabar stop loss.
+- Compute and plot equity curve and drawdown charts.
 - Throughly covered by automated tests.
 
 ## Coming soon
 
+- Calculation of risk and rmultiples.
 - Intrabar profit target.
 - Intrabar trailing stop loss.
 - Conditional buy on price level (intrabar).
-- Parameters
+- Parameters.
 - Optimization based on permutations of parameters.
-- Analysis
-- Charting equity curves and drawdown
-- Monte Carlo simulation
-- Walk-forward backtesting
-- Risk curve
+- Monte Carlo simulation.
+- Walk-forward backtesting.
+- Copmute and plot risk chart.
 
-## Missing
+## Not coming soon
 
 Due to this being a simple API there is no support (at least not yet) for:
 
-- Fees
-- Slippage
-- Position sizing
+- Fees.
+- Slippage.
+- Position sizing.
 - Testing multiple instruments / portfolio simulation / ranking instruments.
 - Short selling.
 
 ## Complete examples
 
 For a ready to go example please see the repo [grademark-first-example](https://github.com/ashleydavis/grademark-first-example).
-
-TODO: Coming soon
-TODO: Link to DFN notebook.
 
 ## Usage
 
@@ -69,7 +60,6 @@ Instructions here are for JavaScript, but this library is written in TypeScript 
 
 ```javascript
 const dataForge = require('data-forge');
-//TODO: coming soon - require('data-forge-fs'); // For loading files.
 require('data-forge-indicators'); // For the moving average indicator.
 require('data-forge-plot'); // For rendering charts.
 const { backtest, analyze, computeEquityCurve, computeDrawdown } = require('grademark');
@@ -153,3 +143,7 @@ computeDrawdown(trades)
 ```
 
 
+## Resources
+
+- [Data-Forge](http://data-forge-js.com/)
+- [Data-Forge Notebook](http://www.data-forge-notebook.com/)
