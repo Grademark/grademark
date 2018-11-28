@@ -31,6 +31,11 @@ export interface IAnalysis {
     growth: number;
 
     /**
+     * Total number of trades considered.
+     */
+    totalTrades: number;
+
+    /**
      * Number of bars within trades.
      * NOTE: Doesn't include days between trades (because that doesn't work with monte carlo simulation).
      */
@@ -40,13 +45,13 @@ export interface IAnalysis {
      * The maximum level of drawdown experienced during trading.
      * This is the cash that is lost from peak to lowest trough.
      */
-    maxDrawdown: number; //todo:
+    maxDrawdown: number;
 
     /**
      * The maximum level of drawdown experienced during trading as a percentage of capital at the peak.
      * This is percent amount of lost from peak to lowest trough.
      */
-    maxDrawdownPct: number; //todo:
+    maxDrawdownPct: number;
 
     /**
      * Maximum amount of risk across the trading session.
@@ -61,6 +66,19 @@ export interface IAnalysis {
      */
     maxRiskPct?: number; //todo:
 
+    /**
+     * The ratio of wins to losses.
+     * Values above 2 are outstanding.
+     * Values above 3 are unheard of.
+     */
+    profitFactor: number;
+
+    /**
+     * The percentage of trades that were winners.
+     * This could also be called reliability or accuracy.
+     */
+    percentProfitable: number;
+
     //TODO: Add system quality, etc.
 }
 
@@ -72,8 +90,13 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
     let workingDrawdown = 0;
     let maxDrawdown = 0;
     let maxDrawdownPct = 0;
+    let totalProfits = 0;
+    let totalLosses = 0;
+    let winningTrades = 0;
+    let totalTrades = 0;
 
     for (const trade of trades) {
+        ++totalTrades;
         workingCapital *= trade.growth;
         barCount += trade.holdingPeriod;
 
@@ -83,6 +106,14 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
         else {
             peakCapital = workingCapital;
             workingDrawdown = 0; // Reset at the peak.
+        }
+
+        if (trade.profit > 0) {
+            totalProfits += trade.profit;
+            ++winningTrades;
+        }
+        else {
+            totalLosses += trade.profit;
         }
 
         maxDrawdown = Math.min(workingDrawdown, maxDrawdown);
@@ -97,11 +128,14 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
         profit: profit,
         profitPct: (profit / startingCapital) * 100,
         growth: workingCapital / startingCapital,
+        totalTrades: totalTrades,
         barCount: barCount,
         maxDrawdown: maxDrawdown,
         maxDrawdownPct: maxDrawdownPct,
         maxRisk: undefined,     //TODO
         maxRiskPct: undefined,  //TODO
+        profitFactor: totalProfits / Math.abs(totalLosses),
+        percentProfitable: (winningTrades / totalTrades) * 100,
     };
 
     return analysis;

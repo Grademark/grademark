@@ -164,6 +164,20 @@ computeDrawdown(trades)
     .renderImage("output/my-drawdown.png");
 ```
 
+## Advanced backtesting
+
+We are only just getting started here and in future notebooks, videos and blog posts we'll explore some of the more advanced aspects of backtesting including:
+
+- Market filters
+- Ranking and portfolio simulation
+- Position sizing
+- Optimization
+- Walk-forward testing
+- Monte-carlo testing
+- Comparing systems
+- Eliminating bias
+
+Follow my [blog](http://www.the-data-wrangler.com/) and [YouTube channel](https://www.youtube.com/channel/UCOxw0jy384_wFRwspgq7qMQ) to keep up.
 
 ## Resources
 

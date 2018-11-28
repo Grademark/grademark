@@ -398,4 +398,6 @@ describe("analyze", () => {
     });
 
     //todo: risk
+    //todo: percent profitable, profit factor
+    //todo: total trades
 });
