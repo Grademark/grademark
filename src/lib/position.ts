@@ -35,7 +35,12 @@ export interface IPosition {
     holdingPeriod: number;
 
     /**
-     * Distance to the stop loss price.
+     * Maximum loss before exit is triggered (intrabar).
      */
     stopDistance?: number;
+
+    /*
+     * Profit target where exit is triggered (intrabar).
+     */
+    profitTarget?: number;
 }

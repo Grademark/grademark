@@ -142,6 +142,10 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                     openPosition.stopDistance = strategy.stopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
                 }
 
+                if (strategy.profitTarget) {
+                    openPosition.profitTarget = strategy.profitTarget(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                }
+
                 positionStatus = PositionStatus.Position;
                 break;
 
@@ -159,6 +163,15 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                     }
                 }
 
+                if (openPosition!.profitTarget !== undefined) {
+                    const exitPrice = openPosition!.entryPrice + openPosition!.profitTarget!;
+                    if (bar.high >= exitPrice) {
+                        // Exit intrabar due to profit target.
+                        closePosition(bar, exitPrice, "profit-target");
+                        break;
+                    }
+                }
+                
                 if (strategy.exitRule) {
                     strategy.exitRule(exitPosition, openPosition!, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
                 }

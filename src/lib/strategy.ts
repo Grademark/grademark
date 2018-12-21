@@ -13,10 +13,16 @@ export type EnterPositionFn = () => void;
 export type ExitPositionFn = () => void;
 
 /**
- * Compute the stop loss.
- * Return the maximum value the instrument can change before the stop loss is triggered.
+ * Computes the intrabar stop loss.
+ * Return the maximum loss before an exit is triggered.
  */
 export type StopLossFn<BarT extends IBar = IBar> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>) => number;
+
+/**
+ * Computes the intrabar profit target.
+ * Return the amount of profit to trigger an exit.
+ */
+export type ProfitTargetFn<BarT extends IBar = IBar> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>) => number;
 
 /**
  * Type for a function that defines an entry rule.
@@ -49,7 +55,14 @@ export interface IStrategy<BarT extends IBar = IBar> {
     exitRule?: ExitRuleFn<BarT>;
 
     /**
-     * Function that computes stop loss.
+     * Function that computes intrabar stop loss distance.
+     * Return the maximum loss before an exit is triggered.
      */
     stopLoss?: StopLossFn<BarT>;
+
+    /**
+     * Function that computes the intrabar profit target.
+     * Return the amount of profit to trigger an exit.
+     */
+    profitTarget?: ProfitTargetFn<BarT>;
 }
