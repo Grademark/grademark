@@ -61,6 +61,13 @@ export interface IStrategy<BarT extends IBar = IBar> {
     stopLoss?: StopLossFn<BarT>;
 
     /**
+     * Function that computes intrabar trailing stop loss distance.
+     * Return the maximum loss before an exit is triggered.
+     * This stop trails the current price, rising but never declining.
+     */
+    trailingStopLoss?: StopLossFn<BarT>;
+    
+    /**
      * Function that computes the intrabar profit target.
      * Return the amount of profit to trigger an exit.
      */

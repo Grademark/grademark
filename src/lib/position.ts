@@ -37,7 +37,12 @@ export interface IPosition {
     /**
      * Maximum loss before exit is triggered (intrabar).
      */
-    stopDistance?: number;
+    stopPrice?: number;
+
+    /**
+     * Maximum loss before exit is triggered (intrabar).
+     */
+    trailingStopPrice?: number;
 
     /*
      * Profit target where exit is triggered (intrabar).

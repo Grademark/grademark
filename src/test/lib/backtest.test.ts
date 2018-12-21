@@ -694,4 +694,95 @@ describe("backtest", () => {
         expect(singleTrade.exitReason).to.eql("finalize");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/24"));
     });
+
+    it("can exit via trailing stop loss", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day.
+            { time: "2018/10/22", close: 90 },  // Hold
+            { time: "2018/10/23", close: 70 },  // Stop loss triggered.
+            { time: "2018/10/24", close: 70 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.exitReason).to.eql("trailing-stop-loss");
+        expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
+    });
+
+    it("can exit via rising trailing stop loss", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 },  // Entry day.
+            { time: "2018/10/22", close: 200 },  // Hold
+            { time: "2018/10/23", close: 150 },  // Stop loss triggered.
+            { time: "2018/10/24", close: 150 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.exitReason).to.eql("trailing-stop-loss");
+        expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
+    });
+
+    it("trailing stop loss exits based on intrabar low", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day.
+            { time: "2018/10/22", close: 90 },  // Hold
+            { time: "2018/10/23", open: 90, high: 100, low: 30, close: 70 },  // Stop loss triggered.
+            { time: "2018/10/24", close: 70 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.exitPrice).to.eql(80);
+    });
+
+    it("trailing stop loss is not triggered unless there is a significant loss", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day
+            { time: "2018/10/22", close: 90 },  // Hold
+            { time: "2018/10/23", close: 85 },  // Hold
+            { time: "2018/10/24", close: 82 },  // Exit
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.exitReason).to.eql("finalize");
+        expect(singleTrade.exitTime).to.eql(makeDate("2018/10/24"));
+    });
 });

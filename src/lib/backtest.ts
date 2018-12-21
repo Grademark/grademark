@@ -2,6 +2,7 @@ import { ITrade } from "./trade";
 import { IDataFrame, DataFrame } from 'data-forge';
 import { IStrategy, IBar, IPosition } from "..";
 import { assert } from "chai";
+import { open } from "inspector";
 const CBuffer = require('CBuffer');
 
 /**
@@ -139,7 +140,11 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                 };
 
                 if (strategy.stopLoss) {
-                    openPosition.stopDistance = strategy.stopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    openPosition.stopPrice = entryPrice - strategy.stopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                }
+
+                if (strategy.trailingStopLoss) {
+                    openPosition.trailingStopPrice = entryPrice - strategy.trailingStopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
                 }
 
                 if (strategy.profitTarget) {
@@ -154,12 +159,27 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
 
                 updatePosition(openPosition!, bar);
 
-                if (openPosition!.stopDistance !== undefined) {
-                    const stopPrice = openPosition!.entryPrice - openPosition!.stopDistance!;
-                    if (bar.low <= stopPrice) {
+                if (openPosition!.stopPrice !== undefined) {
+                    if (bar.low <= openPosition!.stopPrice!) {
                         // Exit intrabar due to stop loss.
-                        closePosition(bar, stopPrice, "stop-loss");
+                        closePosition(bar, openPosition!.stopPrice!, "stop-loss");
                         break;
+                    }
+                }
+
+                if (openPosition!.trailingStopPrice !== undefined) {
+                    if (bar.low <= openPosition!.trailingStopPrice!) {
+                        // Exit intrabar due to trailing stop loss.
+                        closePosition(bar, openPosition!.trailingStopPrice!, "trailing-stop-loss");
+                        break;
+                    }
+
+                    //
+                    // Revaluate trailing stop loss.
+                    //
+                    const newTrailingStopPrice = bar.close - strategy.trailingStopLoss!(openPosition!.entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    if (newTrailingStopPrice > openPosition!.trailingStopPrice!) {
+                        openPosition!.trailingStopPrice = newTrailingStopPrice;
                     }
                 }
 
