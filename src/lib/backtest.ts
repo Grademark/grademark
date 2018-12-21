@@ -96,6 +96,11 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
     let positionStatus: PositionStatus = PositionStatus.None;
 
     //
+    // Records the price for conditional intrabar entry.
+    //
+    let conditionalEntryPrice: number | undefined;
+
+    //
     // Tracks the currently open position, or set to null when there is no open position.
     //
     let openPosition: IPosition | null = null;
@@ -108,10 +113,11 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
     /**
      * User calls this function to enter a position on the instrument.
      */
-    function enterPosition() {
+    function enterPosition(entryPrice?: number) {
         assert(positionStatus === PositionStatus.None, "Can only enter a position when not already in one.");
 
         positionStatus = PositionStatus.Enter; // Enter position next bar.
+        conditionalEntryPrice = entryPrice;
     }
 
     /**
@@ -148,6 +154,13 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
 
             case PositionStatus.Enter:
                 assert(openPosition === null, "Expected there to be no open position initialised yet!");
+
+                if (conditionalEntryPrice !== undefined) {
+                    if (bar.high < conditionalEntryPrice) {
+                        // Must breach conditional entry price before entering position.
+                        break;
+                    }
+                }
 
                 const entryPrice = bar.open;
                 

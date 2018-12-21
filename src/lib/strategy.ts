@@ -4,8 +4,10 @@ import { IPosition } from "./position";
 
 /**
  * Type for the function used to enter a position.
+ * Can specify an optional conditional entry price, if specified entry
+ * is only triggered when that instrument hits the target price.
  */
-export type EnterPositionFn = () => void;
+export type EnterPositionFn = (entryPrice?: number) => void;
 
 /**
  * Type for the function used to exit a position.

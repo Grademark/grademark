@@ -828,4 +828,51 @@ describe("backtest", () => {
             400,
         ]);
     });
+
+    it("can place intrabar conditional buy order", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: (enterPosition, bar) => {
+                enterPosition(6); // Enter position when price hits 6.
+            },
+
+            exitRule: mockExit,
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 1 },
+            { time: "2018/10/21", close: 2 },
+            { time: "2018/10/22", close: 4 },
+            { time: "2018/10/23", close: 5, high: 6 }, // Intraday entry.
+            { time: "2018/10/24", close: 5 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.entryTime).to.eql(makeDate("2018/10/23"));
+    });
+    
+    it("conditional buy order is not executed if price doesn't reach target", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: (enterPosition, bar) => {
+                enterPosition(6); // Enter position when price hits 6.
+            },
+
+            exitRule: mockExit,
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 1 },
+            { time: "2018/10/21", close: 2 },
+            { time: "2018/10/22", close: 3 },
+            { time: "2018/10/23", close: 4 },
+            { time: "2018/10/24", close: 5 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(0);
+    });
 });
