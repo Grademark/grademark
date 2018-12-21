@@ -578,6 +578,7 @@ describe("backtest", () => {
         expect(trades.count()).to.eql(1);
 
         const singleTrade = trades.first();
+        expect(singleTrade.stopPrice).to.eql(80);
         expect(singleTrade.exitReason).to.eql("stop-loss");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
     });
@@ -646,6 +647,7 @@ describe("backtest", () => {
         expect(trades.count()).to.eql(1);
 
         const singleTrade = trades.first();
+        expect(singleTrade.profitTarget).to.eql(110);
         expect(singleTrade.exitReason).to.eql("profit-target");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
     });
@@ -784,5 +786,46 @@ describe("backtest", () => {
         const singleTrade = trades.first();
         expect(singleTrade.exitReason).to.eql("finalize");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/24"));
+    });
+
+    it("can record trailing stop loss", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (50/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 200 },
+            { time: "2018/10/22", close: 300 },
+            { time: "2018/10/23", close: 200 },
+            { time: "2018/10/24", close: 500 },
+            { time: "2018/10/25", close: 400 },
+            { time: "2018/10/26", close: 800 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries, { recordTrailingStop: true });
+
+        expect(trades.count()).to.eql(1);
+        const singleTrade = trades.first();
+
+        expect(singleTrade.trailingStopPrice!.getIndex().select(d => moment(d).format("YYYY/MM/DD")).toArray()).to.eql([
+            "2018/10/21",
+            "2018/10/22",
+            "2018/10/23",
+            "2018/10/24",
+            "2018/10/25",
+            "2018/10/26",
+        ]);
+
+        expect(singleTrade.trailingStopPrice!.toArray()).to.eql([
+            100,
+            150,
+            150,
+            250,
+            250,
+            400,
+        ]);
     });
 });

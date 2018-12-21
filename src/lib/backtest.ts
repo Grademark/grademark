@@ -1,5 +1,5 @@
 import { ITrade } from "./trade";
-import { IDataFrame, DataFrame } from 'data-forge';
+import { IDataFrame, DataFrame, Series } from 'data-forge';
 import { IStrategy, IBar, IPosition } from "..";
 import { assert } from "chai";
 import { open } from "inspector";
@@ -37,6 +37,11 @@ function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number
         growth: exitPrice / position.entryPrice,
         holdingPeriod: position.holdingPeriod,
         exitReason: exitReason,
+        stopPrice: position.stopPrice,
+        trailingStopPrice: new Series<Date, number>({ 
+            pairs: position.trailngStopPriceSeries,
+        }),
+        profitTarget: position.profitTarget,
     };
 }
 
@@ -48,12 +53,28 @@ enum PositionStatus { // Tracks the state of the position across the trading per
 }
 
 /**
+ * Options to the backtest function.
+ */
+export interface IBacktestOptions {
+    /**
+     * Enable recording of the trailing stop price for each trade.
+     * It can be useful to enable this and visualize the trailing stop over time.
+     */
+    recordTrailingStop?: boolean;
+}
+
+/**
  * Backtest a trading strategy against a data series and generate a sequence of trades.
  */
 export function backtest<BarT extends IBar = IBar, IndexT = number>(
     strategy: IStrategy<BarT>, 
-    inputSeries: IDataFrame<IndexT, BarT>): 
+    inputSeries: IDataFrame<IndexT, BarT>,
+    options?: IBacktestOptions): 
         IDataFrame<number, ITrade> {
+
+    if (!options) {
+        options = {};
+    }
 
     if (inputSeries.none()) {
         throw new Error("Expect input data series to contain at last 1 bar.");
@@ -145,10 +166,19 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
 
                 if (strategy.trailingStopLoss) {
                     openPosition.trailingStopPrice = entryPrice - strategy.trailingStopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+
+                    if (options.recordTrailingStop) {
+                        openPosition.trailngStopPriceSeries = [
+                            [
+                                bar.time,
+                                openPosition.trailingStopPrice
+                            ],
+                        ];
+                    }
                 }
 
                 if (strategy.profitTarget) {
-                    openPosition.profitTarget = strategy.profitTarget(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    openPosition.profitTarget = entryPrice + strategy.profitTarget(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
                 }
 
                 positionStatus = PositionStatus.Position;
@@ -181,13 +211,19 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                     if (newTrailingStopPrice > openPosition!.trailingStopPrice!) {
                         openPosition!.trailingStopPrice = newTrailingStopPrice;
                     }
+
+                    if (options.recordTrailingStop) {
+                        openPosition!.trailngStopPriceSeries!.push([
+                            bar.time,
+                            openPosition!.trailingStopPrice!
+                        ]);
+                    }
                 }
 
                 if (openPosition!.profitTarget !== undefined) {
-                    const exitPrice = openPosition!.entryPrice + openPosition!.profitTarget!;
-                    if (bar.high >= exitPrice) {
+                    if (bar.high >= openPosition!.profitTarget!) {
                         // Exit intrabar due to profit target.
-                        closePosition(bar, exitPrice, "profit-target");
+                        closePosition(bar, openPosition!.profitTarget!, "profit-target");
                         break;
                     }
                 }

@@ -1,3 +1,4 @@
+import { ISeries } from "data-forge";
 
 
 /**
@@ -58,5 +59,20 @@ export interface ITrade {
      * The reason the position was exited.
      */
     exitReason: string;
+
+    /**
+     * Price where stop loss exit is triggered.
+     */
+    stopPrice?: number;
+
+    /**
+     * Trailing stop price (if recording of this is enabled).
+     */
+    trailingStopPrice?: ISeries<Date, number>;
+
+    /**
+     * Price where profit target exit is triggered.
+     */
+    profitTarget?: number;
 
 }

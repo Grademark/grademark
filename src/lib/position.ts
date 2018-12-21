@@ -44,6 +44,11 @@ export interface IPosition {
      */
     trailingStopPrice?: number;
 
+    /**
+     * Records the trailing stop price series, if enabled.
+     */
+    trailngStopPriceSeries?: [Date, number][],
+
     /*
      * Profit target where exit is triggered (intrabar).
      */
