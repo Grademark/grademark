@@ -6,5 +6,6 @@ export { ITrade } from './lib/trade';
 export { IPosition } from './lib/position';
 export { backtest } from './lib/backtest';
 export { analyze } from './lib/analyze';
+export { monteCarlo } from './lib/monte-carlo';
 export { computeEquityCurve } from './lib/compute-equity-curve';
 export { computeDrawdown } from './lib/compute-drawdown';

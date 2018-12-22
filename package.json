@@ -36,6 +36,7 @@
     "dependencies": {
         "CBuffer": "^2.0.0",
         "data-forge": "^1.2.6",
+        "mersennetwister": "^0.2.3",
         "moment": "2.22.2"
     },
     "devDependencies": {
