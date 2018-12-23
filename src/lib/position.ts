@@ -15,7 +15,7 @@ export interface IPosition {
     entryPrice: number;
 
     /**
-     * Nest profit or loss.
+     * Net profit or loss.
      */
     profit: number;
 
@@ -30,24 +30,49 @@ export interface IPosition {
     growth: number;
 
     /**
+     * Optional initial risk in dollars computed from stop loss.
+     */
+    initialUnitRisk?: number;
+
+    /**
+     * Optional initial risk computed from stop loss and expressed as a percentage of entry price.
+     */
+    initialRiskPct?: number;
+
+    /**
+     * Ongoing risk, the difference of current price and stop loss expressed as a percentage of current price.
+     */
+    curRiskPct?: number;
+
+    /**
+     * Optional profit expressed as a multiple of initial unit risk.
+     */
+    curRMultiple?: number;
+
+    /**
+     * Records the risk series, if enabled.
+     */
+    riskSeries?: [Date, number][],
+    
+    /**
      * Number of bars the position was held for.
      */
     holdingPeriod: number;
 
     /**
-     * Maximum loss before exit is triggered (intrabar).
+     * Initial maximum loss before exit is triggered (intrabar).
      */
-    stopPrice?: number;
+    initialStopPrice?: number;
 
     /**
-     * Maximum loss before exit is triggered (intrabar).
+     * Current (possibly trailing) maximum loss before exit is triggered (intrabar).
      */
-    trailingStopPrice?: number;
+    curStopPrice?: number;
 
     /**
-     * Records the trailing stop price series, if enabled.
+     * Records the stop price series, if enabled.
      */
-    trailngStopPriceSeries?: [Date, number][],
+    stopPriceSeries?: [Date, number][],
 
     /*
      * Profit target where exit is triggered (intrabar).

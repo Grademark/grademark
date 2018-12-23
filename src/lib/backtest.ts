@@ -15,6 +15,11 @@ function updatePosition(position: IPosition, bar: IBar): void {
     position.profit = bar.close - position.entryPrice;
     position.profitPct = (position.profit / position.entryPrice) * 100;
     position.growth = bar.close / position.entryPrice;
+    if (position.curStopPrice !== undefined) {
+        const unitRisk = bar.close - position.curStopPrice;
+        position.curRiskPct = (unitRisk / bar.close) * 100;
+        position.curRMultiple = position.profit / unitRisk;
+    }
     position.holdingPeriod += 1;
 }
 
@@ -27,6 +32,10 @@ function updatePosition(position: IPosition, bar: IBar): void {
  */
 function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number, exitReason: string): ITrade {
     const profit = exitPrice - position.entryPrice;
+    let rmultiple;
+    if (position.initialUnitRisk !== undefined) {
+        rmultiple = profit / position.initialUnitRisk; 
+    }
     return {
         entryTime: position.entryTime,
         entryPrice: position.entryPrice,
@@ -35,12 +44,21 @@ function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number
         profit: profit,
         profitPct: (profit / position.entryPrice) * 100,
         growth: exitPrice / position.entryPrice,
+        riskPct: position.initialRiskPct,
+        riskSeries: position.riskSeries
+            ? new Series<Date, number>({
+                pairs: position.riskSeries
+            })
+            : undefined,
+        rmultiple: rmultiple,
         holdingPeriod: position.holdingPeriod,
         exitReason: exitReason,
-        stopPrice: position.stopPrice,
-        trailingStopPrice: new Series<Date, number>({ 
-            pairs: position.trailngStopPriceSeries,
-        }),
+        stopPrice: position.initialStopPrice,
+        stopPriceSeries: position.stopPriceSeries 
+            ? new Series<Date, number>({ 
+                pairs: position.stopPriceSeries,
+            })
+            : undefined,
         profitTarget: position.profitTarget,
     };
 }
@@ -57,10 +75,16 @@ enum PositionStatus { // Tracks the state of the position across the trading per
  */
 export interface IBacktestOptions {
     /**
-     * Enable recording of the trailing stop price for each trade.
-     * It can be useful to enable this and visualize the trailing stop over time.
+     * Enable recording of the stop price over the holding period of each trade.
+     * It can be useful to enable this and visualize the stop loss over time.
      */
-    recordTrailingStop?: boolean;
+    recordStopPrice?: boolean;
+
+    /**
+     * Enable recording of the risk over the holding period of each trade.
+     * It can be useful to enable this and visualize the risk over time.
+     */
+    recordRisk?: boolean;
 }
 
 /**
@@ -174,17 +198,44 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                 };
 
                 if (strategy.stopLoss) {
-                    openPosition.stopPrice = entryPrice - strategy.stopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    const initialStopDistance = strategy.stopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    openPosition.initialStopPrice = entryPrice - initialStopDistance;
+                    openPosition.curStopPrice = openPosition.initialStopPrice;
                 }
 
                 if (strategy.trailingStopLoss) {
-                    openPosition.trailingStopPrice = entryPrice - strategy.trailingStopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    const trailingStopDistance = strategy.trailingStopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    const trailingStopPrice = entryPrice - trailingStopDistance;
+                    if (openPosition.initialStopPrice === undefined) {
+                        openPosition.initialStopPrice = trailingStopPrice;
+                    }
+                    else {
+                        openPosition.initialStopPrice = Math.max(openPosition.initialStopPrice, trailingStopPrice);
+                    }
 
-                    if (options.recordTrailingStop) {
-                        openPosition.trailngStopPriceSeries = [
+                    openPosition.curStopPrice = openPosition.initialStopPrice;
+
+                    if (options.recordStopPrice) {
+                        openPosition.stopPriceSeries = [
                             [
                                 bar.time,
-                                openPosition.trailingStopPrice
+                                openPosition.curStopPrice
+                            ],
+                        ];
+                    }
+                }
+
+                if (openPosition.curStopPrice) {
+                    openPosition.initialUnitRisk = entryPrice - openPosition.curStopPrice;
+                    openPosition.initialRiskPct = (openPosition.initialUnitRisk / entryPrice) * 100;
+                    openPosition.curRiskPct = openPosition.initialRiskPct;
+                    openPosition.curRMultiple = 0;
+
+                    if (options.recordRisk) {
+                        openPosition.riskSeries = [
+                            [
+                                bar.time,
+                                openPosition.curRiskPct
                             ],
                         ];
                     }
@@ -200,35 +251,28 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
             case PositionStatus.Position:
                 assert(openPosition !== null, "Expected open position to already be initialised!");
 
-                updatePosition(openPosition!, bar);
-
-                if (openPosition!.stopPrice !== undefined) {
-                    if (bar.low <= openPosition!.stopPrice!) {
+                if (openPosition!.curStopPrice !== undefined) {
+                    if (bar.low <= openPosition!.curStopPrice!) {
                         // Exit intrabar due to stop loss.
-                        closePosition(bar, openPosition!.stopPrice!, "stop-loss");
+                        closePosition(bar, openPosition!.curStopPrice!, "stop-loss");
                         break;
                     }
                 }
 
-                if (openPosition!.trailingStopPrice !== undefined) {
-                    if (bar.low <= openPosition!.trailingStopPrice!) {
-                        // Exit intrabar due to trailing stop loss.
-                        closePosition(bar, openPosition!.trailingStopPrice!, "trailing-stop-loss");
-                        break;
-                    }
-
+                if (strategy.trailingStopLoss !== undefined) {
                     //
                     // Revaluate trailing stop loss.
                     //
-                    const newTrailingStopPrice = bar.close - strategy.trailingStopLoss!(openPosition!.entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
-                    if (newTrailingStopPrice > openPosition!.trailingStopPrice!) {
-                        openPosition!.trailingStopPrice = newTrailingStopPrice;
+                    const trailingStopDistance = strategy.trailingStopLoss!(openPosition!.entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    const newTrailingStopPrice = bar.close - trailingStopDistance;
+                    if (newTrailingStopPrice > openPosition!.curStopPrice!) {
+                        openPosition!.curStopPrice = newTrailingStopPrice;
                     }
 
-                    if (options.recordTrailingStop) {
-                        openPosition!.trailngStopPriceSeries!.push([
+                    if (options.recordStopPrice) {
+                        openPosition!.stopPriceSeries!.push([
                             bar.time,
-                            openPosition!.trailingStopPrice!
+                            openPosition!.curStopPrice!
                         ]);
                     }
                 }
@@ -241,9 +285,19 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                     }
                 }
                 
+                updatePosition(openPosition!, bar);
+                
+                if (openPosition!.curRiskPct !== undefined && options.recordRisk) {
+                    openPosition!.riskSeries!.push([
+                        bar.time,
+                        openPosition!.curRiskPct!
+                    ]);
+                }
+
                 if (strategy.exitRule) {
                     strategy.exitRule(exitPosition, openPosition!, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
                 }
+
                 break;
 
             case PositionStatus.Exit:

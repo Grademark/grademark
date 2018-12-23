@@ -36,11 +36,13 @@
     "dependencies": {
         "CBuffer": "^2.0.0",
         "data-forge": "^1.2.6",
+        "mathjs": "^5.4.0",
         "mersennetwister": "^0.2.3",
         "moment": "2.22.2"
     },
     "devDependencies": {
         "@types/chai": "4.1.6",
+        "@types/mathjs": "^4.4.4",
         "@types/mocha": "5.2.5",
         "@types/node": "10.11.4",
         "chai": "4.2.0",

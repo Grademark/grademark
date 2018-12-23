@@ -26,7 +26,7 @@ export interface ITrade {
     exitPrice: number;
 
     /**
-     * Nest profit or loss.
+     * Net profit or loss.
      */
     profit: number;
 
@@ -43,13 +43,18 @@ export interface ITrade {
     /**
      * Optional risk computed from stop loss.
      */
-    risk?: number;
+    riskPct?: number;
 
     /**
      * Optional profit expressed as a mutiple of initial risk.
      */
     rmultiple?: number;
 
+    /**
+     * The series of risk% recorded over the holding period of the trade (if recording of this is enabled).
+     */
+    riskSeries?: ISeries<Date, number>;
+    
     /**
      * Number of bars the position was held for.
      */
@@ -66,9 +71,9 @@ export interface ITrade {
     stopPrice?: number;
 
     /**
-     * Trailing stop price (if recording of this is enabled).
+     * The series of stop prices recorded over the holding period of the trade (if recording of this is enabled).
      */
-    trailingStopPrice?: ISeries<Date, number>;
+    stopPriceSeries?: ISeries<Date, number>;
 
     /**
      * Price where profit target exit is triggered.

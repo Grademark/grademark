@@ -7,6 +7,10 @@ import * as moment from 'moment';
 
 describe("backtest", () => {
 
+    function round(value: number) {
+        return Math.round(value * 100) / 100;
+    }
+
     function makeDate(dateStr: string, fmt?: string): Date {
         return moment(dateStr, fmt || "YYYY/MM/DD").toDate();
     }
@@ -716,7 +720,7 @@ describe("backtest", () => {
         expect(trades.count()).to.eql(1);
 
         const singleTrade = trades.first();
-        expect(singleTrade.exitReason).to.eql("trailing-stop-loss");
+        expect(singleTrade.exitReason).to.eql("stop-loss");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
     });
 
@@ -739,7 +743,7 @@ describe("backtest", () => {
         expect(trades.count()).to.eql(1);
 
         const singleTrade = trades.first();
-        expect(singleTrade.exitReason).to.eql("trailing-stop-loss");
+        expect(singleTrade.exitReason).to.eql("stop-loss");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
     });
 
@@ -805,12 +809,12 @@ describe("backtest", () => {
             { time: "2018/10/26", close: 800 },
         ]);
 
-        const trades = backtest(strategy, inputSeries, { recordTrailingStop: true });
+        const trades = backtest(strategy, inputSeries, { recordStopPrice: true });
 
         expect(trades.count()).to.eql(1);
         const singleTrade = trades.first();
 
-        expect(singleTrade.trailingStopPrice!.getIndex().select(d => moment(d).format("YYYY/MM/DD")).toArray()).to.eql([
+        expect(singleTrade.stopPriceSeries!.getIndex().select(d => moment(d).format("YYYY/MM/DD")).toArray()).to.eql([
             "2018/10/21",
             "2018/10/22",
             "2018/10/23",
@@ -819,7 +823,7 @@ describe("backtest", () => {
             "2018/10/26",
         ]);
 
-        expect(singleTrade.trailingStopPrice!.toArray()).to.eql([
+        expect(singleTrade.stopPriceSeries!.toArray()).to.eql([
             100,
             150,
             150,
@@ -875,4 +879,149 @@ describe("backtest", () => {
         const trades = backtest(strategy, inputSeries);
         expect(trades.count()).to.eql(0);
     });
+
+    it("computes risk from initial stop", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            stopLoss: entryPrice => entryPrice * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day.
+            { time: "2018/10/22", close: 100 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.riskPct).to.eql(20);
+    });
+
+    it("computes rmultiple from initial risk and profit", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            stopLoss: entryPrice => entryPrice * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day.
+            { time: "2018/10/22", close: 120 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.rmultiple).to.eql(1);
+    });
+
+    it("computes rmultiple from initial risk and loss", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            stopLoss: entryPrice => entryPrice * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day.
+            { time: "2018/10/22", close: 80 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries);
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+        expect(singleTrade.rmultiple).to.eql(-1);
+    });
+
+    it("current risk rises as profit increases", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            stopLoss: entryPrice => entryPrice * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day.
+            { time: "2018/10/22", close: 150 },
+            { time: "2018/10/23", close: 140 },
+            { time: "2018/10/24", close: 200 },
+            { time: "2018/10/25", close: 190 },
+            { time: "2018/10/26", close: 250 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries, { recordRisk: true });
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+
+        expect(singleTrade.riskSeries!.getIndex().select(d => moment(d).format("YYYY/MM/DD")).toArray()).to.eql([
+            "2018/10/21",
+            "2018/10/22",
+            "2018/10/23",
+            "2018/10/24",
+            "2018/10/25",
+            "2018/10/26",
+        ]);
+
+        expect(singleTrade.riskSeries!.select(riskPct => round(riskPct)).toArray()).to.eql([
+            20,
+            46.67,
+            42.86,
+            60,
+            57.89,
+            68,
+        ]);
+        
+    });
+
+    it("current risk is low by trailing stop loss", () => {
+        
+        const strategy: IStrategy = {
+            entryRule: unconditionalEntry,
+            trailingStopLoss: (entryPrice, bar) => bar.close * (20/100)
+        };
+
+        const inputSeries = makeDataSeries([
+            { time: "2018/10/20", close: 100 },
+            { time: "2018/10/21", close: 100 }, // Entry day.
+            { time: "2018/10/22", close: 150 },
+            { time: "2018/10/23", close: 140 },
+            { time: "2018/10/24", close: 200 },
+            { time: "2018/10/25", close: 190 },
+            { time: "2018/10/26", close: 250 },
+        ]);
+
+        const trades = backtest(strategy, inputSeries, { recordRisk: true });
+        expect(trades.count()).to.eql(1);
+
+        const singleTrade = trades.first();
+
+        expect(singleTrade.riskSeries!.getIndex().select(d => moment(d).format("YYYY/MM/DD")).toArray()).to.eql([
+            "2018/10/21",
+            "2018/10/22",
+            "2018/10/23",
+            "2018/10/24",
+            "2018/10/25",
+            "2018/10/26",
+        ]);
+
+        expect(singleTrade.riskSeries!.select(riskPct => round(riskPct)).toArray()).to.eql([
+            20,
+            20,
+            14.29,
+            20,
+            15.79,
+            20,
+        ]);
+        
+    });
+
 });

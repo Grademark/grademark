@@ -6,6 +6,10 @@ import { ITrade } from '../..';
 
 describe("analyze", () => {
 
+    function round(value: number) {
+        return Math.round(value * 100) / 100;
+    }
+
     function makeDate(dateStr: string, fmt?: string): Date {
         return moment(dateStr, fmt || "YYYY/MM/DD").toDate();
     }
@@ -38,7 +42,6 @@ describe("analyze", () => {
 
     it("analysis of zero trades has undefined risk", () => {
         const analysis = analyze(1000, new DataFrame<number, ITrade>());
-        expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
@@ -57,7 +60,7 @@ describe("analyze", () => {
             profit: 10,
             profitPct: 100,
             growth: 2,
-            risk: undefined,
+            riskPct: undefined,
             rmultiple: undefined,
             holdingPeriod: 5,
             exitReason: "Sell",
@@ -70,7 +73,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(100);
         expect(analysis.growth).to.eql(2);
         expect(analysis.barCount).to.eql(5);
-        expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
@@ -84,7 +86,7 @@ describe("analyze", () => {
             profit: -5,
             profitPct: -50,
             growth: 0.5,
-            risk: undefined,
+            riskPct: undefined,
             rmultiple: undefined,
             holdingPeriod: 4,
             exitReason: "Sell",
@@ -97,7 +99,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(-50);
         expect(analysis.growth).to.eql(0.5);
         expect(analysis.barCount).to.eql(4);
-        expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
     
@@ -112,7 +113,7 @@ describe("analyze", () => {
                 profit: 10,
                 profitPct: 100,
                 growth: 2,
-                risk: undefined,
+                riskPct: undefined,
                 rmultiple: undefined,
                 holdingPeriod: 5,
                 exitReason: "Sell",
@@ -125,7 +126,7 @@ describe("analyze", () => {
                 profit: 40,
                 profitPct: 150,
                 growth: 3,
-                risk: undefined,
+                riskPct: undefined,
                 rmultiple: undefined,
                 holdingPeriod: 10,
                 exitReason: "Sell",
@@ -139,7 +140,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(500);
         expect(analysis.growth).to.eql(6);
         expect(analysis.barCount).to.eql(15);
-        expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
@@ -154,7 +154,7 @@ describe("analyze", () => {
                 profit: -10,
                 profitPct: -50,
                 growth: 0.5,
-                risk: undefined,
+                riskPct: undefined,
                 rmultiple: undefined,
                 holdingPeriod: 5,
                 exitReason: "Sell",
@@ -167,7 +167,7 @@ describe("analyze", () => {
                 profit: -2,
                 profitPct: -20,
                 growth: 0.8,
-                risk: undefined,
+                riskPct: undefined,
                 rmultiple: undefined,
                 holdingPeriod: 10,
                 exitReason: "Sell",
@@ -181,7 +181,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(-60);
         expect(analysis.growth).to.eql(0.4);
         expect(analysis.barCount).to.eql(15);
-        expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
@@ -196,7 +195,7 @@ describe("analyze", () => {
                 profit: 10,
                 profitPct: 100,
                 growth: 2,
-                risk: undefined,
+                riskPct: undefined,
                 rmultiple: undefined,
                 holdingPeriod: 5,
                 exitReason: "Sell",
@@ -209,7 +208,7 @@ describe("analyze", () => {
                 profit: -10,
                 profitPct: -50,
                 growth: 0.5,
-                risk: undefined,
+                riskPct: undefined,
                 rmultiple: undefined,
                 holdingPeriod: 10,
                 exitReason: "Sell",
@@ -223,7 +222,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(0);
         expect(analysis.growth).to.eql(1);
         expect(analysis.barCount).to.eql(15);
-        expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
@@ -238,7 +236,7 @@ describe("analyze", () => {
                 profit: -10,
                 profitPct: -50,
                 growth: 0.5,
-                risk: undefined,
+                riskPct: undefined,
                 rmultiple: undefined,
                 holdingPeriod: 5,
                 exitReason: "Sell",
@@ -251,7 +249,7 @@ describe("analyze", () => {
                 profit: 10,
                 profitPct: 100,
                 growth: 2,
-                risk: undefined,
+                riskPct: undefined,
                 rmultiple: undefined,
                 holdingPeriod: 10,
                 exitReason: "Sell",
@@ -265,7 +263,6 @@ describe("analyze", () => {
         expect(analysis.profitPct).to.eql(0);
         expect(analysis.growth).to.eql(1);
         expect(analysis.barCount).to.eql(15);
-        expect(analysis.maxRisk).to.eql(undefined);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
@@ -280,7 +277,7 @@ describe("analyze", () => {
             profit: 10,
             profitPct: 100,
             growth: 2,
-            risk: undefined,
+            riskPct: undefined,
             rmultiple: undefined,
             holdingPeriod: 5,
             exitReason: "Sell",
@@ -301,7 +298,7 @@ describe("analyze", () => {
             profit: -5,
             profitPct: -50,
             growth: 0.5,
-            risk: undefined,
+            riskPct: undefined,
             rmultiple: undefined,
             holdingPeriod: 4,
             exitReason: "Sell",
@@ -323,7 +320,7 @@ describe("analyze", () => {
                 profit: -10,
                 profitPct: -50,
                 growth: 0.5,
-                risk: undefined,
+                riskPct: undefined,
                 rmultiple: undefined,
                 holdingPeriod: 5,
                 exitReason: "Sell",
@@ -336,7 +333,7 @@ describe("analyze", () => {
                 profit: 10,
                 profitPct: 100,
                 growth: 2,
-                risk: undefined,
+                riskPct: undefined,
                 rmultiple: undefined,
                 holdingPeriod: 10,
                 exitReason: "Sell",
@@ -348,56 +345,87 @@ describe("analyze", () => {
         expect(analysis.maxDrawdownPct).to.eql(-50);
     });
 
+    const threeSampleTrades: ITrade[] = [
+        {
+            entryTime: makeDate("2018/10/25"),
+            entryPrice: 20,
+            exitTime: makeDate("2018/10/30"),
+            exitPrice: 10,
+            profit: -10,
+            profitPct: -50,
+            growth: 0.5,
+            riskPct: 50,
+            rmultiple: -1,
+            holdingPeriod: 5,
+            exitReason: "Sell",
+        },
+        {
+            entryTime: makeDate("2018/11/1"),
+            entryPrice: 10,
+            exitTime: makeDate("2018/11/10"),
+            exitPrice: 30,
+            profit: 20,
+            profitPct: 200,
+            growth: 3,
+            riskPct: 50,
+            rmultiple: 4,
+            holdingPeriod: 10,
+            exitReason: "Sell",
+        },
+        {
+            entryTime: makeDate("2018/12/1"),
+            entryPrice: 30,
+            exitTime: makeDate("2018/12/5"),
+            exitPrice: 15,
+            profit: -15,
+            profitPct: -50,
+            growth: 0.5,
+            riskPct: 50,
+            rmultiple: -1,
+            holdingPeriod: 5,
+            exitReason: "Sell",
+        },
+    ];
+
     it("drawdown resets on peak", () => {
-
-        const trades: ITrade[] = [
-            {
-                entryTime: makeDate("2018/10/25"),
-                entryPrice: 20,
-                exitTime: makeDate("2018/10/30"),
-                exitPrice: 10,
-                profit: -10,
-                profitPct: -50,
-                growth: 0.5,
-                risk: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 5,
-                exitReason: "Sell",
-            },
-            {
-                entryTime: makeDate("2018/11/1"),
-                entryPrice: 10,
-                exitTime: makeDate("2018/11/10"),
-                exitPrice: 30,
-                profit: 20,
-                profitPct: 200,
-                growth: 3,
-                risk: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 10,
-                exitReason: "Sell",
-            },
-            {
-                entryTime: makeDate("2018/12/1"),
-                entryPrice: 30,
-                exitTime: makeDate("2018/12/5"),
-                exitPrice: 15,
-                profit: -15,
-                profitPct: -50,
-                growth: 0.5,
-                risk: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 5,
-                exitReason: "Sell",
-            },
-        ];
-
-        const analysis = analyze(20, new DataFrame<number, ITrade>(trades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
         expect(analysis.maxDrawdown).to.eql(-15);
         expect(analysis.maxDrawdownPct).to.eql(-50);
     });
 
-    //todo: risk
-    //todo: percent profitable, profit factor
-    //todo: total trades
+    it("total number of trades is recorded", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        expect(analysis.totalTrades).to.eql(3);
+    });
+    
+    it("percent profitable is computed", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        expect(round(analysis.percentProfitable)).to.eql(33.33);
+    });
+
+    it("profit factor is computed", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        expect(analysis.profitFactor).to.eql(0.8);
+    });
+
+    it("expectency is computed", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        expect(round(analysis.expectency!)).to.eql(0.67);
+    });
+
+    it("rmultiple std dev is computed", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        expect(round(analysis.rmultipleStdDev!)).to.eql(2.89);
+    });
+
+    it("system quality is computed", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        expect(round(analysis.systemQuality!)).to.eql(0.23);
+    });
 });
