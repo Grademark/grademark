@@ -1,14 +1,12 @@
 import { assert, expect } from 'chai';
 import * as dataForge from 'data-forge';
-import 'data-forge-fs';
-import 'data-forge-indicators';
 import * as path from 'path';
-import * as fs from 'fs';
+import 'data-forge-indicators';
 import { IStrategy, backtest, IBar, ITrade } from '../..';
 import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
 import { ISerializedDataFrame } from 'data-forge/build/lib/dataframe';
-import { checkArray } from './check-object';
+import { checkArray, checkData } from './check-object';
 import { Stream } from 'stream';
 import { StopLossFn, ProfitTargetFn, EntryRuleFn, ExitRuleFn } from '../../lib/strategy';
 
@@ -35,27 +33,6 @@ describe("backtest mean reversion", function (this: any) {
         .withSeries("sma", movingAverage)   // Integrate moving average into data, indexed on date.
         .skip(30)                           // Skip blank sma entries.
 
-    function output(filePath: string, dataFrame: IDataFrame<any, any>): void {
-        const serializedDataFrame = dataFrame.serialize();
-        const json = JSON.stringify(serializedDataFrame, null, 4);
-        fs.writeFileSync(filePath, json);
-    }
-        
-    function loadExpectedInput<IndexT = any, ValueT = any>(filePath: string): IDataFrame<IndexT, ValueT> {
-        const json = fs.readFileSync(filePath, "utf8");
-        const serializedDataFrame = JSON.parse(json) as ISerializedDataFrame;
-        return DataFrame.deserialize<IndexT, ValueT>(serializedDataFrame);
-    }
-
-    function checkData(trades: IDataFrame<number, ITrade>, test: any) {
-        const filePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
-        if (!fs.existsSync(filePath)) {
-            output(filePath, trades);
-        }
-
-        const expectedTrades = loadExpectedInput<number, ITrade>(filePath);
-        checkArray(trades.toArray(), expectedTrades.toArray());
-    }
 
     interface IStrategyModifications {
         entryRule?: EntryRuleFn<MyBar>;

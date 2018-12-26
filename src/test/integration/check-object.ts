@@ -1,9 +1,38 @@
 import { assert, expect } from 'chai';
 import * as Sugar from 'sugar';
+import * as fs from 'fs';
+import * as path from 'path';
+import { IDataFrame } from 'data-forge';
+import { ISerializedDataFrame } from 'data-forge/build/lib/dataframe';
+import { ITrade } from '../..';
+import { DataFrame } from 'data-forge';
+import 'data-forge-fs';
 
 //
 //TODO: Make an npm lib out of this.
 //
+
+export function output(filePath: string, dataFrame: IDataFrame<any, any>): void {
+    const serializedDataFrame = dataFrame.serialize();
+    const json = JSON.stringify(serializedDataFrame, null, 4);
+    fs.writeFileSync(filePath, json);
+}
+    
+export function loadExpectedInput<IndexT = any, ValueT = any>(filePath: string): IDataFrame<IndexT, ValueT> {
+    const json = fs.readFileSync(filePath, "utf8");
+    const serializedDataFrame = JSON.parse(json) as ISerializedDataFrame;
+    return DataFrame.deserialize<IndexT, ValueT>(serializedDataFrame);
+}
+
+export function checkData(trades: IDataFrame<number, ITrade>, test: any) {
+    const filePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
+    if (!fs.existsSync(filePath)) {
+        output(filePath, trades);
+    }
+
+    const expectedTrades = loadExpectedInput<number, ITrade>(filePath);
+    checkArray(trades.toArray(), expectedTrades.toArray());
+}
 
 //
 // Check an array to ensure that each element matches the specification.
