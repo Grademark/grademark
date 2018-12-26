@@ -46,6 +46,8 @@
         "@types/mocha": "5.2.5",
         "@types/node": "10.11.4",
         "chai": "4.2.0",
+        "data-forge-fs": "0.0.3",
+        "data-forge-indicators": "^0.1.7",
         "mocha": "5.2.0",
         "nyc": "13.0.1",
         "source-map-support": "0.5.9",
