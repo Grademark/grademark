@@ -9,7 +9,7 @@ describe("monte-carlo mean reversion", function (this: any) {
     
     this.timeout(15000);
 
-    const sampleTrades = readDataFrame<number, ITrade>(path.join(__dirname, "data/sample trades.dataframe"));
+    const sampleTrades = readDataFrame<number, ITrade>(path.join(__dirname, "data/sample trades - all profits.dataframe"));
 
     it("monte-carlo", function  (this: any) {
         const samples = monteCarlo(sampleTrades, 10, 5);

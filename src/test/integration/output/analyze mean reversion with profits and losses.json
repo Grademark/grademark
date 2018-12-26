@@ -1,0 +1,17 @@
+{
+    "startingCapital": 10000,
+    "finalCapital": 10934.957304697546,
+    "profit": 934.9573046975456,
+    "profitPct": 9.349573046975458,
+    "growth": 1.0934957304697546,
+    "totalTrades": 17,
+    "barCount": 58,
+    "maxDrawdown": -301.9079642341858,
+    "maxDrawdownPct": -2.9775000000000036,
+    "maxRiskPct": 1.5000000000000064,
+    "expectency": 0.35490700169116474,
+    "rmultipleStdDev": 0.700771531883713,
+    "systemQuality": 0.5064517971173214,
+    "profitFactor": 2.9954247963726575,
+    "percentProfitable": 82.35294117647058
+}

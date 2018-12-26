@@ -50,9 +50,58 @@ describe("analyze", () => {
         expect(analysis.finalCapital).to.eql(2000);
     });
 
-    it("can analyze single trade with profit", () => {
+    const aProfit: ITrade = {
+        entryTime: makeDate("2018/10/25"),
+        entryPrice: 10,
+        exitTime: makeDate("2018/10/30"),
+        exitPrice: 20,
+        profit: 10,
+        profitPct: 100,
+        growth: 2,
+        riskPct: undefined,
+        rmultiple: undefined,
+        holdingPeriod: 5,
+        exitReason: "Sell",
+    };
 
-        const singleTrade: ITrade = {
+    it("can analyze single trade with profit", () => {
+        const analysis = analyze(10, new DataFrame<number, ITrade>([ aProfit ] ));
+        expect(analysis.startingCapital).to.eql(10);
+        expect(analysis.finalCapital).to.eql(20);
+        expect(analysis.profit).to.eql(10);
+        expect(analysis.profitPct).to.eql(100);
+        expect(analysis.growth).to.eql(2);
+        expect(analysis.barCount).to.eql(5);
+        expect(analysis.maxRiskPct).to.eql(undefined);
+    });
+
+    const aLoss: ITrade = {
+        entryTime: makeDate("2018/10/25"),
+        entryPrice: 10,
+        exitTime: makeDate("2018/10/29"),
+        exitPrice: 5,
+        profit: -5,
+        profitPct: -50,
+        growth: 0.5,
+        riskPct: undefined,
+        rmultiple: undefined,
+        holdingPeriod: 4,
+        exitReason: "Sell",
+    };
+
+    it("can analyze single trade with loss", () => {
+        const analysis = analyze(10, new DataFrame<number, ITrade>([ aLoss ] ));
+        expect(analysis.startingCapital).to.eql(10);
+        expect(analysis.finalCapital).to.eql(5);
+        expect(analysis.profit).to.eql(-5);
+        expect(analysis.profitPct).to.eql(-50);
+        expect(analysis.growth).to.eql(0.5);
+        expect(analysis.barCount).to.eql(4);
+        expect(analysis.maxRiskPct).to.eql(undefined);
+    });
+    
+    const twoProfits: ITrade[] = [
+        {
             entryTime: makeDate("2018/10/25"),
             entryPrice: 10,
             exitTime: makeDate("2018/10/30"),
@@ -64,76 +113,24 @@ describe("analyze", () => {
             rmultiple: undefined,
             holdingPeriod: 5,
             exitReason: "Sell",
-        };
-
-        const analysis = analyze(10, new DataFrame<number, ITrade>([ singleTrade ] ));
-        expect(analysis.startingCapital).to.eql(10);
-        expect(analysis.finalCapital).to.eql(20);
-        expect(analysis.profit).to.eql(10);
-        expect(analysis.profitPct).to.eql(100);
-        expect(analysis.growth).to.eql(2);
-        expect(analysis.barCount).to.eql(5);
-        expect(analysis.maxRiskPct).to.eql(undefined);
-    });
-
-    it("can analyze single trade with loss", () => {
-
-        const singleTrade: ITrade = {
-            entryTime: makeDate("2018/10/25"),
-            entryPrice: 10,
-            exitTime: makeDate("2018/10/29"),
-            exitPrice: 5,
-            profit: -5,
-            profitPct: -50,
-            growth: 0.5,
+        },
+        {
+            entryTime: makeDate("2018/11/1"),
+            entryPrice: 20,
+            exitTime: makeDate("2018/11/10"),
+            exitPrice: 60,
+            profit: 40,
+            profitPct: 150,
+            growth: 3,
             riskPct: undefined,
             rmultiple: undefined,
-            holdingPeriod: 4,
+            holdingPeriod: 10,
             exitReason: "Sell",
-        };
+        },
+    ];
 
-        const analysis = analyze(10, new DataFrame<number, ITrade>([ singleTrade ] ));
-        expect(analysis.startingCapital).to.eql(10);
-        expect(analysis.finalCapital).to.eql(5);
-        expect(analysis.profit).to.eql(-5);
-        expect(analysis.profitPct).to.eql(-50);
-        expect(analysis.growth).to.eql(0.5);
-        expect(analysis.barCount).to.eql(4);
-        expect(analysis.maxRiskPct).to.eql(undefined);
-    });
-    
     it("can analyze multiple trades with profit", () => {
-
-        const trades: ITrade[] = [
-            {
-                entryTime: makeDate("2018/10/25"),
-                entryPrice: 10,
-                exitTime: makeDate("2018/10/30"),
-                exitPrice: 20,
-                profit: 10,
-                profitPct: 100,
-                growth: 2,
-                riskPct: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 5,
-                exitReason: "Sell",
-            },
-            {
-                entryTime: makeDate("2018/11/1"),
-                entryPrice: 20,
-                exitTime: makeDate("2018/11/10"),
-                exitPrice: 60,
-                profit: 40,
-                profitPct: 150,
-                growth: 3,
-                riskPct: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 10,
-                exitReason: "Sell",
-            },
-        ];
-
-        const analysis = analyze(10, new DataFrame<number, ITrade>(trades));
+        const analysis = analyze(10, new DataFrame<number, ITrade>(twoProfits));
         expect(analysis.startingCapital).to.eql(10);
         expect(analysis.finalCapital).to.eql(60);
         expect(analysis.profit).to.eql(50);
@@ -143,38 +140,37 @@ describe("analyze", () => {
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
+    const twoLosses: ITrade[] = [
+        {
+            entryTime: makeDate("2018/10/25"),
+            entryPrice: 20,
+            exitTime: makeDate("2018/10/30"),
+            exitPrice: 10,
+            profit: -10,
+            profitPct: -50,
+            growth: 0.5,
+            riskPct: undefined,
+            rmultiple: undefined,
+            holdingPeriod: 5,
+            exitReason: "Sell",
+        },
+        {
+            entryTime: makeDate("2018/11/1"),
+            entryPrice: 10,
+            exitTime: makeDate("2018/11/10"),
+            exitPrice: 8,
+            profit: -2,
+            profitPct: -20,
+            growth: 0.8,
+            riskPct: undefined,
+            rmultiple: undefined,
+            holdingPeriod: 10,
+            exitReason: "Sell",
+        },
+    ];
+
     it("can analyze multiple trades with loss", () => {
-
-        const trades: ITrade[] = [
-            {
-                entryTime: makeDate("2018/10/25"),
-                entryPrice: 20,
-                exitTime: makeDate("2018/10/30"),
-                exitPrice: 10,
-                profit: -10,
-                profitPct: -50,
-                growth: 0.5,
-                riskPct: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 5,
-                exitReason: "Sell",
-            },
-            {
-                entryTime: makeDate("2018/11/1"),
-                entryPrice: 10,
-                exitTime: makeDate("2018/11/10"),
-                exitPrice: 8,
-                profit: -2,
-                profitPct: -20,
-                growth: 0.8,
-                riskPct: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 10,
-                exitReason: "Sell",
-            },
-        ];
-
-        const analysis = analyze(20, new DataFrame<number, ITrade>(trades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(twoLosses));
         expect(analysis.startingCapital).to.eql(20);
         expect(analysis.finalCapital).to.eql(8);
         expect(analysis.profit).to.eql(-12);
@@ -184,38 +180,37 @@ describe("analyze", () => {
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
+    const aProfitThenALoss: ITrade[] = [
+        {
+            entryTime: makeDate("2018/10/25"),
+            entryPrice: 10,
+            exitTime: makeDate("2018/10/30"),
+            exitPrice: 20,
+            profit: 10,
+            profitPct: 100,
+            growth: 2,
+            riskPct: undefined,
+            rmultiple: undefined,
+            holdingPeriod: 5,
+            exitReason: "Sell",
+        },
+        {
+            entryTime: makeDate("2018/11/1"),
+            entryPrice: 20,
+            exitTime: makeDate("2018/11/10"),
+            exitPrice: 10,
+            profit: -10,
+            profitPct: -50,
+            growth: 0.5,
+            riskPct: undefined,
+            rmultiple: undefined,
+            holdingPeriod: 10,
+            exitReason: "Sell",
+        },
+    ];
+
     it("can analyze multiple trades with profit and loss", () => {
-
-        const trades: ITrade[] = [
-            {
-                entryTime: makeDate("2018/10/25"),
-                entryPrice: 10,
-                exitTime: makeDate("2018/10/30"),
-                exitPrice: 20,
-                profit: 10,
-                profitPct: 100,
-                growth: 2,
-                riskPct: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 5,
-                exitReason: "Sell",
-            },
-            {
-                entryTime: makeDate("2018/11/1"),
-                entryPrice: 20,
-                exitTime: makeDate("2018/11/10"),
-                exitPrice: 10,
-                profit: -10,
-                profitPct: -50,
-                growth: 0.5,
-                riskPct: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 10,
-                exitReason: "Sell",
-            },
-        ];
-
-        const analysis = analyze(10, new DataFrame<number, ITrade>(trades));
+        const analysis = analyze(10, new DataFrame<number, ITrade>(aProfitThenALoss));
         expect(analysis.startingCapital).to.eql(10);
         expect(analysis.finalCapital).to.eql(10);
         expect(analysis.profit).to.eql(0);
@@ -225,38 +220,37 @@ describe("analyze", () => {
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
+    const aLossThenAProfit: ITrade[] = [
+        {
+            entryTime: makeDate("2018/10/25"),
+            entryPrice: 20,
+            exitTime: makeDate("2018/10/30"),
+            exitPrice: 10,
+            profit: -10,
+            profitPct: -50,
+            growth: 0.5,
+            riskPct: undefined,
+            rmultiple: undefined,
+            holdingPeriod: 5,
+            exitReason: "Sell",
+        },
+        {
+            entryTime: makeDate("2018/11/1"),
+            entryPrice: 10,
+            exitTime: makeDate("2018/11/10"),
+            exitPrice: 20,
+            profit: 10,
+            profitPct: 100,
+            growth: 2,
+            riskPct: undefined,
+            rmultiple: undefined,
+            holdingPeriod: 10,
+            exitReason: "Sell",
+        },
+    ];
+
     it("can analyze multiple trades with loss and profit", () => {
-
-        const trades: ITrade[] = [
-            {
-                entryTime: makeDate("2018/10/25"),
-                entryPrice: 20,
-                exitTime: makeDate("2018/10/30"),
-                exitPrice: 10,
-                profit: -10,
-                profitPct: -50,
-                growth: 0.5,
-                riskPct: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 5,
-                exitReason: "Sell",
-            },
-            {
-                entryTime: makeDate("2018/11/1"),
-                entryPrice: 10,
-                exitTime: makeDate("2018/11/10"),
-                exitPrice: 20,
-                profit: 10,
-                profitPct: 100,
-                growth: 2,
-                riskPct: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 10,
-                exitReason: "Sell",
-            },
-        ];
-
-        const analysis = analyze(20, new DataFrame<number, ITrade>(trades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(aLossThenAProfit));
         expect(analysis.startingCapital).to.eql(20);
         expect(analysis.finalCapital).to.eql(20);
         expect(analysis.profit).to.eql(0);
@@ -268,84 +262,26 @@ describe("analyze", () => {
 
 
     it("single trade with profit has no drawdown", () => {
-
-        const singleTrade: ITrade = {
-            entryTime: makeDate("2018/10/25"),
-            entryPrice: 10,
-            exitTime: makeDate("2018/10/30"),
-            exitPrice: 20,
-            profit: 10,
-            profitPct: 100,
-            growth: 2,
-            riskPct: undefined,
-            rmultiple: undefined,
-            holdingPeriod: 5,
-            exitReason: "Sell",
-        };
-
-        const analysis = analyze(10, new DataFrame<number, ITrade>([ singleTrade ] ));
+        const analysis = analyze(10, new DataFrame<number, ITrade>([ aProfit ] ));
         expect(analysis.maxDrawdown).to.eql(0);
         expect(analysis.maxDrawdownPct).to.eql(0);
     });
 
     it("single trade with loss sets the drawdown to the loss", () => {
 
-        const singleTrade: ITrade = {
-            entryTime: makeDate("2018/10/25"),
-            entryPrice: 10,
-            exitTime: makeDate("2018/10/29"),
-            exitPrice: 5,
-            profit: -5,
-            profitPct: -50,
-            growth: 0.5,
-            riskPct: undefined,
-            rmultiple: undefined,
-            holdingPeriod: 4,
-            exitReason: "Sell",
-        };
-
-        const analysis = analyze(10, new DataFrame<number, ITrade>([ singleTrade ] ));
+        const analysis = analyze(10, new DataFrame<number, ITrade>([ aLoss ] ));
         expect(analysis.maxDrawdown).to.eql(-5);
         expect(analysis.maxDrawdownPct).to.eql(-50);
     });
     
     it("drawdown from first loss is not override by subsequent profit", () => {
 
-        const trades: ITrade[] = [
-            {
-                entryTime: makeDate("2018/10/25"),
-                entryPrice: 20,
-                exitTime: makeDate("2018/10/30"),
-                exitPrice: 10,
-                profit: -10,
-                profitPct: -50,
-                growth: 0.5,
-                riskPct: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 5,
-                exitReason: "Sell",
-            },
-            {
-                entryTime: makeDate("2018/11/1"),
-                entryPrice: 10,
-                exitTime: makeDate("2018/11/10"),
-                exitPrice: 20,
-                profit: 10,
-                profitPct: 100,
-                growth: 2,
-                riskPct: undefined,
-                rmultiple: undefined,
-                holdingPeriod: 10,
-                exitReason: "Sell",
-            },
-        ];
-
-        const analysis = analyze(20, new DataFrame<number, ITrade>(trades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(aLossThenAProfit));
         expect(analysis.maxDrawdown).to.eql(-10);
         expect(analysis.maxDrawdownPct).to.eql(-50);
     });
 
-    const threeSampleTrades: ITrade[] = [
+    const threeSampleTradesWithProfitsAndLoss: ITrade[] = [
         {
             entryTime: makeDate("2018/10/25"),
             entryPrice: 20,
@@ -388,44 +324,44 @@ describe("analyze", () => {
     ];
 
     it("drawdown resets on peak", () => {
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
         expect(analysis.maxDrawdown).to.eql(-15);
         expect(analysis.maxDrawdownPct).to.eql(-50);
     });
 
     it("total number of trades is recorded", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
         expect(analysis.totalTrades).to.eql(3);
     });
     
     it("percent profitable is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
         expect(round(analysis.percentProfitable)).to.eql(33.33);
     });
 
     it("profit factor is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
         expect(analysis.profitFactor).to.eql(0.8);
     });
 
     it("expectency is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
         expect(round(analysis.expectency!)).to.eql(0.67);
     });
 
     it("rmultiple std dev is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
         expect(round(analysis.rmultipleStdDev!)).to.eql(2.89);
     });
 
     it("system quality is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTrades));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
         expect(round(analysis.systemQuality!)).to.eql(0.23);
     });
 });
