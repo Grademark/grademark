@@ -1,0 +1,13 @@
+{
+    "startingCapital": 10000,
+    "finalCapital": 11221.364110573439,
+    "profit": 1221.3641105734387,
+    "profitPct": 12.213641105734387,
+    "growth": 1.122136411057344,
+    "totalTrades": 15,
+    "barCount": 66,
+    "maxDrawdown": 0,
+    "maxDrawdownPct": 0,
+    "profitFactor": null,
+    "percentProfitable": 100
+}

@@ -9,29 +9,41 @@ import { DataFrame } from 'data-forge';
 import 'data-forge-fs';
 
 //
-//TODO: Make an npm lib out of this.
+// TODO: Make an npm lib out of this.
+// Output testing tools.
+// Need to make this file independent of chai.
 //
 
-export function output(filePath: string, dataFrame: IDataFrame<any, any>): void {
+export function writeDataFrame(filePath: string, dataFrame: IDataFrame<any, any>): void {
     const serializedDataFrame = dataFrame.serialize();
     const json = JSON.stringify(serializedDataFrame, null, 4);
     fs.writeFileSync(filePath, json);
 }
     
-export function loadExpectedInput<IndexT = any, ValueT = any>(filePath: string): IDataFrame<IndexT, ValueT> {
+export function readDataFrame<IndexT = any, ValueT = any>(filePath: string): IDataFrame<IndexT, ValueT> {
     const json = fs.readFileSync(filePath, "utf8");
     const serializedDataFrame = JSON.parse(json) as ISerializedDataFrame;
     return DataFrame.deserialize<IndexT, ValueT>(serializedDataFrame);
 }
 
-export function checkData(trades: IDataFrame<number, ITrade>, test: any) {
+export function checkDataFrameExpectations(trades: IDataFrame<number, ITrade>, test: any) {
     const filePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
     if (!fs.existsSync(filePath)) {
-        output(filePath, trades);
+        writeDataFrame(filePath, trades);
     }
 
-    const expectedTrades = loadExpectedInput<number, ITrade>(filePath);
+    const expectedTrades = readDataFrame<number, ITrade>(filePath);
     checkArray(trades.toArray(), expectedTrades.toArray());
+}
+
+export function checkObjectExpectations(obj: any, test: any) {
+    const filePath = path.join(__dirname, "output", test.fullTitle() + ".json");
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, JSON.stringify(obj, null, 4));
+    }
+
+    const expectedObj = JSON.parse(fs.readFileSync(filePath, "utf8"));;
+    checkObject(obj, expectedObj);
 }
 
 //
