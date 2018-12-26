@@ -10,15 +10,13 @@ import { DataFrame } from 'data-forge';
 import { ISerializedDataFrame } from 'data-forge/build/lib/dataframe';
 import { checkArray } from './check-object';
 import { Stream } from 'stream';
-import { StopLossFn, ProfitTargetFn, EntryRuleFn } from '../../lib/strategy';
+import { StopLossFn, ProfitTargetFn, EntryRuleFn, ExitRuleFn } from '../../lib/strategy';
 
 interface MyBar extends IBar {
     sma: number;
 }
 
 describe("backtest mean reversion", function (this: any) {
-
-    this.timeout(15000);
 
     let inputSeries = dataForge.readFileSync(path.join(__dirname, "data/STW.csv"))
         .parseCSV()
@@ -51,6 +49,7 @@ describe("backtest mean reversion", function (this: any) {
 
     interface IStrategyModifications {
         entryRule?: EntryRuleFn<MyBar>;
+        exitRule?: ExitRuleFn<MyBar>;
         stopLoss?: StopLossFn<MyBar>;
         trailingStopLoss?: StopLossFn<MyBar>;
         profitTarget?: ProfitTargetFn<MyBar>;        
@@ -130,6 +129,23 @@ describe("backtest mean reversion", function (this: any) {
             }
         });
     
+        const trades = backtest(strategy, inputSeries);
+        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
+        checkArray(trades.toArray(), expectedTrades.toArray());
+
+        //output(this.test, trades);
+    });
+
+    it("with maximum holding period", function  (this: any) {
+        const strategy = meanReversionStrategy({
+            exitRule: (exitPosition, position) => {
+                console.log(position); //fio:
+                if (position.holdingPeriod >= 3) {
+                    exitPosition();
+                }
+            }
+        });
+
         const trades = backtest(strategy, inputSeries);
         const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
         checkArray(trades.toArray(), expectedTrades.toArray());
