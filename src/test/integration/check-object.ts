@@ -26,6 +26,16 @@ export function readDataFrame<IndexT = any, ValueT = any>(filePath: string): IDa
     return DataFrame.deserialize<IndexT, ValueT>(serializedDataFrame);
 }
 
+export function checkArrayExpectations<T>(array: T[], test: any) {
+    const filePath = path.join(__dirname, "output", test.fullTitle() + ".json");
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, JSON.stringify(array, null, 4));
+    }
+
+    const expectedArray = JSON.parse(fs.readFileSync(filePath, "utf8"));;
+    checkArray(array, expectedArray);
+}
+
 export function checkDataFrameExpectations(trades: IDataFrame<number, ITrade>, test: any) {
     const filePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
     if (!fs.existsSync(filePath)) {
