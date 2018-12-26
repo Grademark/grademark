@@ -17,6 +17,8 @@ interface MyBar extends IBar {
 }
 
 describe("backtest mean reversion", function (this: any) {
+    
+    this.timeout(15000);
 
     let inputSeries = dataForge.readFileSync(path.join(__dirname, "data/STW.csv"))
         .parseCSV()
@@ -33,18 +35,26 @@ describe("backtest mean reversion", function (this: any) {
         .withSeries("sma", movingAverage)   // Integrate moving average into data, indexed on date.
         .skip(30)                           // Skip blank sma entries.
 
-    function output(test: any, dataFrame: IDataFrame<any, any>): void {
-        const outputFilePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
+    function output(filePath: string, dataFrame: IDataFrame<any, any>): void {
         const serializedDataFrame = dataFrame.serialize();
         const json = JSON.stringify(serializedDataFrame, null, 4);
-        fs.writeFileSync(outputFilePath, json);
+        fs.writeFileSync(filePath, json);
     }
         
-    function loadExpectedInput<IndexT = any, ValueT = any>(test: any): IDataFrame<IndexT, ValueT> {
-        const inputFilePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
-        const json = fs.readFileSync(inputFilePath, "utf8");
+    function loadExpectedInput<IndexT = any, ValueT = any>(filePath: string): IDataFrame<IndexT, ValueT> {
+        const json = fs.readFileSync(filePath, "utf8");
         const serializedDataFrame = JSON.parse(json) as ISerializedDataFrame;
         return DataFrame.deserialize<IndexT, ValueT>(serializedDataFrame);
+    }
+
+    function checkData(trades: IDataFrame<number, ITrade>, test: any) {
+        const filePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
+        if (!fs.existsSync(filePath)) {
+            output(filePath, trades);
+        }
+
+        const expectedTrades = loadExpectedInput<number, ITrade>(filePath);
+        checkArray(trades.toArray(), expectedTrades.toArray());
     }
 
     interface IStrategyModifications {
@@ -80,10 +90,7 @@ describe("backtest mean reversion", function (this: any) {
     it("basic strategy", function  (this: any) {
         const strategy = meanReversionStrategy();    
         const trades = backtest(strategy, inputSeries);
-        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
-        checkArray(trades.toArray(), expectedTrades.toArray());
-
-        //output(this.test, trades);
+        checkData(trades, this.test);
     });
 
     it("with stop loss", function  (this: any) {
@@ -92,10 +99,7 @@ describe("backtest mean reversion", function (this: any) {
         });
 
         const trades = backtest(strategy, inputSeries);
-        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
-        checkArray(trades.toArray(), expectedTrades.toArray());
-
-        //output(this.test, trades);
+        checkData(trades, this.test);
     });
 
     it("with trailing stop", function  (this: any) {
@@ -104,10 +108,7 @@ describe("backtest mean reversion", function (this: any) {
         });
     
         const trades = backtest(strategy, inputSeries);
-        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
-        checkArray(trades.toArray(), expectedTrades.toArray());
-
-        //output(this.test, trades);
+        checkData(trades, this.test);
     });
 
     it("with profit target", function  (this: any) {
@@ -116,10 +117,7 @@ describe("backtest mean reversion", function (this: any) {
         });
     
         const trades = backtest(strategy, inputSeries);
-        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
-        checkArray(trades.toArray(), expectedTrades.toArray());
-
-        //output(this.test, trades);
+        checkData(trades, this.test);
     });
 
     it("with conditional buy", function  (this: any) {
@@ -130,16 +128,12 @@ describe("backtest mean reversion", function (this: any) {
         });
     
         const trades = backtest(strategy, inputSeries);
-        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
-        checkArray(trades.toArray(), expectedTrades.toArray());
-
-        //output(this.test, trades);
+        checkData(trades, this.test);
     });
 
     it("with maximum holding period", function  (this: any) {
         const strategy = meanReversionStrategy({
             exitRule: (exitPosition, position) => {
-                console.log(position); //fio:
                 if (position.holdingPeriod >= 3) {
                     exitPosition();
                 }
@@ -147,9 +141,6 @@ describe("backtest mean reversion", function (this: any) {
         });
 
         const trades = backtest(strategy, inputSeries);
-        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
-        checkArray(trades.toArray(), expectedTrades.toArray());
-
-        //output(this.test, trades);
+        checkData(trades, this.test);
     });
 });
