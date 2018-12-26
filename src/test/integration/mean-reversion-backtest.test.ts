@@ -46,7 +46,33 @@ describe("mean reversion backtest", function (this: any) {
         const serializedDataFrame = JSON.parse(json) as ISerializedDataFrame;
         return DataFrame.deserialize<IndexT, ValueT>(serializedDataFrame);
     }
+
+    function meanReversionStrategy(): IStrategy<MyBar> {
+        const strategy: IStrategy<MyBar> = {
+            entryRule: (enterPosition, bar, lookback) => {
+                if (bar.close < bar.sma) {
+                    enterPosition();
+                }
+            },
     
+            exitRule: (exitPosition, position, bar, lookback) => {
+                if (bar.close > bar.sma) {
+                    exitPosition();
+                }
+            },
+        };
+        return strategy;
+    }
+    
+    it("basic strategy", function  (this: any) {
+        const strategy = meanReversionStrategy();    
+        const trades = backtest(strategy, inputSeries);
+        //const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
+        //checkArray(trades.toArray(), expectedTrades.toArray());
+
+        output(this.test, trades);
+    });
+
     it("with stop loss", function  (this: any) {
         const strategy: IStrategy<MyBar> = {
             entryRule: (enterPosition, bar, lookback) => {
