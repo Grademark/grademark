@@ -9,6 +9,8 @@ import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
 import { ISerializedDataFrame } from 'data-forge/build/lib/dataframe';
 import { checkArray } from './check-object';
+import { Stream } from 'stream';
+import { StopLossFn, ProfitTargetFn } from '../../lib/strategy';
 
 interface MyBar extends IBar {
     sma: number;
@@ -47,8 +49,14 @@ describe("backtest mean reversion", function (this: any) {
         return DataFrame.deserialize<IndexT, ValueT>(serializedDataFrame);
     }
 
-    function meanReversionStrategy(): IStrategy<MyBar> {
-        const strategy: IStrategy<MyBar> = {
+    interface IStrategyModifications {
+        stopLoss?: StopLossFn<MyBar>;
+        trailingStopLoss?: StopLossFn<MyBar>;
+        profitTarget?: ProfitTargetFn<MyBar>;        
+    }
+
+    function meanReversionStrategy(modifications?: IStrategyModifications): IStrategy<MyBar> {
+        let strategy: IStrategy<MyBar> = {
             entryRule: (enterPosition, bar, lookback) => {
                 if (bar.close < bar.sma) {
                     enterPosition();
@@ -61,6 +69,11 @@ describe("backtest mean reversion", function (this: any) {
                 }
             },
         };
+
+        if (modifications) {
+            strategy = Object.assign(strategy, modifications);
+        }
+
         return strategy;
     }
     
@@ -74,25 +87,10 @@ describe("backtest mean reversion", function (this: any) {
     });
 
     it("with stop loss", function  (this: any) {
-        const strategy: IStrategy<MyBar> = {
-            entryRule: (enterPosition, bar, lookback) => {
-                if (bar.close < bar.sma) {
-                    enterPosition();
-                }
-            },
-    
-            exitRule: (exitPosition, position, bar, lookback) => {
-                if (bar.close > bar.sma) {
-                    exitPosition();
-                }
-            },
-    
-            stopLoss: (entryPrice, latestBar, lookback) => {
-                return entryPrice * (5/100);
-            },
-        };
+        const strategy = meanReversionStrategy({
+            stopLoss: entryPrice => entryPrice * (5/100),
+        });
 
-    
         const trades = backtest(strategy, inputSeries);
         const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
         checkArray(trades.toArray(), expectedTrades.toArray());
@@ -101,24 +99,9 @@ describe("backtest mean reversion", function (this: any) {
     });
 
     it("with trailing stop", function  (this: any) {
-        const strategy: IStrategy<MyBar> = {
-            entryRule: (enterPosition, bar, lookback) => {
-                if (bar.close < bar.sma) {
-                    enterPosition();
-                }
-            },
-    
-            exitRule: (exitPosition, position, bar, lookback) => {
-                if (bar.close > bar.sma) {
-                    exitPosition();
-                }
-            },
-    
-            trailingStopLoss: (entryPrice, latestBar, lookback) => {
-                return latestBar.close * (5/100);
-            },
-        };
-
+        const strategy = meanReversionStrategy({
+            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (5/100),
+        });
     
         const trades = backtest(strategy, inputSeries);
         const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
@@ -128,24 +111,9 @@ describe("backtest mean reversion", function (this: any) {
     });
 
     it("with profit target", function  (this: any) {
-        const strategy: IStrategy<MyBar> = {
-            entryRule: (enterPosition, bar, lookback) => {
-                if (bar.close < bar.sma) {
-                    enterPosition();
-                }
-            },
-    
-            exitRule: (exitPosition, position, bar, lookback) => {
-                if (bar.close > bar.sma) {
-                    exitPosition();
-                }
-            },
-    
-            profitTarget: (entryPrice, latestBar, lookback) => {
-                return entryPrice * (5/100);
-            },
-        };
-
+        const strategy = meanReversionStrategy({
+            profitTarget: entryPrice => entryPrice * (5/100),
+        });
     
         const trades = backtest(strategy, inputSeries);
         const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
