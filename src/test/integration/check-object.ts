@@ -70,7 +70,7 @@ export function checkArray (array: any[], spec: any[], fieldPath: string = "") {
             checkObject(el, expected, elPath);
         }
         else {
-            expect(el, elPath).to.deep.include(expected);
+            expect(el, elPath).to.eql(expected);
         }            
     }
 };

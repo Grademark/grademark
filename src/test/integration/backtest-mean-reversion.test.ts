@@ -6,7 +6,7 @@ import { IStrategy, backtest, IBar, ITrade } from '../..';
 import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
 import { ISerializedDataFrame } from 'data-forge/build/lib/dataframe';
-import { checkArray, checkDataFrameExpectations } from './check-object';
+import { checkArray, checkDataFrameExpectations, checkArrayExpectations } from './check-object';
 import { Stream } from 'stream';
 import { StopLossFn, ProfitTargetFn, EntryRuleFn, ExitRuleFn } from '../../lib/strategy';
 
@@ -119,5 +119,15 @@ describe("backtest mean reversion", function (this: any) {
 
         const trades = backtest(strategy, inputSeries);
         checkDataFrameExpectations(trades, this.test);
+    });
+
+    it("can record trailing stop", function  (this: any) {
+        const strategy = meanReversionStrategy({
+            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (3/100),
+        });
+
+        const trades = backtest(strategy, inputSeries, { recordStopPrice: true });
+        const stopPrice = trades.deflate().selectMany(trade => trade.stopPriceSeries!);
+        checkArrayExpectations(stopPrice.toArray(), this.test);
     });
 });
