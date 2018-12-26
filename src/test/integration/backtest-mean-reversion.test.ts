@@ -130,4 +130,14 @@ describe("backtest mean reversion", function (this: any) {
         const stopPrice = trades.deflate().selectMany(trade => trade.stopPriceSeries!);
         checkArrayExpectations(stopPrice.toArray(), this.test);
     });
+
+    it("can record risk", function  (this: any) {
+        const strategy = meanReversionStrategy({
+            stopLoss: entryPrice => entryPrice * (5/100),
+        });
+
+        const trades = backtest(strategy, inputSeries, { recordRisk: true });
+        const risk = trades.deflate().selectMany(trade => trade.riskSeries!);
+        checkArrayExpectations(risk.toArray(), this.test);
+    });
 });
