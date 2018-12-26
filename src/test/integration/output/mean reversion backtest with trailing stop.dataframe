@@ -1,0 +1,58 @@
+{
+    "columnOrder": [
+        "entryTime",
+        "entryPrice",
+        "exitTime",
+        "exitPrice",
+        "profit",
+        "profitPct",
+        "growth",
+        "riskPct",
+        "riskSeries",
+        "rmultiple",
+        "holdingPeriod",
+        "exitReason",
+        "stopPrice",
+        "stopPriceSeries",
+        "profitTarget"
+    ],
+    "columns": {
+        "entryTime": "date",
+        "entryPrice": "number",
+        "exitTime": "date",
+        "exitPrice": "number",
+        "profit": "number",
+        "profitPct": "number",
+        "growth": "number",
+        "riskPct": "number",
+        "riskSeries": "unsupported",
+        "rmultiple": "number",
+        "holdingPeriod": "number",
+        "exitReason": "string",
+        "stopPrice": "number",
+        "stopPriceSeries": "unsupported",
+        "profitTarget": "unsupported"
+    },
+    "index": {
+        "type": "number",
+        "values": [
+            0
+        ]
+    },
+    "values": [
+        {
+            "entryTime": "2017-12-07T00:00:00.000+10:00",
+            "entryPrice": 55.96,
+            "exitTime": "2017-12-11T00:00:00.000+10:00",
+            "exitPrice": 56.52,
+            "profit": 0.5600000000000023,
+            "profitPct": 1.0007147962830634,
+            "growth": 1.0100071479628305,
+            "riskPct": 5.0259113652609,
+            "rmultiple": 0.19911111111111193,
+            "holdingPeriod": 1,
+            "exitReason": "exit-rule",
+            "stopPrice": 53.1475
+        }
+    ]
+}

@@ -14,7 +14,7 @@ interface MyBar extends IBar {
     sma: number;
 }
 
-describe("backtest integration", function (this: any) {
+describe("mean reversion backtest", function (this: any) {
 
     this.timeout(15000);
 
@@ -33,25 +33,21 @@ describe("backtest integration", function (this: any) {
         .withSeries("sma", movingAverage)   // Integrate moving average into data, indexed on date.
         .skip(30)                           // Skip blank sma entries.
 
-    const enableOutput = false;
-
-    function output(testName: string, dataFrame: IDataFrame<any, any>): void {
-        if (enableOutput) {
-            const outputFilePath = path.join(__dirname, "output", testName + ".dataframe");
-            const serializedDataFrame = dataFrame.serialize();
-            const json = JSON.stringify(serializedDataFrame, null, 4);
-            fs.writeFileSync(outputFilePath, json);
-        }
+    function output(test: any, dataFrame: IDataFrame<any, any>): void {
+        const outputFilePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
+        const serializedDataFrame = dataFrame.serialize();
+        const json = JSON.stringify(serializedDataFrame, null, 4);
+        fs.writeFileSync(outputFilePath, json);
     }
         
-    function loadExpectedInput<IndexT = any, ValueT = any>(testName: string): IDataFrame<IndexT, ValueT> {
-        const inputFilePath = path.join(__dirname, "output", testName + ".dataframe");
+    function loadExpectedInput<IndexT = any, ValueT = any>(test: any): IDataFrame<IndexT, ValueT> {
+        const inputFilePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
         const json = fs.readFileSync(inputFilePath, "utf8");
         const serializedDataFrame = JSON.parse(json) as ISerializedDataFrame;
         return DataFrame.deserialize<IndexT, ValueT>(serializedDataFrame);
     }
     
-    it("mean reversion strategy 1", function  (this: any) {
+    it("with stop loss", function  (this: any) {
         const strategy: IStrategy<MyBar> = {
             entryRule: (enterPosition, bar, lookback) => {
                 if (bar.close < bar.sma) {
@@ -72,9 +68,37 @@ describe("backtest integration", function (this: any) {
 
     
         const trades = backtest(strategy, inputSeries);
-        const expectedTrades = loadExpectedInput<number, ITrade>(this.test.title);
+        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
         checkArray(trades.toArray(), expectedTrades.toArray());
 
-        output(this.test.title, trades);
+        //output(this.test, trades);
     });
+
+    it("with trailing stop", function  (this: any) {
+        const strategy: IStrategy<MyBar> = {
+            entryRule: (enterPosition, bar, lookback) => {
+                if (bar.close < bar.sma) {
+                    enterPosition();
+                }
+            },
+    
+            exitRule: (exitPosition, position, bar, lookback) => {
+                if (bar.close > bar.sma) {
+                    exitPosition();
+                }
+            },
+    
+            trailingStopLoss: (entryPrice, latestBar, lookback) => {
+                return latestBar.close * (5/100);
+            },
+        };
+
+    
+        const trades = backtest(strategy, inputSeries);
+        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
+        checkArray(trades.toArray(), expectedTrades.toArray());
+
+        //output(this.test, trades);
+    });
+
 });
