@@ -371,9 +371,21 @@ describe("analyze", () => {
         expect(round(analysis.rmultipleStdDev!)).to.eql(2.89);
     });
 
-    it("system quality is computed", () => {
+    it("system quality is computed with profits and lossses", () => {
 
         const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
         expect(round(analysis.systemQuality!)).to.eql(0.23);
+    });
+
+    it("system quality is undefined with only a single profit", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>([ aProfit ]));
+        expect(analysis.systemQuality).to.eql(undefined);
+    });
+
+    it("system quality is undefined with only a single loss", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>([ aLoss ]));
+        expect(analysis.systemQuality).to.eql(undefined);
     });
 });

@@ -60,7 +60,12 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
     
     let systemQuality: number | undefined;
     if (expectency !== undefined && rmultipleStdDev !== undefined) {
-        systemQuality = expectency / rmultipleStdDev;
+        if (rmultipleStdDev === 0) {
+            systemQuality = undefined;
+        }
+        else {
+            systemQuality = expectency / rmultipleStdDev;
+        }
     }
 
     let profitFactor: number | undefined = undefined;

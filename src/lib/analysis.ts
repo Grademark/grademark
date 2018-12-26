@@ -72,7 +72,10 @@ export interface IAnalysis {
     
     //
     // The estimated or actual quality of the strategy.
-    // Expectency / std devation of rmultiples
+    // Expectency / std devation of rmultiples.
+    // Only computed when stop loss is used for a strategy, otherwise set to undefined.
+    // Result is also undefined when there is no deviation in profits from trades 
+    // (this might happen if all trades in your backtest are stopped out at the same loss).
     //
     /*
     Typically you can tell how good your system is by the ratio of the expectancy to the standard deviation.

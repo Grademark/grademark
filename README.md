@@ -45,12 +45,17 @@ Here's another chart, this one is a visualization of the drawdown for the exampl
 - Calculation of risk and rmultiples.
 - Intrabar profit target.
 - Intrabar trailing stop loss.
+- Plot a chart of trailing stop loss.
 - Conditional buy on price level (intrabar).
 - Parameters.
 - Optimization based on permutations of parameters.
 - Monte Carlo simulation.
 - Walk-forward backtesting.
-- Copmute and plot risk chart.
+- Plot a chart of risk over time.
+
+## Maybe coming later
+
+- Support for precise decimal numbers.
 
 ## Not coming soon
 
