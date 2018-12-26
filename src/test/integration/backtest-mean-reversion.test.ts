@@ -14,7 +14,7 @@ interface MyBar extends IBar {
     sma: number;
 }
 
-describe("mean reversion backtest", function (this: any) {
+describe("backtest mean reversion", function (this: any) {
 
     this.timeout(15000);
 
@@ -67,10 +67,10 @@ describe("mean reversion backtest", function (this: any) {
     it("basic strategy", function  (this: any) {
         const strategy = meanReversionStrategy();    
         const trades = backtest(strategy, inputSeries);
-        //const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
-        //checkArray(trades.toArray(), expectedTrades.toArray());
+        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
+        checkArray(trades.toArray(), expectedTrades.toArray());
 
-        output(this.test, trades);
+        //output(this.test, trades);
     });
 
     it("with stop loss", function  (this: any) {
