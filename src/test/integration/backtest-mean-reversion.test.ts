@@ -10,7 +10,7 @@ import { DataFrame } from 'data-forge';
 import { ISerializedDataFrame } from 'data-forge/build/lib/dataframe';
 import { checkArray } from './check-object';
 import { Stream } from 'stream';
-import { StopLossFn, ProfitTargetFn } from '../../lib/strategy';
+import { StopLossFn, ProfitTargetFn, EntryRuleFn } from '../../lib/strategy';
 
 interface MyBar extends IBar {
     sma: number;
@@ -50,6 +50,7 @@ describe("backtest mean reversion", function (this: any) {
     }
 
     interface IStrategyModifications {
+        entryRule?: EntryRuleFn<MyBar>;
         stopLoss?: StopLossFn<MyBar>;
         trailingStopLoss?: StopLossFn<MyBar>;
         profitTarget?: ProfitTargetFn<MyBar>;        
@@ -122,4 +123,17 @@ describe("backtest mean reversion", function (this: any) {
         //output(this.test, trades);
     });
 
+    it("with conditional buy", function  (this: any) {
+        const strategy = meanReversionStrategy({
+            entryRule: (enterPosition, curBar) => {
+                enterPosition(curBar.close + (curBar.close * (0.1/100)))
+            }
+        });
+    
+        const trades = backtest(strategy, inputSeries);
+        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
+        checkArray(trades.toArray(), expectedTrades.toArray());
+
+        //output(this.test, trades);
+    });
 });
