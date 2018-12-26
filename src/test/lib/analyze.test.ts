@@ -341,10 +341,22 @@ describe("analyze", () => {
         expect(round(analysis.percentProfitable)).to.eql(33.33);
     });
 
-    it("profit factor is computed", () => {
+    it("profit factor is computed with profits and losses", () => {
 
         const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
         expect(analysis.profitFactor).to.eql(0.8);
+    });
+
+    it("profit factor is computed with only a profit", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>([ aProfit ]));
+        expect(analysis.profitFactor).to.eql(undefined);
+    });
+
+    it("profit factor is computed with only a loss", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>([ aLoss ]));
+        expect(analysis.profitFactor).to.eql(0);
     });
 
     it("expectency is computed", () => {

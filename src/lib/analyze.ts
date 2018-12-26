@@ -63,6 +63,12 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
         systemQuality = expectency / rmultipleStdDev;
     }
 
+    let profitFactor: number | undefined = undefined;
+    const absTotalLosses = Math.abs(totalLosses);
+    if (absTotalLosses > 0) {
+        profitFactor = totalProfits / absTotalLosses    ;
+    }
+    
     const profit = workingCapital - startingCapital;
     const analysis: IAnalysis = {
         startingCapital: startingCapital,
@@ -78,7 +84,7 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
         expectency: expectency,
         rmultipleStdDev: rmultipleStdDev,
         systemQuality: systemQuality,
-        profitFactor: totalProfits / Math.abs(totalLosses),
+        profitFactor: profitFactor,
         percentProfitable: (winningTrades / totalTrades) * 100,
     };
 

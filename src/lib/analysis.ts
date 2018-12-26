@@ -85,8 +85,9 @@ export interface IAnalysis {
      * The ratio of wins to losses.
      * Values above 2 are outstanding.
      * Values above 3 are unheard of.
+     * Set to undefined if there are no losses.
      */
-    profitFactor: number;
+    profitFactor: number | undefined;
 
     /**
      * The percentage of trades that were winners.
