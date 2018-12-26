@@ -50,7 +50,8 @@
             11,
             12,
             13,
-            14
+            14,
+            15
         ]
     },
     "values": [
@@ -62,11 +63,11 @@
             "profit": 0.14000000000000057,
             "profitPct": 0.2599814298978655,
             "growth": 1.0025998142989787,
-            "riskPct": 5.008356545961008,
-            "rmultiple": 0.05190952910641469,
+            "riskPct": 3.0050139275766043,
+            "rmultiple": 0.08651588184402449,
             "holdingPeriod": 1,
             "exitReason": "exit-rule",
-            "stopPrice": 51.153
+            "stopPrice": 52.2318
         },
         {
             "entryTime": "2017-04-20T00:00:00.000+10:00",
@@ -76,11 +77,11 @@
             "profit": 0.5600000000000023,
             "profitPct": 1.0241404535479193,
             "growth": 1.0102414045354793,
-            "riskPct": 4.995427944403811,
-            "rmultiple": 0.2050155592165482,
+            "riskPct": 2.9972567666422814,
+            "rmultiple": 0.3416925986942476,
             "holdingPeriod": 1,
             "exitReason": "exit-rule",
-            "stopPrice": 51.948499999999996
+            "stopPrice": 53.0411
         },
         {
             "entryTime": "2017-05-08T00:00:00.000+10:00",
@@ -90,25 +91,39 @@
             "profit": 0.060000000000002274,
             "profitPct": 0.10828370330265705,
             "growth": 1.0010828370330265,
-            "riskPct": 4.983757444504599,
-            "rmultiple": 0.021727322107551083,
+            "riskPct": 2.990254466702762,
+            "rmultiple": 0.036212203512585105,
             "holdingPeriod": 2,
             "exitReason": "exit-rule",
-            "stopPrice": 52.6485
+            "stopPrice": 53.753099999999996
         },
         {
             "entryTime": "2017-05-15T00:00:00.000+10:00",
             "entryPrice": 54.6,
+            "exitTime": "2017-06-07T00:00:00.000+10:00",
+            "exitPrice": 53.4955,
+            "profit": -1.1045000000000016,
+            "profitPct": -2.0228937728937755,
+            "growth": 0.9797710622710623,
+            "riskPct": 3.017582417582412,
+            "rmultiple": -0.6703690216071884,
+            "holdingPeriod": 16,
+            "exitReason": "stop-loss",
+            "stopPrice": 52.952400000000004
+        },
+        {
+            "entryTime": "2017-06-09T00:00:00.000+10:00",
+            "entryPrice": 53.39,
             "exitTime": "2017-06-14T00:00:00.000+10:00",
             "exitPrice": 54.63,
-            "profit": 0.030000000000001137,
-            "profitPct": 0.054945054945057026,
-            "growth": 1.0005494505494505,
-            "riskPct": 5.029304029304034,
-            "rmultiple": 0.01092498179169742,
-            "holdingPeriod": 20,
+            "profit": 1.240000000000002,
+            "profitPct": 2.3225323094212436,
+            "growth": 1.0232253230942125,
+            "riskPct": 3.015171380408316,
+            "rmultiple": 0.7702820226115058,
+            "holdingPeriod": 1,
             "exitReason": "exit-rule",
-            "stopPrice": 51.854
+            "stopPrice": 51.7802
         },
         {
             "entryTime": "2017-06-16T00:00:00.000+10:00",
@@ -118,11 +133,11 @@
             "profit": 0.28999999999999915,
             "profitPct": 0.5319148936170197,
             "growth": 1.0053191489361701,
-            "riskPct": 4.999999999999998,
-            "rmultiple": 0.10638297872340398,
+            "riskPct": 2.999999999999994,
+            "rmultiple": 0.17730496453900693,
             "holdingPeriod": 1,
             "exitReason": "exit-rule",
-            "stopPrice": 51.794000000000004
+            "stopPrice": 52.88440000000001
         },
         {
             "entryTime": "2017-06-22T00:00:00.000+10:00",
@@ -132,11 +147,11 @@
             "profit": 0.5700000000000003,
             "profitPct": 1.0626398210290833,
             "growth": 1.0106263982102908,
-            "riskPct": 5.027964205816559,
-            "rmultiple": 0.21134593993325906,
+            "riskPct": 3.016778523489936,
+            "rmultiple": 0.35224323322209844,
             "holdingPeriod": 4,
             "exitReason": "exit-rule",
-            "stopPrice": 50.943
+            "stopPrice": 52.0218
         },
         {
             "entryTime": "2017-07-03T00:00:00.000+10:00",
@@ -146,11 +161,11 @@
             "profit": 0.6400000000000006,
             "profitPct": 1.1953679491968632,
             "growth": 1.0119536794919686,
-            "riskPct": 4.971049682480382,
-            "rmultiple": 0.2404659026864555,
+            "riskPct": 2.9826298094882295,
+            "rmultiple": 0.40077650447742585,
             "holdingPeriod": 1,
             "exitReason": "exit-rule",
-            "stopPrice": 50.8785
+            "stopPrice": 51.9431
         },
         {
             "entryTime": "2017-07-07T00:00:00.000+10:00",
@@ -160,11 +175,11 @@
             "profit": 0.6899999999999977,
             "profitPct": 1.290684624017953,
             "growth": 1.0129068462401796,
-            "riskPct": 4.993453049008603,
-            "rmultiple": 0.2584753699194598,
+            "riskPct": 2.9960718294051647,
+            "rmultiple": 0.4307922831990993,
             "holdingPeriod": 13,
             "exitReason": "exit-rule",
-            "stopPrice": 50.7905
+            "stopPrice": 51.8583
         },
         {
             "entryTime": "2017-07-31T00:00:00.000+10:00",
@@ -174,11 +189,11 @@
             "profit": 0.75,
             "profitPct": 1.4031805425631432,
             "growth": 1.0140318054256314,
-            "riskPct": 5.012160898035551,
-            "rmultiple": 0.27995520716685307,
+            "riskPct": 3.0072965388213255,
+            "rmultiple": 0.46659201194475597,
             "holdingPeriod": 1,
             "exitReason": "exit-rule",
-            "stopPrice": 50.771
+            "stopPrice": 51.842600000000004
         },
         {
             "entryTime": "2017-08-04T00:00:00.000+10:00",
@@ -188,11 +203,11 @@
             "profit": 0.7000000000000028,
             "profitPct": 1.3084112149532763,
             "growth": 1.0130841121495329,
-            "riskPct": 5.009345794392523,
-            "rmultiple": 0.26119402985074736,
+            "riskPct": 3.0056074766355083,
+            "rmultiple": 0.4353233830845797,
             "holdingPeriod": 1,
             "exitReason": "exit-rule",
-            "stopPrice": 50.82
+            "stopPrice": 51.892
         },
         {
             "entryTime": "2017-08-14T00:00:00.000+10:00",
@@ -202,11 +217,11 @@
             "profit": 0.3299999999999983,
             "profitPct": 0.6148686416992701,
             "growth": 1.0061486864169926,
-            "riskPct": 5.005589714924543,
-            "rmultiple": 0.12283640424343868,
+            "riskPct": 3.0033538289547206,
+            "rmultiple": 0.20472734040573148,
             "holdingPeriod": 1,
             "exitReason": "exit-rule",
-            "stopPrice": 50.9835
+            "stopPrice": 52.0581
         },
         {
             "entryTime": "2017-08-29T00:00:00.000+10:00",
@@ -216,11 +231,11 @@
             "profit": 0.46000000000000085,
             "profitPct": 0.857888847444985,
             "growth": 1.0085788884744498,
-            "riskPct": 4.9841477060798205,
-            "rmultiple": 0.1721234798877459,
+            "riskPct": 2.9904886236478867,
+            "rmultiple": 0.28687246647957704,
             "holdingPeriod": 2,
             "exitReason": "exit-rule",
-            "stopPrice": 50.9475
+            "stopPrice": 52.0165
         },
         {
             "entryTime": "2017-09-05T00:00:00.000+10:00",
@@ -230,11 +245,11 @@
             "profit": 0.44999999999999574,
             "profitPct": 0.8334876829042336,
             "growth": 1.0083348768290423,
-            "riskPct": 4.989812928320063,
-            "rmultiple": 0.16703786191536574,
+            "riskPct": 2.993887756992033,
+            "rmultiple": 0.2783964365256101,
             "holdingPeriod": 4,
             "exitReason": "exit-rule",
-            "stopPrice": 51.296
+            "stopPrice": 52.3736
         },
         {
             "entryTime": "2017-09-22T00:00:00.000+10:00",
@@ -244,11 +259,11 @@
             "profit": 0.020000000000003126,
             "profitPct": 0.037126415444594635,
             "growth": 1.000371264154446,
-            "riskPct": 5.0074252830889145,
-            "rmultiple": 0.0074142724745146025,
+            "riskPct": 3.004455169853346,
+            "rmultiple": 0.012357120790857682,
             "holdingPeriod": 13,
             "exitReason": "exit-rule",
-            "stopPrice": 51.1725
+            "stopPrice": 52.2515
         },
         {
             "entryTime": "2017-12-07T00:00:00.000+10:00",
@@ -258,11 +273,11 @@
             "profit": 0.5600000000000023,
             "profitPct": 1.0007147962830634,
             "growth": 1.0100071479628305,
-            "riskPct": 5.0259113652609,
-            "rmultiple": 0.19911111111111193,
+            "riskPct": 3.0155468191565404,
+            "rmultiple": 0.3318518518518532,
             "holdingPeriod": 1,
             "exitReason": "exit-rule",
-            "stopPrice": 53.1475
+            "stopPrice": 54.2725
         }
     ]
 }

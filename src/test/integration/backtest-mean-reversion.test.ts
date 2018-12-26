@@ -72,7 +72,7 @@ describe("backtest mean reversion", function (this: any) {
 
     it("with stop loss", function  (this: any) {
         const strategy = meanReversionStrategy({
-            stopLoss: entryPrice => entryPrice * (5/100),
+            stopLoss: entryPrice => entryPrice * (1.5/100),
         });
 
         const trades = backtest(strategy, inputSeries);
@@ -81,7 +81,7 @@ describe("backtest mean reversion", function (this: any) {
 
     it("with trailing stop", function  (this: any) {
         const strategy = meanReversionStrategy({
-            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (5/100),
+            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (3/100),
         });
     
         const trades = backtest(strategy, inputSeries);
@@ -90,7 +90,7 @@ describe("backtest mean reversion", function (this: any) {
 
     it("with profit target", function  (this: any) {
         const strategy = meanReversionStrategy({
-            profitTarget: entryPrice => entryPrice * (5/100),
+            profitTarget: entryPrice => entryPrice * (1/100),
         });
     
         const trades = backtest(strategy, inputSeries);
