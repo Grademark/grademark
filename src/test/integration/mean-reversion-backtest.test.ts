@@ -101,4 +101,31 @@ describe("mean reversion backtest", function (this: any) {
         //output(this.test, trades);
     });
 
+    it("with profit target", function  (this: any) {
+        const strategy: IStrategy<MyBar> = {
+            entryRule: (enterPosition, bar, lookback) => {
+                if (bar.close < bar.sma) {
+                    enterPosition();
+                }
+            },
+    
+            exitRule: (exitPosition, position, bar, lookback) => {
+                if (bar.close > bar.sma) {
+                    exitPosition();
+                }
+            },
+    
+            profitTarget: (entryPrice, latestBar, lookback) => {
+                return entryPrice * (5/100);
+            },
+        };
+
+    
+        const trades = backtest(strategy, inputSeries);
+        const expectedTrades = loadExpectedInput<number, ITrade>(this.test);
+        checkArray(trades.toArray(), expectedTrades.toArray());
+
+        //output(this.test, trades);
+    });
+
 });
