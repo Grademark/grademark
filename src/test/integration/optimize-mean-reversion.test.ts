@@ -14,7 +14,7 @@ interface MyBar extends IBar {
 
 describe("optimize mean reversion", function (this: any) {
     
-    this.timeout(5000);
+    this.timeout(50000);
 
     let inputSeries = dataForge.readFileSync(path.join(__dirname, "data/STW-short.csv"))
         .parseCSV()
