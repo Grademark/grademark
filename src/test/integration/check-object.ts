@@ -4,7 +4,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { IDataFrame } from 'data-forge';
 import { ISerializedDataFrame } from 'data-forge/build/lib/dataframe';
-import { ITrade } from '../..';
 import { DataFrame } from 'data-forge';
 import 'data-forge-fs';
 
@@ -13,6 +12,32 @@ import 'data-forge-fs';
 // Output testing tools.
 // Need to make this file independent of chai.
 //
+
+export function transformDataFrames(obj: any): any {
+    if (Sugar.Object.isArray(obj)) {
+        return obj.map(el => transformDataFrames(el));
+    } 
+    else if (typeof obj === "object") {
+        if (typeof obj.getTypeCode === "function") {
+            if (obj.getTypeCode() === "dataframe") {
+                return transformDataFrames(obj.serialize());
+            }
+            else if (obj.getTypeCode() === "series") {
+                return transformDataFrames(obj.toPairs()); //todo: would be good to be able to serialize a series!
+            }
+        }
+
+        //todo: Must be a nice way to do this with ramda!
+        const clone = Object.assign({}, obj);
+        for (const key of Object.keys(clone)) {
+            clone[key] = transformDataFrames(clone[key]);
+        }
+        return clone;
+    }
+    else {
+        return obj;
+    }
+}
 
 export function writeDataFrame(filePath: string, dataFrame: IDataFrame<any, any>): void {
     const serializedDataFrame = dataFrame.serialize();
@@ -27,33 +52,35 @@ export function readDataFrame<IndexT = any, ValueT = any>(filePath: string): IDa
 }
 
 export function checkArrayExpectations<T>(array: T[], test: any) {
+    const transformed = transformDataFrames(array); 
     const filePath = path.join(__dirname, "output", test.fullTitle() + ".json");
     if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify(array, null, 4));
+        fs.writeFileSync(filePath, JSON.stringify(transformed, null, 4));
     }
 
     const expectedArray = JSON.parse(fs.readFileSync(filePath, "utf8"));;
-    checkArray(array, expectedArray);
+    checkArray(transformed, expectedArray);
 }
 
-export function checkDataFrameExpectations(trades: IDataFrame<number, ITrade>, test: any) {
+export function checkDataFrameExpectations<ValueT>(trades: IDataFrame<number, ValueT>, test: any) {
     const filePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
     if (!fs.existsSync(filePath)) {
         writeDataFrame(filePath, trades);
     }
 
-    const expectedTrades = readDataFrame<number, ITrade>(filePath);
+    const expectedTrades = readDataFrame<number, ValueT>(filePath);
     checkArray(trades.toArray(), expectedTrades.toArray());
 }
 
 export function checkObjectExpectations(obj: any, test: any) {
+    const transformed = transformDataFrames(obj); 
     const filePath = path.join(__dirname, "output", test.fullTitle() + ".json");
     if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify(obj, null, 4));
+        fs.writeFileSync(filePath, JSON.stringify(transformed, null, 4));
     }
 
     const expectedObj = JSON.parse(fs.readFileSync(filePath, "utf8"));;
-    checkObject(obj, expectedObj);
+    checkObject(transformed, expectedObj);
 }
 
 //

@@ -90,9 +90,9 @@ export interface IBacktestOptions {
 /**
  * Backtest a trading strategy against a data series and generate a sequence of trades.
  */
-export function backtest<BarT extends IBar = IBar, IndexT = number>(
-    strategy: IStrategy<BarT>, 
-    inputSeries: IDataFrame<IndexT, BarT>,
+export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParametersT, IndexT>(
+    strategy: IStrategy<InputBarT, IndicatorBarT, ParametersT, IndexT>, 
+    inputSeries: IDataFrame<IndexT, InputBarT>,
     options?: IBacktestOptions): 
         IDataFrame<number, ITrade> {
 
@@ -107,6 +107,18 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
     const lookbackPeriod = strategy.lookbackPeriod || 1;
     if (inputSeries.count() < lookbackPeriod) {
         throw new Error("You have less input data than your lookback period, the size of your input data should be some multiple of your lookback period.");
+    }
+
+    let indicatorsSeries: IDataFrame<IndexT, IndicatorBarT>;
+
+    //
+    // Prepare indicators.
+    //
+    if (strategy.prepIndicators) {
+        indicatorsSeries = strategy.prepIndicators(strategy.parameters || {} as ParametersT, inputSeries)
+    }
+    else {
+        indicatorsSeries = inputSeries as IDataFrame<IndexT, IndicatorBarT>;
     }
 
     //
@@ -156,7 +168,7 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
     //
     // Close the current open position.
     //
-    function closePosition(bar: BarT, exitPrice: number, exitReason: string) {
+    function closePosition(bar: InputBarT, exitPrice: number, exitReason: string) {
         const trade = finalizePosition(openPosition!, bar.time, exitPrice, exitReason);
         completedTrades.push(trade!);
         // Reset to no open position;
@@ -164,7 +176,7 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
         positionStatus = PositionStatus.None;
     }
 
-    for (const bar of inputSeries) {
+    for (const bar of indicatorsSeries) {
         lookbackBuffer.push(bar);
 
         if (lookbackBuffer.length < lookbackPeriod) {
@@ -173,7 +185,7 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
 
         switch (+positionStatus) { //TODO: + is a work around for TS switch stmt with enum.
             case PositionStatus.None:
-                strategy.entryRule(enterPosition, bar, new DataFrame<number, BarT>(lookbackBuffer.data), );
+                strategy.entryRule(enterPosition, bar, new DataFrame<number, IndicatorBarT>(lookbackBuffer.data), );
                 break;
 
             case PositionStatus.Enter:
@@ -198,13 +210,13 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                 };
 
                 if (strategy.stopLoss) {
-                    const initialStopDistance = strategy.stopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    const initialStopDistance = strategy.stopLoss(entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data));
                     openPosition.initialStopPrice = entryPrice - initialStopDistance;
                     openPosition.curStopPrice = openPosition.initialStopPrice;
                 }
 
                 if (strategy.trailingStopLoss) {
-                    const trailingStopDistance = strategy.trailingStopLoss(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    const trailingStopDistance = strategy.trailingStopLoss(entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data));
                     const trailingStopPrice = entryPrice - trailingStopDistance;
                     if (openPosition.initialStopPrice === undefined) {
                         openPosition.initialStopPrice = trailingStopPrice;
@@ -242,7 +254,7 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                 }
 
                 if (strategy.profitTarget) {
-                    openPosition.profitTarget = entryPrice + strategy.profitTarget(entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    openPosition.profitTarget = entryPrice + strategy.profitTarget(entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data));
                 }
 
                 positionStatus = PositionStatus.Position;
@@ -263,7 +275,7 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                     //
                     // Revaluate trailing stop loss.
                     //
-                    const trailingStopDistance = strategy.trailingStopLoss!(openPosition!.entryPrice, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    const trailingStopDistance = strategy.trailingStopLoss!(openPosition!.entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data));
                     const newTrailingStopPrice = bar.close - trailingStopDistance;
                     if (newTrailingStopPrice > openPosition!.curStopPrice!) {
                         openPosition!.curStopPrice = newTrailingStopPrice;
@@ -295,7 +307,7 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
                 }
 
                 if (strategy.exitRule) {
-                    strategy.exitRule(exitPosition, openPosition!, bar, new DataFrame<number, BarT>(lookbackBuffer.data));
+                    strategy.exitRule(exitPosition, openPosition!, bar, new DataFrame<number, IndicatorBarT>(lookbackBuffer.data));
                 }
 
                 break;
@@ -313,7 +325,7 @@ export function backtest<BarT extends IBar = IBar, IndexT = number>(
 
     if (openPosition) {
         // Finalize open position.
-        const lastBar = inputSeries.last();
+        const lastBar = indicatorsSeries.last();
         const lastTrade = finalizePosition(openPosition, lastBar.time, lastBar.close, "finalize");
         completedTrades.push(lastTrade);
     }

@@ -1,0 +1,1048 @@
+{
+    "bestIterationResult": {
+        "iterationIndex": 0,
+        "parameterValue": 5,
+        "performanceMetric": 0.654892119305041,
+        "trades": {
+            "columnOrder": [
+                "entryTime",
+                "entryPrice",
+                "exitTime",
+                "exitPrice",
+                "profit",
+                "profitPct",
+                "growth",
+                "riskPct",
+                "riskSeries",
+                "rmultiple",
+                "holdingPeriod",
+                "exitReason",
+                "stopPrice",
+                "stopPriceSeries",
+                "profitTarget"
+            ],
+            "columns": {
+                "entryTime": "date",
+                "entryPrice": "number",
+                "exitTime": "date",
+                "exitPrice": "number",
+                "profit": "number",
+                "profitPct": "number",
+                "growth": "number",
+                "riskPct": "unsupported",
+                "riskSeries": "unsupported",
+                "rmultiple": "unsupported",
+                "holdingPeriod": "number",
+                "exitReason": "string",
+                "stopPrice": "unsupported",
+                "stopPriceSeries": "unsupported",
+                "profitTarget": "unsupported"
+            },
+            "index": {
+                "type": "number",
+                "values": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ]
+            },
+            "values": [
+                {
+                    "entryTime": "2017-10-24T00:00:00.000+10:00",
+                    "entryPrice": 55.07,
+                    "exitTime": "2017-10-26T00:00:00.000+10:00",
+                    "exitPrice": 55.12,
+                    "profit": 0.04999999999999716,
+                    "profitPct": 0.09079353550026723,
+                    "growth": 1.0009079353550028,
+                    "holdingPeriod": 1,
+                    "exitReason": "exit-rule"
+                },
+                {
+                    "entryTime": "2017-10-30T00:00:00.000+10:00",
+                    "entryPrice": 55.4,
+                    "exitTime": "2017-11-01T00:00:00.000+10:00",
+                    "exitPrice": 55.38,
+                    "profit": -0.01999999999999602,
+                    "profitPct": -0.03610108303248379,
+                    "growth": 0.9996389891696752,
+                    "holdingPeriod": 1,
+                    "exitReason": "exit-rule"
+                },
+                {
+                    "entryTime": "2017-11-15T00:00:00.000+10:00",
+                    "entryPrice": 55.88,
+                    "exitTime": "2017-11-22T00:00:00.000+10:00",
+                    "exitPrice": 56.32,
+                    "profit": 0.4399999999999977,
+                    "profitPct": 0.7874015748031454,
+                    "growth": 1.0078740157480315,
+                    "holdingPeriod": 4,
+                    "exitReason": "exit-rule"
+                },
+                {
+                    "entryTime": "2017-11-29T00:00:00.000+10:00",
+                    "entryPrice": 56.57,
+                    "exitTime": "2017-12-04T00:00:00.000+10:00",
+                    "exitPrice": 56.34,
+                    "profit": -0.22999999999999687,
+                    "profitPct": -0.4065759236344297,
+                    "growth": 0.9959342407636557,
+                    "holdingPeriod": 2,
+                    "exitReason": "exit-rule"
+                },
+                {
+                    "entryTime": "2017-12-06T00:00:00.000+10:00",
+                    "entryPrice": 55.89,
+                    "exitTime": "2017-12-08T00:00:00.000+10:00",
+                    "exitPrice": 56.3,
+                    "profit": 0.4099999999999966,
+                    "profitPct": 0.7335838253712589,
+                    "growth": 1.0073358382537125,
+                    "holdingPeriod": 1,
+                    "exitReason": "exit-rule"
+                },
+                {
+                    "entryTime": "2017-12-18T00:00:00.000+10:00",
+                    "entryPrice": 56.65,
+                    "exitTime": "2017-12-20T00:00:00.000+10:00",
+                    "exitPrice": 56.9,
+                    "profit": 0.25,
+                    "profitPct": 0.441306266548985,
+                    "growth": 1.00441306266549,
+                    "holdingPeriod": 1,
+                    "exitReason": "exit-rule"
+                },
+                {
+                    "entryTime": "2017-12-28T00:00:00.000+10:00",
+                    "entryPrice": 57.11,
+                    "exitTime": "2017-12-29T00:00:00.000+10:00",
+                    "exitPrice": 56.57,
+                    "profit": -0.5399999999999991,
+                    "profitPct": -0.9455436876203802,
+                    "growth": 0.9905445631237962,
+                    "holdingPeriod": 1,
+                    "exitReason": "finalize"
+                }
+            ]
+        }
+    },
+    "iterationResults": [
+        {
+            "iterationIndex": 0,
+            "parameterValue": 5,
+            "performanceMetric": 0.654892119305041,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-10-24T00:00:00.000+10:00",
+                        "entryPrice": 55.07,
+                        "exitTime": "2017-10-26T00:00:00.000+10:00",
+                        "exitPrice": 55.12,
+                        "profit": 0.04999999999999716,
+                        "profitPct": 0.09079353550026723,
+                        "growth": 1.0009079353550028,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-10-30T00:00:00.000+10:00",
+                        "entryPrice": 55.4,
+                        "exitTime": "2017-11-01T00:00:00.000+10:00",
+                        "exitPrice": 55.38,
+                        "profit": -0.01999999999999602,
+                        "profitPct": -0.03610108303248379,
+                        "growth": 0.9996389891696752,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-11-15T00:00:00.000+10:00",
+                        "entryPrice": 55.88,
+                        "exitTime": "2017-11-22T00:00:00.000+10:00",
+                        "exitPrice": 56.32,
+                        "profit": 0.4399999999999977,
+                        "profitPct": 0.7874015748031454,
+                        "growth": 1.0078740157480315,
+                        "holdingPeriod": 4,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-11-29T00:00:00.000+10:00",
+                        "entryPrice": 56.57,
+                        "exitTime": "2017-12-04T00:00:00.000+10:00",
+                        "exitPrice": 56.34,
+                        "profit": -0.22999999999999687,
+                        "profitPct": -0.4065759236344297,
+                        "growth": 0.9959342407636557,
+                        "holdingPeriod": 2,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-06T00:00:00.000+10:00",
+                        "entryPrice": 55.89,
+                        "exitTime": "2017-12-08T00:00:00.000+10:00",
+                        "exitPrice": 56.3,
+                        "profit": 0.4099999999999966,
+                        "profitPct": 0.7335838253712589,
+                        "growth": 1.0073358382537125,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-18T00:00:00.000+10:00",
+                        "entryPrice": 56.65,
+                        "exitTime": "2017-12-20T00:00:00.000+10:00",
+                        "exitPrice": 56.9,
+                        "profit": 0.25,
+                        "profitPct": 0.441306266548985,
+                        "growth": 1.00441306266549,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-28T00:00:00.000+10:00",
+                        "entryPrice": 57.11,
+                        "exitTime": "2017-12-29T00:00:00.000+10:00",
+                        "exitPrice": 56.57,
+                        "profit": -0.5399999999999991,
+                        "profitPct": -0.9455436876203802,
+                        "growth": 0.9905445631237962,
+                        "holdingPeriod": 1,
+                        "exitReason": "finalize"
+                    }
+                ]
+            }
+        },
+        {
+            "iterationIndex": 1,
+            "parameterValue": 7,
+            "performanceMetric": 0.750830314965242,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-11-15T00:00:00.000+10:00",
+                        "entryPrice": 55.88,
+                        "exitTime": "2017-11-22T00:00:00.000+10:00",
+                        "exitPrice": 56.32,
+                        "profit": 0.4399999999999977,
+                        "profitPct": 0.7874015748031454,
+                        "growth": 1.0078740157480315,
+                        "holdingPeriod": 4,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-01T00:00:00.000+10:00",
+                        "entryPrice": 56.33,
+                        "exitTime": "2017-12-08T00:00:00.000+10:00",
+                        "exitPrice": 56.3,
+                        "profit": -0.030000000000001137,
+                        "profitPct": -0.05325758920646394,
+                        "growth": 0.9994674241079353,
+                        "holdingPeriod": 4,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-18T00:00:00.000+10:00",
+                        "entryPrice": 56.65,
+                        "exitTime": "2017-12-20T00:00:00.000+10:00",
+                        "exitPrice": 56.9,
+                        "profit": 0.25,
+                        "profitPct": 0.441306266548985,
+                        "growth": 1.00441306266549,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-29T00:00:00.000+10:00",
+                        "entryPrice": 56.81,
+                        "exitTime": "2017-12-29T00:00:00.000+10:00",
+                        "exitPrice": 56.57,
+                        "profit": -0.240000000000002,
+                        "profitPct": -0.4224608343601513,
+                        "growth": 0.9957753916563985,
+                        "holdingPeriod": 0,
+                        "exitReason": "finalize"
+                    }
+                ]
+            }
+        },
+        {
+            "iterationIndex": 2,
+            "parameterValue": 9,
+            "performanceMetric": 0.1656809132842318,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-11-15T00:00:00.000+10:00",
+                        "entryPrice": 55.88,
+                        "exitTime": "2017-11-23T00:00:00.000+10:00",
+                        "exitPrice": 56.24,
+                        "profit": 0.35999999999999943,
+                        "profitPct": 0.6442376521116667,
+                        "growth": 1.0064423765211166,
+                        "holdingPeriod": 5,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-01T00:00:00.000+10:00",
+                        "entryPrice": 56.33,
+                        "exitTime": "2017-12-08T00:00:00.000+10:00",
+                        "exitPrice": 56.3,
+                        "profit": -0.030000000000001137,
+                        "profitPct": -0.05325758920646394,
+                        "growth": 0.9994674241079353,
+                        "holdingPeriod": 4,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-29T00:00:00.000+10:00",
+                        "entryPrice": 56.81,
+                        "exitTime": "2017-12-29T00:00:00.000+10:00",
+                        "exitPrice": 56.57,
+                        "profit": -0.240000000000002,
+                        "profitPct": -0.4224608343601513,
+                        "growth": 0.9957753916563985,
+                        "holdingPeriod": 0,
+                        "exitReason": "finalize"
+                    }
+                ]
+            }
+        },
+        {
+            "iterationIndex": 3,
+            "parameterValue": 11,
+            "performanceMetric": 1.310216528573528,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-11-16T00:00:00.000+10:00",
+                        "entryPrice": 55.68,
+                        "exitTime": "2017-11-23T00:00:00.000+10:00",
+                        "exitPrice": 56.24,
+                        "profit": 0.5600000000000023,
+                        "profitPct": 1.0057471264367857,
+                        "growth": 1.010057471264368,
+                        "holdingPeriod": 4,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-01T00:00:00.000+10:00",
+                        "entryPrice": 56.33,
+                        "exitTime": "2017-12-05T00:00:00.000+10:00",
+                        "exitPrice": 55.94,
+                        "profit": -0.39000000000000057,
+                        "profitPct": -0.692348659684006,
+                        "growth": 0.9930765134031599,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-07T00:00:00.000+10:00",
+                        "entryPrice": 55.96,
+                        "exitTime": "2017-12-11T00:00:00.000+10:00",
+                        "exitPrice": 56.52,
+                        "profit": 0.5600000000000023,
+                        "profitPct": 1.0007147962830634,
+                        "growth": 1.0100071479628305,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    }
+                ]
+            }
+        },
+        {
+            "iterationIndex": 4,
+            "parameterValue": 13,
+            "performanceMetric": 1.310216528573528,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-11-16T00:00:00.000+10:00",
+                        "entryPrice": 55.68,
+                        "exitTime": "2017-11-23T00:00:00.000+10:00",
+                        "exitPrice": 56.24,
+                        "profit": 0.5600000000000023,
+                        "profitPct": 1.0057471264367857,
+                        "growth": 1.010057471264368,
+                        "holdingPeriod": 4,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-01T00:00:00.000+10:00",
+                        "entryPrice": 56.33,
+                        "exitTime": "2017-12-05T00:00:00.000+10:00",
+                        "exitPrice": 55.94,
+                        "profit": -0.39000000000000057,
+                        "profitPct": -0.692348659684006,
+                        "growth": 0.9930765134031599,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-07T00:00:00.000+10:00",
+                        "entryPrice": 55.96,
+                        "exitTime": "2017-12-11T00:00:00.000+10:00",
+                        "exitPrice": 56.52,
+                        "profit": 0.5600000000000023,
+                        "profitPct": 1.0007147962830634,
+                        "growth": 1.0100071479628305,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    }
+                ]
+            }
+        },
+        {
+            "iterationIndex": 5,
+            "parameterValue": 15,
+            "performanceMetric": 0.391507239285238,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-11-16T00:00:00.000+10:00",
+                        "entryPrice": 55.68,
+                        "exitTime": "2017-11-20T00:00:00.000+10:00",
+                        "exitPrice": 55.73,
+                        "profit": 0.04999999999999716,
+                        "profitPct": 0.08979885057470753,
+                        "growth": 1.0008979885057472,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-01T00:00:00.000+10:00",
+                        "entryPrice": 56.33,
+                        "exitTime": "2017-12-05T00:00:00.000+10:00",
+                        "exitPrice": 55.94,
+                        "profit": -0.39000000000000057,
+                        "profitPct": -0.692348659684006,
+                        "growth": 0.9930765134031599,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-07T00:00:00.000+10:00",
+                        "entryPrice": 55.96,
+                        "exitTime": "2017-12-11T00:00:00.000+10:00",
+                        "exitPrice": 56.52,
+                        "profit": 0.5600000000000023,
+                        "profitPct": 1.0007147962830634,
+                        "growth": 1.0100071479628305,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    }
+                ]
+            }
+        },
+        {
+            "iterationIndex": 6,
+            "parameterValue": 17,
+            "performanceMetric": 0.6055440754587834,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-11-21T00:00:00.000+10:00",
+                        "entryPrice": 56.07,
+                        "exitTime": "2017-11-23T00:00:00.000+10:00",
+                        "exitPrice": 56.24,
+                        "profit": 0.1700000000000017,
+                        "profitPct": 0.3031924380239017,
+                        "growth": 1.003031924380239,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-01T00:00:00.000+10:00",
+                        "entryPrice": 56.33,
+                        "exitTime": "2017-12-05T00:00:00.000+10:00",
+                        "exitPrice": 55.94,
+                        "profit": -0.39000000000000057,
+                        "profitPct": -0.692348659684006,
+                        "growth": 0.9930765134031599,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-07T00:00:00.000+10:00",
+                        "entryPrice": 55.96,
+                        "exitTime": "2017-12-11T00:00:00.000+10:00",
+                        "exitPrice": 56.52,
+                        "profit": 0.5600000000000023,
+                        "profitPct": 1.0007147962830634,
+                        "growth": 1.0100071479628305,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    }
+                ]
+            }
+        },
+        {
+            "iterationIndex": 7,
+            "parameterValue": 19,
+            "performanceMetric": 0.3014377011197211,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0,
+                        1
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-12-01T00:00:00.000+10:00",
+                        "entryPrice": 56.33,
+                        "exitTime": "2017-12-05T00:00:00.000+10:00",
+                        "exitPrice": 55.94,
+                        "profit": -0.39000000000000057,
+                        "profitPct": -0.692348659684006,
+                        "growth": 0.9930765134031599,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-07T00:00:00.000+10:00",
+                        "entryPrice": 55.96,
+                        "exitTime": "2017-12-11T00:00:00.000+10:00",
+                        "exitPrice": 56.52,
+                        "profit": 0.5600000000000023,
+                        "profitPct": 1.0007147962830634,
+                        "growth": 1.0100071479628305,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    }
+                ]
+            }
+        },
+        {
+            "iterationIndex": 8,
+            "parameterValue": 21,
+            "performanceMetric": 0.3014377011197211,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0,
+                        1
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-12-01T00:00:00.000+10:00",
+                        "entryPrice": 56.33,
+                        "exitTime": "2017-12-05T00:00:00.000+10:00",
+                        "exitPrice": 55.94,
+                        "profit": -0.39000000000000057,
+                        "profitPct": -0.692348659684006,
+                        "growth": 0.9930765134031599,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    },
+                    {
+                        "entryTime": "2017-12-07T00:00:00.000+10:00",
+                        "entryPrice": 55.96,
+                        "exitTime": "2017-12-11T00:00:00.000+10:00",
+                        "exitPrice": 56.52,
+                        "profit": 0.5600000000000023,
+                        "profitPct": 1.0007147962830634,
+                        "growth": 1.0100071479628305,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    }
+                ]
+            }
+        },
+        {
+            "iterationIndex": 9,
+            "parameterValue": 23,
+            "performanceMetric": 0.7335838253712609,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-12-06T00:00:00.000+10:00",
+                        "entryPrice": 55.89,
+                        "exitTime": "2017-12-08T00:00:00.000+10:00",
+                        "exitPrice": 56.3,
+                        "profit": 0.4099999999999966,
+                        "profitPct": 0.7335838253712589,
+                        "growth": 1.0073358382537125,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    }
+                ]
+            }
+        },
+        {
+            "iterationIndex": 10,
+            "parameterValue": 25,
+            "performanceMetric": 0.7335838253712609,
+            "trades": {
+                "columnOrder": [
+                    "entryTime",
+                    "entryPrice",
+                    "exitTime",
+                    "exitPrice",
+                    "profit",
+                    "profitPct",
+                    "growth",
+                    "riskPct",
+                    "riskSeries",
+                    "rmultiple",
+                    "holdingPeriod",
+                    "exitReason",
+                    "stopPrice",
+                    "stopPriceSeries",
+                    "profitTarget"
+                ],
+                "columns": {
+                    "entryTime": "date",
+                    "entryPrice": "number",
+                    "exitTime": "date",
+                    "exitPrice": "number",
+                    "profit": "number",
+                    "profitPct": "number",
+                    "growth": "number",
+                    "riskPct": "unsupported",
+                    "riskSeries": "unsupported",
+                    "rmultiple": "unsupported",
+                    "holdingPeriod": "number",
+                    "exitReason": "string",
+                    "stopPrice": "unsupported",
+                    "stopPriceSeries": "unsupported",
+                    "profitTarget": "unsupported"
+                },
+                "index": {
+                    "type": "number",
+                    "values": [
+                        0
+                    ]
+                },
+                "values": [
+                    {
+                        "entryTime": "2017-12-06T00:00:00.000+10:00",
+                        "entryPrice": 55.89,
+                        "exitTime": "2017-12-08T00:00:00.000+10:00",
+                        "exitPrice": 56.3,
+                        "profit": 0.4099999999999966,
+                        "profitPct": 0.7335838253712589,
+                        "growth": 1.0073358382537125,
+                        "holdingPeriod": 1,
+                        "exitReason": "exit-rule"
+                    }
+                ]
+            }
+        }
+    ]
+}

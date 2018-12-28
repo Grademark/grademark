@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import * as dataForge from 'data-forge';
-import * as path from 'path';
 import 'data-forge-indicators';
+import * as path from 'path';
 import { IStrategy, backtest, IBar, ITrade } from '../..';
 import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
@@ -16,7 +16,7 @@ interface MyBar extends IBar {
 
 describe("backtest mean reversion", function (this: any) {
     
-    this.timeout(15000);
+    this.timeout(25000);
 
     let inputSeries = dataForge.readFileSync(path.join(__dirname, "data/STW.csv"))
         .parseCSV()
@@ -32,7 +32,6 @@ describe("backtest mean reversion", function (this: any) {
     inputSeries = inputSeries
         .withSeries("sma", movingAverage)   // Integrate moving average into data, indexed on date.
         .skip(30)                           // Skip blank sma entries.
-
 
     interface IStrategyModifications {
         entryRule?: EntryRuleFn<MyBar>;
