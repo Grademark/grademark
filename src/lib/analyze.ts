@@ -75,11 +75,12 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
     }
     
     const profit = workingCapital - startingCapital;
+    const profitPct = (profit / startingCapital) * 100;
     const analysis: IAnalysis = {
         startingCapital: startingCapital,
         finalCapital: workingCapital,
         profit: profit,
-        profitPct: (profit / startingCapital) * 100,
+        profitPct: profitPct,
         growth: workingCapital / startingCapital,
         totalTrades: totalTrades,
         barCount: barCount,
@@ -91,6 +92,7 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
         systemQuality: systemQuality,
         profitFactor: profitFactor,
         percentProfitable: (winningTrades / totalTrades) * 100,
+        returnOnAccount: profitPct / Math.abs(maxDrawdownPct),
     };
 
     return analysis;

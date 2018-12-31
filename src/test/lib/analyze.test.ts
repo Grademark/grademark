@@ -281,7 +281,7 @@ describe("analyze", () => {
         expect(analysis.maxDrawdownPct).to.eql(-50);
     });
 
-    const threeSampleTradesWithProfitsAndLoss: ITrade[] = [
+    const threeSampleTradesEndingInALoss: ITrade[] = [
         {
             entryTime: makeDate("2018/10/25"),
             entryPrice: 20,
@@ -323,27 +323,69 @@ describe("analyze", () => {
         },
     ];
 
+    const threeSampleTradesEndingInAProfit: ITrade[] = [
+        {
+            entryTime: makeDate("2018/10/25"),
+            entryPrice: 20,
+            exitTime: makeDate("2018/10/30"),
+            exitPrice: 10,
+            profit: 10,
+            profitPct: 100,
+            growth: 2,
+            riskPct: 50,
+            rmultiple: -1,
+            holdingPeriod: 5,
+            exitReason: "Sell",
+        },
+        {
+            entryTime: makeDate("2018/11/1"),
+            entryPrice: 10,
+            exitTime: makeDate("2018/11/10"),
+            exitPrice: 30,
+            profit: 20,
+            profitPct: 200,
+            growth: 3,
+            riskPct: 50,
+            rmultiple: 4,
+            holdingPeriod: 10,
+            exitReason: "Sell",
+        },
+        {
+            entryTime: makeDate("2018/12/1"),
+            entryPrice: 30,
+            exitTime: makeDate("2018/12/5"),
+            exitPrice: 15,
+            profit: -15,
+            profitPct: -50,
+            growth: 0.5,
+            riskPct: 50,
+            rmultiple: -1,
+            holdingPeriod: 5,
+            exitReason: "Sell",
+        },
+    ];
+
     it("drawdown resets on peak", () => {
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
         expect(analysis.maxDrawdown).to.eql(-15);
         expect(analysis.maxDrawdownPct).to.eql(-50);
     });
 
     it("total number of trades is recorded", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
         expect(analysis.totalTrades).to.eql(3);
     });
     
     it("percent profitable is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
         expect(round(analysis.percentProfitable)).to.eql(33.33);
     });
 
     it("profit factor is computed with profits and losses", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
         expect(analysis.profitFactor).to.eql(0.8);
     });
 
@@ -361,19 +403,19 @@ describe("analyze", () => {
 
     it("expectency is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
         expect(round(analysis.expectency!)).to.eql(0.67);
     });
 
     it("rmultiple std dev is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
         expect(round(analysis.rmultipleStdDev!)).to.eql(2.89);
     });
 
     it("system quality is computed with profits and lossses", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesWithProfitsAndLoss));
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
         expect(round(analysis.systemQuality!)).to.eql(0.23);
     });
 
@@ -387,5 +429,19 @@ describe("analyze", () => {
 
         const analysis = analyze(20, new DataFrame<number, ITrade>([ aLoss ]));
         expect(analysis.systemQuality).to.eql(undefined);
+    });
+
+    it("return on account is computed for a profit", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInAProfit));
+        console.log(analysis);
+        expect(analysis.returnOnAccount).to.eql(4);
+    });
+
+    it("return on account is computed for a loss", () => {
+
+        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
+        console.log(analysis);
+        expect(analysis.returnOnAccount).to.eql(-0.5);
     });
 });

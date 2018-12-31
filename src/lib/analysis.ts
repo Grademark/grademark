@@ -97,4 +97,13 @@ export interface IAnalysis {
      * This could also be called reliability or accuracy.
      */
     percentProfitable: number;
+
+    /**
+     * Ratio of net profit to max drawdown. 
+     * Useful metric for comparing strategies.
+     * The higher the better.
+     * Similar to the calmar ratio:
+     * http://www.investopedia.com/terms/c/calmarratio.asp
+     */
+    returnOnAccount: number;
 }
