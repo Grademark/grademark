@@ -814,22 +814,31 @@ describe("backtest", () => {
         expect(trades.count()).to.eql(1);
         const singleTrade = trades.first();
 
-        expect(singleTrade.stopPriceSeries!.getIndex().select(d => moment(d).format("YYYY/MM/DD")).toArray()).to.eql([
-            "2018/10/21",
-            "2018/10/22",
-            "2018/10/23",
-            "2018/10/24",
-            "2018/10/25",
-            "2018/10/26",
-        ]);
-
         expect(singleTrade.stopPriceSeries!.toArray()).to.eql([
-            100,
-            150,
-            150,
-            250,
-            250,
-            400,
+            {
+                time: makeDate("2018/10/21"),
+                value: 100,
+            },
+            {
+                time: makeDate("2018/10/22"),
+                value: 150,
+            },
+            {
+                time: makeDate("2018/10/23"),
+                value: 150,
+            },
+            {
+                time: makeDate("2018/10/24"),
+                value: 250,
+            },
+            {
+                time: makeDate("2018/10/25"),
+                value: 250,
+            },
+            {
+                time: makeDate("2018/10/26"),
+                value: 400,
+            },
         ]);
     });
 
@@ -962,24 +971,36 @@ describe("backtest", () => {
 
         const singleTrade = trades.first();
 
-        expect(singleTrade.riskSeries!.getIndex().select(d => moment(d).format("YYYY/MM/DD")).toArray()).to.eql([
-            "2018/10/21",
-            "2018/10/22",
-            "2018/10/23",
-            "2018/10/24",
-            "2018/10/25",
-            "2018/10/26",
-        ]);
+        const output = singleTrade.riskSeries!
+            .transformSeries({ value: round })
+            .toArray();
 
-        expect(singleTrade.riskSeries!.select(riskPct => round(riskPct)).toArray()).to.eql([
-            20,
-            46.67,
-            42.86,
-            60,
-            57.89,
-            68,
+        expect(output).to.eql([
+            {
+                time: makeDate("2018/10/21"),
+                value: 20,
+            },
+            {
+                time: makeDate("2018/10/22"),
+                value: 46.67,
+            },
+            {
+                time: makeDate("2018/10/23"),
+                value: 42.86,
+            },
+            {
+                time: makeDate("2018/10/24"),
+                value: 60,
+            },
+            {
+                time: makeDate("2018/10/25"),
+                value: 57.89,
+            },
+            {
+                time: makeDate("2018/10/26"),
+                value: 68,
+            },
         ]);
-        
     });
 
     it("current risk is low by trailing stop loss", () => {
@@ -1004,24 +1025,36 @@ describe("backtest", () => {
 
         const singleTrade = trades.first();
 
-        expect(singleTrade.riskSeries!.getIndex().select(d => moment(d).format("YYYY/MM/DD")).toArray()).to.eql([
-            "2018/10/21",
-            "2018/10/22",
-            "2018/10/23",
-            "2018/10/24",
-            "2018/10/25",
-            "2018/10/26",
-        ]);
+        const output = singleTrade.riskSeries!
+            .transformSeries({ value: round })
+            .toArray();
 
-        expect(singleTrade.riskSeries!.select(riskPct => round(riskPct)).toArray()).to.eql([
-            20,
-            20,
-            14.29,
-            20,
-            15.79,
-            20,
+        expect(output).to.eql([
+            {
+                time: makeDate("2018/10/21"),
+                value: 20,
+            },
+            {
+                time: makeDate("2018/10/22"),
+                value: 20,
+            },
+            {
+                time: makeDate("2018/10/23"),
+                value: 14.29,
+            },
+            {
+                time: makeDate("2018/10/24"),
+                value: 20,
+            },
+            {
+                time: makeDate("2018/10/25"),
+                value: 15.79,
+            },
+            {
+                time: makeDate("2018/10/26"),
+                value: 20,
+            },
         ]);
-        
     });
 
 });

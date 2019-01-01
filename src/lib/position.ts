@@ -1,3 +1,4 @@
+import { ITimestampedValue } from "./trade";
 
 /**
  * Interface that defines an open position.
@@ -52,7 +53,7 @@ export interface IPosition {
     /**
      * Records the risk series, if enabled.
      */
-    riskSeries?: [Date, number][],
+    riskSeries?: ITimestampedValue[];
     
     /**
      * Number of bars the position was held for.
@@ -72,7 +73,7 @@ export interface IPosition {
     /**
      * Records the stop price series, if enabled.
      */
-    stopPriceSeries?: [Date, number][],
+    stopPriceSeries?: ITimestampedValue[];
 
     /*
      * Profit target where exit is triggered (intrabar).

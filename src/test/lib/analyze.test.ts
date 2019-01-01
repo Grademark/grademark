@@ -434,14 +434,12 @@ describe("analyze", () => {
     it("return on account is computed for a profit", () => {
 
         const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInAProfit));
-        console.log(analysis);
         expect(analysis.returnOnAccount).to.eql(4);
     });
 
     it("return on account is computed for a loss", () => {
 
         const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
-        console.log(analysis);
         expect(analysis.returnOnAccount).to.eql(-0.5);
     });
 });

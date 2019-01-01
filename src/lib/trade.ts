@@ -1,5 +1,19 @@
-import { ISeries } from "data-forge";
+import { IDataFrame } from "data-forge";
 
+/**
+ * Represents a value at a particular time.
+ */
+export interface ITimestampedValue {
+    /**
+     * Timestamp of the value.
+     */
+    time: Date;
+
+    /**
+     * The value at the time.
+     */
+    value: number;
+}
 
 /**
  * Interface that defines a trade.
@@ -53,7 +67,7 @@ export interface ITrade {
     /**
      * The series of risk% recorded over the holding period of the trade (if recording of this is enabled).
      */
-    riskSeries?: ISeries<Date, number>;
+    riskSeries?: IDataFrame<number, ITimestampedValue>;
     
     /**
      * Number of bars the position was held for.
@@ -73,7 +87,7 @@ export interface ITrade {
     /**
      * The series of stop prices recorded over the holding period of the trade (if recording of this is enabled).
      */
-    stopPriceSeries?: ISeries<Date, number>;
+    stopPriceSeries?: IDataFrame<number, ITimestampedValue>;
 
     /**
      * Price where profit target exit is triggered.

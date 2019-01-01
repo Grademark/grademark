@@ -1,5 +1,5 @@
-import { ITrade } from "./trade";
-import { IDataFrame, DataFrame, Series } from 'data-forge';
+import { ITrade, ITimestampedValue } from "./trade";
+import { IDataFrame, DataFrame } from 'data-forge';
 import { IStrategy, IBar, IPosition } from "..";
 import { assert } from "chai";
 import { open } from "inspector";
@@ -46,18 +46,14 @@ function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number
         growth: exitPrice / position.entryPrice,
         riskPct: position.initialRiskPct,
         riskSeries: position.riskSeries
-            ? new Series<Date, number>({
-                pairs: position.riskSeries
-            })
+            ? new DataFrame<number, ITimestampedValue>(position.riskSeries)
             : undefined,
         rmultiple: rmultiple,
         holdingPeriod: position.holdingPeriod,
         exitReason: exitReason,
         stopPrice: position.initialStopPrice,
         stopPriceSeries: position.stopPriceSeries 
-            ? new Series<Date, number>({ 
-                pairs: position.stopPriceSeries,
-            })
+            ? new DataFrame<number, ITimestampedValue>(position.stopPriceSeries)
             : undefined,
         profitTarget: position.profitTarget,
     };
@@ -229,10 +225,10 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
 
                     if (options.recordStopPrice) {
                         openPosition.stopPriceSeries = [
-                            [
-                                bar.time,
-                                openPosition.curStopPrice
-                            ],
+                            {
+                                time: bar.time,
+                                value: openPosition.curStopPrice
+                            },
                         ];
                     }
                 }
@@ -245,10 +241,10 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
 
                     if (options.recordRisk) {
                         openPosition.riskSeries = [
-                            [
-                                bar.time,
-                                openPosition.curRiskPct
-                            ],
+                            {
+                                time: bar.time,
+                                value: openPosition.curRiskPct
+                            },
                         ];
                     }
                 }
@@ -282,10 +278,10 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                     }
 
                     if (options.recordStopPrice) {
-                        openPosition!.stopPriceSeries!.push([
-                            bar.time,
-                            openPosition!.curStopPrice!
-                        ]);
+                        openPosition!.stopPriceSeries!.push({
+                            time: bar.time,
+                            value: openPosition!.curStopPrice!
+                        });
                     }
                 }
 
@@ -300,10 +296,10 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                 updatePosition(openPosition!, bar);
                 
                 if (openPosition!.curRiskPct !== undefined && options.recordRisk) {
-                    openPosition!.riskSeries!.push([
-                        bar.time,
-                        openPosition!.curRiskPct!
-                    ]);
+                    openPosition!.riskSeries!.push({
+                        time: bar.time,
+                        value: openPosition!.curRiskPct!
+                    });
                 }
 
                 if (strategy.exitRule) {
