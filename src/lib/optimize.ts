@@ -103,7 +103,7 @@ export interface IOptimizationOptions {
     /**
      * Determine the direction we are optimizating for when looking out the object function.
      */
-    searchDirection?: OptimizeSearchDirection;
+    searchDirection?: OptimizeSearchDirection; //TODO: This should be part of the objective function??
 
     /**
      * Record trades for each iteration of the optimization.
@@ -113,7 +113,7 @@ export interface IOptimizationOptions {
     /**
      * Number of buckets for evaluating performance stability.
      */
-    numBuckets?: number;
+    numBuckets?: number; //TODO: This should be part of the objective function??
 }
 
 //todo: probably bring these in from mathjs!
