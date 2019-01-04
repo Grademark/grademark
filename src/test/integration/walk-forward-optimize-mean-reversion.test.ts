@@ -75,12 +75,12 @@ describe("walk forward optimize mean reversion", function (this: any) {
 
     it("can do walk forward optimization", function (this: any) {
         const strategy = meanReversionStrategy();
-        const result = walkForwardOptimize(strategy, { 
+        const result = walkForwardOptimize(strategy, [{ 
                 name: "SMA", 
                 startingValue: 5, 
                 endingValue: 25, 
                 stepSize: 10,
-            },
+            }],
             trades => analyze(10000, trades).profitPct,
             inputSeries,
             90,

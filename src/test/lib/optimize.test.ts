@@ -1,5 +1,5 @@
 import { assert, expect } from 'chai';
-import { optimize, IParameterDef, OptimizeSearchDirection } from '../../lib/optimize';
+import { IParameterDef, OptimizeSearchDirection, optimizeSingleParameter } from '../../lib/optimize';
 import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
 import { IBar } from '../../lib/bar';
@@ -73,7 +73,7 @@ describe("optimize", () => {
         let mockPerformanceMetricIndex = 0;
         const objectiveFn = (trades: IDataFrame<number, ITrade>) => mockPerformanceMetrics[mockPerformanceMetricIndex]++;
 
-        const result = optimize(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Highest });
+        const result = optimizeSingleParameter(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Highest });
         expect(result.iterationResults.length).to.eql(10);
     });
 
@@ -95,7 +95,7 @@ describe("optimize", () => {
         let mockPerformanceMetricIndex = 0;
         const objectiveFn = (trades: IDataFrame<number, ITrade>) => mockPerformanceMetrics[mockPerformanceMetricIndex++];
 
-        const result = optimize(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Highest });
+        const result = optimizeSingleParameter(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Highest });
         expect(result.bestIterationResult.iterationIndex).to.eql(1);
     });
 
@@ -117,7 +117,7 @@ describe("optimize", () => {
         let mockPerformanceMetricIndex = 0;
         const objectiveFn = (trades: IDataFrame<number, ITrade>) => mockPerformanceMetrics[mockPerformanceMetricIndex++];
 
-        const result = optimize(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Lowest });
+        const result = optimizeSingleParameter(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Lowest });
         expect(result.bestIterationResult.iterationIndex).to.eql(2);
 
     });

@@ -39,7 +39,7 @@ export interface IOptimizationResult {
  */
 export function walkForwardOptimize<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParameterT, IndexT>(
     strategy: IStrategy<InputBarT, IndicatorBarT, ParameterT, IndexT>, 
-    parameter: IParameterDef,
+    parameters: IParameterDef[],
     objectiveFn: ObjectiveFn,
     inputSeries: IDataFrame<IndexT, InputBarT>,
     inSampleSize: number,
@@ -68,16 +68,13 @@ export function walkForwardOptimize<InputBarT extends IBar, IndicatorBarT extend
         //
         // Optimize using in sample data.
         //
-        const optimizeResult = optimize(strategy, parameter, objectiveFn, inSampleSeries, { numBuckets: options.numBuckets, searchDirection: options.searchDirection });
+        const optimizeResult = optimize(strategy, parameters, objectiveFn, inSampleSeries, { numBuckets: options.numBuckets, searchDirection: options.searchDirection });
 
         //
-        // Construct a strategy using the optimal parameter value.
+        // Construct a strategy using the optimal parameter values.
         //
-        const parameterOverride: any = {};
-        parameterOverride[parameter.name] = optimizeResult.bestIterationResult.parameterValue;
-
         const strategyClone = Object.assign({}, strategy);
-        strategyClone.parameters = Object.assign({}, strategy.parameters, parameterOverride);
+        strategyClone.parameters = Object.assign({}, strategy.parameters, optimizeResult.bestParameterValues);
         
         //
         // Backtest optimized strategy on out of sample data.

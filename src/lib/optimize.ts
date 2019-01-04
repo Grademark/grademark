@@ -239,7 +239,7 @@ function pickBestStrategy(optimizationIterationResults: IDataFrame<number, IOpti
 /**
  * Perform an optimization over a single parameter.
  */
-export function optimize<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParameterT, IndexT>(
+export function optimizeSingleParameter<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParameterT, IndexT>(
     strategy: IStrategy<InputBarT, IndicatorBarT, ParameterT, IndexT>, 
     parameter: IParameterDef,
     objectiveFn: ObjectiveFn,
@@ -262,7 +262,7 @@ export function optimize<InputBarT extends IBar, IndicatorBarT extends InputBarT
     while (workingParameter <= parameter.endingValue) {
 
         const parameterOverride: any = {};
-        parameterOverride[parameter.name] = workingParameter
+        parameterOverride[parameter.name] = workingParameter;
 
         const strategyClone = Object.assign({}, strategy);
         strategyClone.parameters = Object.assign({}, strategy.parameters, parameterOverride);
@@ -292,5 +292,48 @@ export function optimize<InputBarT extends IBar, IndicatorBarT extends InputBarT
     return {
         bestIterationResult: iterationResults[bestIterationIndex],
         iterationResults: iterationResults,
+    };
+}
+
+/**
+ * Result of a multi-parameter optimisation.
+ */
+export interface IMultiParameterOptimizationResult<ParameterT> {
+
+    /**
+     * Best parameter values produced by this optimization.
+     */
+    bestParameterValues: ParameterT;
+}
+
+/**
+ * Perform an optimization over multiple parameters.
+ */
+export function optimize<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParameterT, IndexT>(
+    strategy: IStrategy<InputBarT, IndicatorBarT, ParameterT, IndexT>, 
+    parameters: IParameterDef[],
+    objectiveFn: ObjectiveFn,
+    inputSeries: IDataFrame<IndexT, InputBarT>,
+    options?: IOptimizationOptions
+        ): IMultiParameterOptimizationResult<ParameterT> {
+
+    if (!options) {
+        options = {};
+    }
+
+    if (options.searchDirection === undefined) {
+        options.searchDirection = OptimizeSearchDirection.Highest;
+    }
+
+    const workingStrategy = Object.assign({}, strategy);
+    workingStrategy.parameters = Object.assign({}, strategy.parameters);
+
+    for (const parameter of parameters) {
+        const singleParameterResult = optimizeSingleParameter(workingStrategy, parameter, objectiveFn, inputSeries, options);
+        (workingStrategy.parameters as any)[parameter.name] = singleParameterResult.bestIterationResult.parameterValue;
+    }
+
+    return {
+        bestParameterValues: workingStrategy.parameters,
     };
 }

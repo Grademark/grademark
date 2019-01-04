@@ -1,5 +1,5 @@
 import { assert, expect } from 'chai';
-import { optimize, OptimizeSearchDirection } from '../../lib/optimize';
+import { OptimizeSearchDirection, optimizeSingleParameter } from '../../lib/optimize';
 import { analyze } from '../../lib/analyze';
 import { IBar } from '../../lib/bar';
 import * as dataForge from 'data-forge';
@@ -74,7 +74,7 @@ describe("optimize mean reversion", function (this: any) {
 
     it("can optimize for largest objective function value", function (this: any) {
         const strategy = meanReversionStrategy();
-        const result = optimize(strategy, { 
+        const result = optimizeSingleParameter(strategy, { 
                 name: "SMA", 
                 startingValue: 5, 
                 endingValue: 25, 
@@ -93,7 +93,7 @@ describe("optimize mean reversion", function (this: any) {
 
     it("larger optimization", function (this: any) {
         const strategy = meanReversionStrategy();
-        const result = optimize(strategy, { 
+        const result = optimizeSingleParameter(strategy, { 
                 name: "SMA", 
                 startingValue: 5, 
                 endingValue: 25, 
