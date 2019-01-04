@@ -18,23 +18,23 @@ export type ExitPositionFn = () => void;
  * Computes the intrabar stop loss.
  * Return the maximum loss before an exit is triggered.
  */
-export type StopLossFn<BarT extends IBar, ParametersT> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => number;
+export type StopLossFn<BarT extends IBar, ParametersT = any> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => number;
 
 /**
  * Computes the intrabar profit target.
  * Return the amount of profit to trigger an exit.
  */
-export type ProfitTargetFn<BarT extends IBar, ParametersT> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => number;
+export type ProfitTargetFn<BarT extends IBar, ParametersT = any> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => number;
 
 /**
  * Type for a function that defines an entry rule.
  */
-export type EntryRuleFn<BarT extends IBar, ParametersT> = (enterPosition: EnterPositionFn, curBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => void;
+export type EntryRuleFn<BarT extends IBar, ParametersT = any> = (enterPosition: EnterPositionFn, curBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => void;
 
 /**
  * Type for a function that defines an exigt rule.
  */
-export type ExitRuleFn<BarT extends IBar, ParametersT> = (exitPosition: ExitPositionFn, position: IPosition, curBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => void;
+export type ExitRuleFn<BarT extends IBar, ParametersT = any> = (exitPosition: ExitPositionFn, position: IPosition, curBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => void;
 
 /**
  * A collection of key/value pairs for parameters.
