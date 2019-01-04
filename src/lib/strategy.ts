@@ -18,23 +18,23 @@ export type ExitPositionFn = () => void;
  * Computes the intrabar stop loss.
  * Return the maximum loss before an exit is triggered.
  */
-export type StopLossFn<BarT extends IBar> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>) => number;
+export type StopLossFn<BarT extends IBar, ParametersT> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => number;
 
 /**
  * Computes the intrabar profit target.
  * Return the amount of profit to trigger an exit.
  */
-export type ProfitTargetFn<BarT extends IBar> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>) => number;
+export type ProfitTargetFn<BarT extends IBar, ParametersT> = (entryPrice: number, latestBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => number;
 
 /**
  * Type for a function that defines an entry rule.
  */
-export type EntryRuleFn<BarT extends IBar> = (enterPosition: EnterPositionFn, curBar: BarT, lookback: IDataFrame<number, BarT>) => void;
+export type EntryRuleFn<BarT extends IBar, ParametersT> = (enterPosition: EnterPositionFn, curBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => void;
 
 /**
  * Type for a function that defines an exigt rule.
  */
-export type ExitRuleFn<BarT extends IBar> = (exitPosition: ExitPositionFn, position: IPosition, curBar: BarT, lookback: IDataFrame<number, BarT>) => void;
+export type ExitRuleFn<BarT extends IBar, ParametersT> = (exitPosition: ExitPositionFn, position: IPosition, curBar: BarT, lookback: IDataFrame<number, BarT>, parameters?: ParametersT) => void;
 
 /**
  * A collection of key/value pairs for parameters.
@@ -71,29 +71,29 @@ export interface IStrategy<InputBarT extends IBar = IBar, IndicatorsBarT extends
     /**
      * Defines the rule to enter a position.
      */
-    entryRule: EntryRuleFn<IndicatorsBarT>;
+    entryRule: EntryRuleFn<IndicatorsBarT, ParametersT>;
 
     /**
      * Defines the rule to exit a position.
      */
-    exitRule?: ExitRuleFn<IndicatorsBarT>;
+    exitRule?: ExitRuleFn<IndicatorsBarT, ParametersT>;
 
     /**
      * Function that computes intrabar stop loss distance.
      * Return the maximum loss before an exit is triggered.
      */
-    stopLoss?: StopLossFn<InputBarT>;
+    stopLoss?: StopLossFn<InputBarT, ParametersT>;
 
     /**
      * Function that computes intrabar trailing stop loss distance.
      * Return the maximum loss before an exit is triggered.
      * This stop trails the current price, rising but never declining.
      */
-    trailingStopLoss?: StopLossFn<InputBarT>;
+    trailingStopLoss?: StopLossFn<InputBarT, ParametersT>;
     
     /**
      * Function that computes the intrabar profit target.
      * Return the amount of profit to trigger an exit.
      */
-    profitTarget?: ProfitTargetFn<InputBarT>;
+    profitTarget?: ProfitTargetFn<InputBarT, ParametersT>;
 }

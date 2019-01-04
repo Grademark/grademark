@@ -181,7 +181,7 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
 
         switch (+positionStatus) { //TODO: + is a work around for TS switch stmt with enum.
             case PositionStatus.None:
-                strategy.entryRule(enterPosition, bar, new DataFrame<number, IndicatorBarT>(lookbackBuffer.data), );
+                strategy.entryRule(enterPosition, bar, new DataFrame<number, IndicatorBarT>(lookbackBuffer.data), strategy.parameters);
                 break;
 
             case PositionStatus.Enter:

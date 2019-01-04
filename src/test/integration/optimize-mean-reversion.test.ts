@@ -23,20 +23,20 @@ describe("optimize mean reversion", function (this: any) {
         .setIndex("date") // Index so we can later merge on date.
         .renameSeries({ date: "time" });
 
-    interface IStrategyModifications {
-        entryRule?: EntryRuleFn<MyBar>;
-        exitRule?: ExitRuleFn<MyBar>;
-        stopLoss?: StopLossFn<MyBar>;
-        trailingStopLoss?: StopLossFn<MyBar>;
-        profitTarget?: ProfitTargetFn<MyBar>;        
+        interface MyParameters {
+            SMA: number;
+        }
+
+        interface IStrategyModifications {
+        entryRule?: EntryRuleFn<MyBar, MyParameters>;
+        exitRule?: ExitRuleFn<MyBar, MyParameters>;
+        stopLoss?: StopLossFn<MyBar, MyParameters>;
+        trailingStopLoss?: StopLossFn<MyBar, MyParameters>;
+        profitTarget?: ProfitTargetFn<MyBar, MyParameters>;
     }
 
-    interface IParameters {
-        SMA: number;
-    }
-
-    function meanReversionStrategy(modifications?: IStrategyModifications): IStrategy<IBar, MyBar, IParameters, number> {
-        let strategy: IStrategy<IBar, MyBar, IParameters, number> = {
+    function meanReversionStrategy(modifications?: IStrategyModifications): IStrategy<IBar, MyBar, MyParameters, number> {
+        let strategy: IStrategy<IBar, MyBar, MyParameters, number> = {
             parameters: {
                 SMA: 30,
             },
