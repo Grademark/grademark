@@ -93,6 +93,6 @@ export function walkForwardOptimize<InputBarT extends IBar, IndicatorBarT extend
     }
 
     return {
-        trades: trades.bake(),
+        trades: trades.resetIndex().bake(),
     };
 }
