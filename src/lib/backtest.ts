@@ -206,13 +206,13 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                 };
 
                 if (strategy.stopLoss) {
-                    const initialStopDistance = strategy.stopLoss(entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data));
+                    const initialStopDistance = strategy.stopLoss(entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data), strategy.parameters);
                     openPosition.initialStopPrice = entryPrice - initialStopDistance;
                     openPosition.curStopPrice = openPosition.initialStopPrice;
                 }
 
                 if (strategy.trailingStopLoss) {
-                    const trailingStopDistance = strategy.trailingStopLoss(entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data));
+                    const trailingStopDistance = strategy.trailingStopLoss(entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data), strategy.parameters);
                     const trailingStopPrice = entryPrice - trailingStopDistance;
                     if (openPosition.initialStopPrice === undefined) {
                         openPosition.initialStopPrice = trailingStopPrice;
@@ -250,7 +250,7 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                 }
 
                 if (strategy.profitTarget) {
-                    openPosition.profitTarget = entryPrice + strategy.profitTarget(entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data));
+                    openPosition.profitTarget = entryPrice + strategy.profitTarget(entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data), strategy.parameters);
                 }
 
                 positionStatus = PositionStatus.Position;
@@ -271,7 +271,7 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                     //
                     // Revaluate trailing stop loss.
                     //
-                    const trailingStopDistance = strategy.trailingStopLoss!(openPosition!.entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data));
+                    const trailingStopDistance = strategy.trailingStopLoss!(openPosition!.entryPrice, bar, new DataFrame<number, InputBarT>(lookbackBuffer.data), strategy.parameters);
                     const newTrailingStopPrice = bar.close - trailingStopDistance;
                     if (newTrailingStopPrice > openPosition!.curStopPrice!) {
                         openPosition!.curStopPrice = newTrailingStopPrice;
@@ -303,7 +303,7 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                 }
 
                 if (strategy.exitRule) {
-                    strategy.exitRule(exitPosition, openPosition!, bar, new DataFrame<number, IndicatorBarT>(lookbackBuffer.data));
+                    strategy.exitRule(exitPosition, openPosition!, bar, new DataFrame<number, IndicatorBarT>(lookbackBuffer.data), strategy.parameters);
                 }
 
                 break;
