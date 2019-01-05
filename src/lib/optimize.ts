@@ -5,6 +5,7 @@ import { IStrategy } from "./strategy";
 import { ISeries } from "data-forge";
 import { backtest } from "./backtest";
 import { DataFrame } from "data-forge";
+import * as math from 'mathjs';
 
 const defaultNumBuckets = 10;
 
@@ -116,32 +117,6 @@ export interface IOptimizationOptions {
     numBuckets?: number; //TODO: This should be part of the objective function??
 }
 
-//todo: probably bring these in from mathjs!
-//
-// Compute the sum of the set of values.
-//
-function sum (values: number[]) {
-    return values.reduce((prev, cur) => prev + cur, 0);
-}
-
-//
-// Compute the average of a set of values.
-//
-function average (values: number[]) {
-    return sum(values) / values.length; // Divide the sum of values by the amount of values.
-}
-
-//
-// Compute the standard deviation of a set of values.
-//
-function std (values: number[]) {
-    const avg = average(values); // Compute the average of the values.
-    const squaredDiffsFromAvg = values // Compute the shared difference from the average for each value.
-        .map(v => Math.pow(v - avg, 2));
-    const avgDiff = average(squaredDiffsFromAvg); // Average the squared differences.
-    return Math.sqrt(avgDiff); // Take the square root and we have our standard deviation.
-}
-
 //
 // Bucket nearby iteration results so we can determine how stable the result is.
 //
@@ -192,8 +167,8 @@ function bucket(optimizationIterationResults: IDataFrame<number, IOptimizationIt
         .groupBy(bucket => bucket.bucketIndex)
         .select(group => {
             const performanceMetrics = group.select(bucket => bucket.iterationResult.performanceMetric).toArray();
-            const bucketPerformance = average(performanceMetrics);
-            const bucketPerformanceStdDev = std(performanceMetrics);
+            const bucketPerformance = math.mean(performanceMetrics);
+            const bucketPerformanceStdDev = math.std(performanceMetrics);
             const invertedPerformance = searchDirection === OptimizeSearchDirection.Highest ? bucketPerformance : -bucketPerformance;
             const bucketRank = bucketPerformanceStdDev > 0
                 ? invertedPerformance / bucketPerformanceStdDev
