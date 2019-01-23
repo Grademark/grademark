@@ -16,15 +16,15 @@ From the [Grademark first example](https://github.com/ashleydavis/grademark-firs
 
 Analysis of a sequence of trades looks like this:
 
-![Analysis of trades screenshot](https://github.com/ashleydavis/grademark-first-example/blob/master/output/analysis-screenshot.png)
+![Analysis of trades screenshot](https://raw.githubusercontent.com/ashleydavis/grademark-first-example/master/output/analysis-screenshot.png)
 
 Here's a chart that visualizes the equity curve for the example strategy:
 
-![Equity curve](https://github.com/ashleydavis/grademark-first-example/blob/master/output/my-equity-curve-pct.png)
+![Equity curve](https://raw.githubusercontent.com/ashleydavis/grademark-first-example/master/output/my-equity-curve-pct.png)
 
 Here's another chart, this one is a visualization of the drawdown for the example strategy:
 
-![Drawdown](https://github.com/ashleydavis/grademark-first-example/blob/master/output/my-drawdown-pct.png)
+![Drawdown](https://raw.githubusercontent.com/ashleydavis/grademark-first-example/master/output/my-drawdown-pct.png)
 
 ## Pre-requisites
 
