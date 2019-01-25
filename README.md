@@ -10,6 +10,15 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 
 For news and updates see my blog [The Data Wrangler](http://www.the-data-wrangler.com/).
 
+## BREAKING CHANGES
+
+v0.0.1
+
+Arguments to functions for strategy rules have changed. Instead of having individual arguments to each function, arguments are now bundled in objects for future expandability and better auto-competion.
+
+Please see what this looks like in [the Grademark first example](https://github.com/ashleydavis/grademark-first-example) and the unit tests in this repo.
+
+
 ## Example output
 
 From the [Grademark first example](https://github.com/ashleydavis/grademark-first-example) here's some example output. 
@@ -40,17 +49,23 @@ Here's another chart, this one is a visualization of the drawdown for the exampl
 - Compute and plot equity curve and drawdown charts.
 - Throughly covered by automated tests.
 
-## Coming soon
+## Latest features
+
+Not yet documented sorry. [Blog posts](http://www.the-data-wrangler.com/), examples and [videos](https://www.youtube.com/channel/UCOxw0jy384_wFRwspgq7qMQ) coming soon!
 
 - Calculation of risk and rmultiples.
 - Intrabar profit target.
 - Intrabar trailing stop loss.
-- Plot a chart of trailing stop loss.
 - Conditional buy on price level (intrabar).
-- Parameters.
+- Monte carlo simulation.
 - Optimization based on permutations of parameters.
-- Monte Carlo simulation.
-- Walk-forward backtesting.
+- Walk forward optimization and backtesting.
+- Plot a chart of trailing stop loss.
+
+If you need help with new features please reach out!
+
+## Coming soon
+
 - Plot a chart of risk over time.
 
 ## Maybe coming later

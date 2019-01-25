@@ -43,14 +43,14 @@ describe("backtest mean reversion", function (this: any) {
 
     function meanReversionStrategy(modifications?: IStrategyModifications): IStrategy<MyBar> {
         let strategy: IStrategy<MyBar> = {
-            entryRule: (enterPosition, bar, lookback) => {
-                if (bar.close < bar.sma) {
+            entryRule: (enterPosition, args) => {
+                if (args.bar.close < args.bar.sma) {
                     enterPosition();
                 }
             },
     
-            exitRule: (exitPosition, position, bar, lookback) => {
-                if (bar.close > bar.sma) {
+            exitRule: (exitPosition, args) => {
+                if (args.bar.close > args.bar.sma) {
                     exitPosition();
                 }
             },
@@ -71,7 +71,7 @@ describe("backtest mean reversion", function (this: any) {
 
     it("with stop loss", function  (this: any) {
         const strategy = meanReversionStrategy({
-            stopLoss: entryPrice => entryPrice * (1.5/100),
+            stopLoss: args => args.entryPrice * (1.5/100),
         });
 
         const trades = backtest(strategy, inputSeries);
@@ -80,7 +80,7 @@ describe("backtest mean reversion", function (this: any) {
 
     it("with trailing stop", function  (this: any) {
         const strategy = meanReversionStrategy({
-            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (3/100),
+            trailingStopLoss: args => args.bar.close * (3/100),
         });
     
         const trades = backtest(strategy, inputSeries);
@@ -89,7 +89,7 @@ describe("backtest mean reversion", function (this: any) {
 
     it("with profit target", function  (this: any) {
         const strategy = meanReversionStrategy({
-            profitTarget: entryPrice => entryPrice * (1/100),
+            profitTarget: args => args.entryPrice * (1/100),
         });
     
         const trades = backtest(strategy, inputSeries);
@@ -98,8 +98,8 @@ describe("backtest mean reversion", function (this: any) {
 
     it("with conditional buy", function  (this: any) {
         const strategy = meanReversionStrategy({
-            entryRule: (enterPosition, curBar) => {
-                enterPosition(curBar.close + (curBar.close * (0.1/100)))
+            entryRule: (enterPosition, args) => {
+                enterPosition({ entryPrice: args.bar.close + (args.bar.close * (0.1/100)) })
             }
         });
     
@@ -109,8 +109,8 @@ describe("backtest mean reversion", function (this: any) {
 
     it("with maximum holding period", function  (this: any) {
         const strategy = meanReversionStrategy({
-            exitRule: (exitPosition, position) => {
-                if (position.holdingPeriod >= 3) {
+            exitRule: (exitPosition, args) => {
+                if (args.position.holdingPeriod >= 3) {
                     exitPosition();
                 }
             }
@@ -122,7 +122,7 @@ describe("backtest mean reversion", function (this: any) {
 
     it("can record trailing stop", function  (this: any) {
         const strategy = meanReversionStrategy({
-            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (3/100),
+            trailingStopLoss: args => args.bar.close * (3/100),
         });
 
         const trades = backtest(strategy, inputSeries, { recordStopPrice: true });
@@ -132,7 +132,7 @@ describe("backtest mean reversion", function (this: any) {
 
     it("can record risk", function  (this: any) {
         const strategy = meanReversionStrategy({
-            stopLoss: entryPrice => entryPrice * (5/100),
+            stopLoss: args => args.entryPrice * (5/100),
         });
 
         const trades = backtest(strategy, inputSeries, { recordRisk: true });

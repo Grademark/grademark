@@ -2,7 +2,7 @@ import { assert, expect } from 'chai';
 import { backtest } from '../../lib/backtest';
 import { DataFrame, IDataFrame } from 'data-forge';
 import { IBar } from '../../lib/bar';
-import { IStrategy, EnterPositionFn, ExitPositionFn } from '../../lib/strategy';
+import { IStrategy, EnterPositionFn, ExitPositionFn, IEntryRuleArgs } from '../../lib/strategy';
 import * as moment from 'moment';
 
 describe("backtest", () => {
@@ -56,7 +56,7 @@ describe("backtest", () => {
          };
     }
 
-    function unconditionalEntry(enterPosition: EnterPositionFn, bar: IBar, lookback: IDataFrame<number, IBar>) {
+    function unconditionalEntry(enterPosition: EnterPositionFn, args: IEntryRuleArgs<IBar, {}>) {
         enterPosition(); // Unconditionally enter position at market price.
     };
 
@@ -164,8 +164,8 @@ describe("backtest", () => {
     it("conditional entry can be triggered within the trading period", () => {
         
         const strategy: IStrategy = {
-            entryRule: (enterPosition, bar) => {
-                if (bar.close > 3) {
+            entryRule: (enterPosition, args) => {
+                if (args.bar.close > 3) {
                     enterPosition(); // Conditional enter when instrument closes above 3.
                 }
             },
@@ -191,8 +191,8 @@ describe("backtest", () => {
     it("conditional entry triggers entry at opening price of next bar", () => {
         
         const strategy: IStrategy = {
-            entryRule: (enterPosition, bar) => {
-                if (bar.close > 5) {
+            entryRule: (enterPosition, args) => {
+                if (args.bar.close > 5) {
                     enterPosition(); // Conditional enter when instrument closes above 3.
                 }
             },
@@ -216,8 +216,8 @@ describe("backtest", () => {
     it("conditional entry is not triggered when condition is not met", () => {
         
         const strategy: IStrategy = {
-            entryRule: (enterPosition, bar) => {
-                if (bar.close > 10) {
+            entryRule: (enterPosition, args) => {
+                if (args.bar.close > 10) {
                     enterPosition(); // Conditional enter when instrument closes above 3.
                 }
             },
@@ -234,8 +234,8 @@ describe("backtest", () => {
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
 
-            exitRule: (exitPosition, position, bar) => {
-                if (bar.close > 3) {
+            exitRule: (exitPosition, args) => {
+                if (args.bar.close > 3) {
                     exitPosition(); // Exit at next open.
                 }
             },
@@ -262,8 +262,8 @@ describe("backtest", () => {
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
 
-            exitRule: (exitPosition, position, bar) => {
-                if (bar.close > 5) {
+            exitRule: (exitPosition, args) => {
+                if (args.bar.close > 5) {
                     exitPosition(); // Exit at next open.
                 }
             },
@@ -286,8 +286,8 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            exitRule: (exitPosition, position, bar) => {
-                if (bar.close > 3) {
+            exitRule: (exitPosition, args) => {
+                if (args.bar.close > 3) {
                     exitPosition(); // Exit at next open.
                 }
             },
@@ -315,8 +315,8 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            exitRule: (exitPosition, position, bar) => {
-                if (position.profitPct <= -50) {
+            exitRule: (exitPosition, args) => {
+                if (args.position.profitPct <= -50) {
                     exitPosition(); // Exit at 50% loss
                 }
             },
@@ -342,8 +342,8 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            exitRule: (exitPosition, position, bar) => {
-                if (position.holdingPeriod >= 3) {
+            exitRule: (exitPosition, args) => {
+                if (args.position.holdingPeriod >= 3) {
                     exitPosition(); // Exit after holding for 3 days.
                 }
             },
@@ -370,14 +370,14 @@ describe("backtest", () => {
     it("can execute multiple trades", () => {
         
         const strategy: IStrategy = {
-            entryRule: (enterPosition, bar) => {
-                if ((bar.close - bar.open) > 0) { 
+            entryRule: (enterPosition, args) => {
+                if ((args.bar.close - args.bar.open) > 0) { 
                     enterPosition(); // Enter on up day.
                 }
             },
 
-            exitRule: (exitPosition, position, bar) => {
-                if (position.profitPct > 1.5) {
+            exitRule: (exitPosition, args) => {
+                if (args.position.profitPct > 1.5) {
                     exitPosition(); // Exit on small profit
                 }
             },
@@ -410,14 +410,14 @@ describe("backtest", () => {
     it("can use custom bar type and enter/exit on computed indicator", () => {
         
         const strategy: IStrategy<CustomBar> = {
-            entryRule: (enterPosition, bar) => {
-                if (bar.goLong > 0) {
+            entryRule: (enterPosition, args) => {
+                if (args.bar.goLong > 0) {
                     enterPosition(); // Enter on custom indicator.
                 }
             },
 
-            exitRule: (exitPosition, position, bar) => {
-                if (bar.goLong < 1) {
+            exitRule: (exitPosition, args) => {
+                if (args.bar.goLong < 1) {
                     exitPosition(); // Exit on custom indicator.
                 }
             },
@@ -446,14 +446,14 @@ describe("backtest", () => {
     it("example of caching a custom indicator before doing the backtest", () => {
         
         const strategy: IStrategy<CustomBar> = {
-            entryRule: (enterPosition, bar) => {
-                if (bar.goLong > 0) {
+            entryRule: (enterPosition, args) => {
+                if (args.bar.goLong > 0) {
                     enterPosition(); // Enter on custom indicator.
                 }
             },
 
-            exitRule: (exitPosition, position, bar) => {
-                if (bar.goLong < 1) {
+            exitRule: (exitPosition, args) => {
+                if (args.bar.goLong < 1) {
                     exitPosition(); // Exit on custom indicator.
                 }
             },
@@ -519,9 +519,9 @@ describe("backtest", () => {
         const strategy: IStrategy = { 
             lookbackPeriod: 2,
 
-            entryRule: (enterPosition, bar, lookback) => {
+            entryRule: (enterPosition, args) => {
                 lookbackPeriodChecked = true;
-                expect(lookback.count()).to.eql(2);
+                expect(args.lookback.count()).to.eql(2);
             },
 
             exitRule: () => {},
@@ -541,9 +541,9 @@ describe("backtest", () => {
 
             entryRule: unconditionalEntry,
 
-            exitRule: (exitPosition, position, bar, lookback) => {
+            exitRule: (exitPosition, args) => {
                 lookbackPeriodChecked = true;
-                expect(lookback.count()).to.eql(2);
+                expect(args.lookback.count()).to.eql(2);
             },
          };
 
@@ -567,7 +567,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            stopLoss: entryPrice => entryPrice * (20/100)
+            stopLoss: args => args.entryPrice * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -591,7 +591,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            stopLoss: entryPrice => entryPrice * (20/100)
+            stopLoss: args => args.entryPrice * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -613,7 +613,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            stopLoss: entryPrice => entryPrice * (20/100)
+            stopLoss: args => args.entryPrice * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -636,7 +636,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            profitTarget: entryPrice => entryPrice * (10/100)
+            profitTarget: args => args.entryPrice * (10/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -660,7 +660,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            profitTarget: entryPrice => entryPrice * (10/100)
+            profitTarget: args => args.entryPrice * (10/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -682,7 +682,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            profitTarget: entryPrice => entryPrice * (30/100)
+            profitTarget: args => args.entryPrice * (30/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -705,7 +705,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (20/100)
+            trailingStopLoss: args => args.bar.close * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -728,7 +728,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (20/100)
+            trailingStopLoss: args => args.bar.close * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -751,7 +751,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (20/100)
+            trailingStopLoss: args => args.bar.close * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -773,7 +773,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (20/100)
+            trailingStopLoss: args => args.bar.close * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -796,7 +796,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            trailingStopLoss: (entryPrice, latestBar) => latestBar.close * (50/100)
+            trailingStopLoss: args => args.bar.close * (50/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -845,8 +845,8 @@ describe("backtest", () => {
     it("can place intrabar conditional buy order", () => {
         
         const strategy: IStrategy = {
-            entryRule: (enterPosition, bar) => {
-                enterPosition(6); // Enter position when price hits 6.
+            entryRule: (enterPosition, args) => {
+                enterPosition({ entryPrice: 6 }); // Enter position when price hits 6.
             },
 
             exitRule: mockExit,
@@ -870,8 +870,8 @@ describe("backtest", () => {
     it("conditional buy order is not executed if price doesn't reach target", () => {
         
         const strategy: IStrategy = {
-            entryRule: (enterPosition, bar) => {
-                enterPosition(6); // Enter position when price hits 6.
+            entryRule: (enterPosition, args) => {
+                enterPosition({ entryPrice: 6 }); // Enter position when price hits 6.
             },
 
             exitRule: mockExit,
@@ -893,7 +893,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            stopLoss: entryPrice => entryPrice * (20/100)
+            stopLoss: args => args.entryPrice * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -913,7 +913,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            stopLoss: entryPrice => entryPrice * (20/100)
+            stopLoss: args => args.entryPrice * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -933,7 +933,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            stopLoss: entryPrice => entryPrice * (20/100)
+            stopLoss: args => args.entryPrice * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -953,7 +953,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            stopLoss: entryPrice => entryPrice * (20/100)
+            stopLoss: args => args.entryPrice * (20/100)
         };
 
         const inputSeries = makeDataSeries([
@@ -1007,7 +1007,7 @@ describe("backtest", () => {
         
         const strategy: IStrategy = {
             entryRule: unconditionalEntry,
-            trailingStopLoss: (entryPrice, bar) => bar.close * (20/100)
+            trailingStopLoss: args => args.bar.close * (20/100)
         };
 
         const inputSeries = makeDataSeries([
