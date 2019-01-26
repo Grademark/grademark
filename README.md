@@ -133,20 +133,20 @@ This is a very simple and very naive mean reversion strategy:
 
 ```javascript
 const strategy = {
-    entryRule: (enterPosition, bar, lookback) => {
-        if (bar.close < bar.sma) { // Buy when price is below average.
+    entryRule: (enterPosition, args) => {
+        if (args.bar.close < args.bar.sma) { // Buy when price is below average.
             enterPosition();
         }
     },
 
-    exitRule: (exitPosition, position, bar, lookback) => {
-        if (bar.close > bar.sma) {
+    exitRule: (exitPosition, args) => {
+        if (args.bar.close > args.bar.sma) {
             exitPosition(); // Sell when price is above average.
         }
     },
 
-    stopLoss: (entryPrice, latestBar, lookback) => { // Optional intrabar stop loss.
-        return entryPrice * (5/100); // Stop out on 5% loss from entry price.
+    stopLoss: args => { // Optional intrabar stop loss.
+        return args.entryPrice * (5/100); // Stop out on 5% loss from entry price.
     },
 };
 ```
