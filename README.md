@@ -75,6 +75,7 @@ If you need help with new features please reach out!
 - Position sizing.
 - Testing multiple instruments / portfolio simulation / ranking instruments.
 - Short selling.
+- Market filters.
 
 ## Complete examples
 
@@ -180,18 +181,7 @@ computeDrawdown(trades)
 
 ## Advanced backtesting
 
-We are only just getting started here and in future notebooks, videos and blog posts we'll explore some of the more advanced aspects of backtesting including:
-
-- Market filters
-- Ranking and portfolio simulation
-- Position sizing
-- Optimization
-- Walk-forward testing
-- Monte-carlo testing
-- Comparing systems
-- Eliminating bias
-
-Follow my [blog](http://www.the-data-wrangler.com/) and [YouTube channel](https://www.youtube.com/channel/UCOxw0jy384_wFRwspgq7qMQ) to keep up.
+We are only just getting started in this example to learn more please follow my [blog](http://www.the-data-wrangler.com/) and [YouTube channel](https://www.youtube.com/channel/UCOxw0jy384_wFRwspgq7qMQ).
 
 ## Resources
 
