@@ -16,24 +16,23 @@ v0.0.1
 
 Arguments to functions for strategy rules have changed. Instead of having individual arguments to each function, arguments are now bundled in objects for future expandability and better auto-competion.
 
-Please see what this looks like in [the Grademark first example](https://github.com/ashleydavis/grademark-first-example) and the unit tests in this repo.
+Please see what this looks like in [the Grademark first example](https://github.com/grademark/grademark-first-example) and the unit tests in this repo.
 
+## First example
 
-## Example output
-
-From the [Grademark first example](https://github.com/ashleydavis/grademark-first-example) here's some example output. 
+From the [Grademark first example](https://github.com/grademark/grademark-first-example) here's some example output. [Click to see the first example as a notebook.](https://grademark.github.io/grademark-first-example/)
 
 Analysis of a sequence of trades looks like this:
 
-![Analysis of trades screenshot](https://raw.githubusercontent.com/ashleydavis/grademark-first-example/master/output/analysis-screenshot.png)
+![Analysis of trades screenshot](https://raw.githubusercontent.com/grademark/grademark-first-example/master/output/analysis-screenshot.png)
 
 Here's a chart that visualizes the equity curve for the example strategy:
 
-![Equity curve](https://raw.githubusercontent.com/ashleydavis/grademark-first-example/master/output/my-equity-curve-pct.png)
+![Equity curve](https://raw.githubusercontent.com/grademark/grademark-first-example/master/output/my-equity-curve-pct.png)
 
 Here's another chart, this one is a visualization of the drawdown for the example strategy:
 
-![Drawdown](https://raw.githubusercontent.com/ashleydavis/grademark-first-example/master/output/my-drawdown-pct.png)
+![Drawdown](https://raw.githubusercontent.com/grademark/grademark-first-example/master/output/my-drawdown-pct.png)
 
 ## Pre-requisites
 
@@ -84,7 +83,7 @@ Due to this being a simple API there is no support (at least not yet) for:
 
 ## Complete examples
 
-For a ready to go example please see the repo [grademark-first-example](https://github.com/ashleydavis/grademark-first-example).
+For a ready to go example please see the repo [grademark-first-example](https://github.com/grademark/grademark-first-example).
 
 ## Usage
 
@@ -117,7 +116,7 @@ let inputSeries = dataForge.readFileSync("STW.csv")
     .setIndex("date") // Index so we can later merge on date.
     .renameSeries({ date: "time" });
 ```
-The example data file is available in [the example repo](https://github.com/ashleydavis/grademark-first-example).
+The example data file is available in [the example repo](https://github.com/grademark/grademark-first-example).
 
 ### Add indicators
 
