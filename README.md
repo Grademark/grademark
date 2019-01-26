@@ -70,11 +70,6 @@ If you need help with new features please reach out!
 ## Maybe coming later
 
 - Support for precise decimal numbers.
-
-## Not coming soon
-
-Due to this being a simple API there is no support (at least not yet) for:
-
 - Fees.
 - Slippage.
 - Position sizing.
