@@ -1,6 +1,6 @@
 {
     "name": "grademark",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "API for backtesting trading strategies in JavaScript and TypeScript.",
     "main": "build/index.js",
     "types": "build/index.d.ts",

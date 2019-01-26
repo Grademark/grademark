@@ -93,6 +93,7 @@ Instructions here are for JavaScript, but this library is written in TypeScript 
 
 ```javascript
 const dataForge = require('data-forge');
+require('data-forge-fs'); // For file loading capability.
 require('data-forge-indicators'); // For the moving average indicator.
 require('data-forge-plot'); // For rendering charts.
 const { backtest, analyze, computeEquityCurve, computeDrawdown } = require('grademark');
