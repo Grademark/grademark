@@ -5,7 +5,6 @@ import * as path from 'path';
 import { IStrategy, backtest, IBar, ITrade } from '../..';
 import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
-import { ISerializedDataFrame } from 'data-forge/build/lib/dataframe';
 import { checkArray, checkDataFrameExpectations, checkArrayExpectations } from './check-object';
 import { Stream } from 'stream';
 import { StopLossFn, ProfitTargetFn, EntryRuleFn, ExitRuleFn } from '../../lib/strategy';

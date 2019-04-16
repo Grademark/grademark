@@ -17,7 +17,7 @@ export type ObjectiveFn = (trades: IDataFrame<number, ITrade>) => number;
 /**
  * What is the best value of the objective function?
  */
-export enum OptimizeSearchDirection {
+export enum OptimizeSearchDirection { //TODO: This should be a string for JS compatibility.
     //
     // Select the optimization iteration with the highest value from the objective function.
     //
