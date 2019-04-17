@@ -4,6 +4,7 @@ import { IStrategy, IBar, IPosition } from "..";
 import { assert } from "chai";
 import { open } from "inspector";
 import { IEnterPositionOptions } from "./strategy";
+import { isObject } from "./utils";
 const CBuffer = require('CBuffer');
 
 /**
@@ -92,6 +93,14 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
     inputSeries: IDataFrame<IndexT, InputBarT>,
     options?: IBacktestOptions): 
         IDataFrame<number, ITrade> {
+
+    if (!isObject(strategy)) {
+        throw new Error("Expected 'strategy' argument to 'backtest' to be an object that defines the trading strategy to backtest.");
+    }
+
+    if (!isObject(inputSeries) && inputSeries.count() > 0) {
+        throw new Error("Expected 'inputSeries' argument to 'backtest' to be a Data-Forge DataFrame that contains historical input data for backtesting.");
+    }
 
     if (!options) {
         options = {};

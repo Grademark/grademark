@@ -6,6 +6,7 @@ import { ISeries } from "data-forge";
 import { backtest } from "./backtest";
 import { DataFrame } from "data-forge";
 import * as math from 'mathjs';
+import { isObject, isNumber, isArray, isFunction } from "./utils";
 
 const defaultNumBuckets = 10;
 
@@ -222,6 +223,30 @@ export function optimizeSingleParameter<InputBarT extends IBar, IndicatorBarT ex
     options?: IOptimizationOptions
         ): IOptimizationResult {
 
+    if (!isObject(strategy)) {
+        throw new Error("Expected 'strategy' argument to 'optimizeSingleParameter' to be an object that defines the strategy to be optimized.");
+    }
+
+    if (!isObject(parameter)) {
+        throw new Error("Expected 'parameter' argument to 'optimizeSingleParameter' to be an object that defines the strategy parameter to be optimized.");
+    }
+
+    if (!isNumber(parameter.startingValue)) {
+        throw new Error("Expected 'startingValue' field of 'parameter' argument to be a number that specifies the starting value of the strategy parameter to be optimized.");
+    }
+
+    if (!isNumber(parameter.endingValue)) {
+        throw new Error("Expected 'endingValue' field of 'parameter' argument to be a number that specifies the starting value of the strategy parameter to be optimized.");
+    }
+
+    if (!isNumber(parameter.stepSize)) {
+        throw new Error("Expected 'stepSize' field of 'parameter' argument to be a number that specifies the starting value of the strategy parameter to be optimized.");
+    }
+
+    if (!isObject(inputSeries)) {
+        throw new Error("Expected 'inputSeries' argument to 'optimizeSingleParameter' to be a Data-Forge DataFrame object that provides the input data for optimization.");
+    }
+
     if (!options) {
         options = {};
     }
@@ -262,6 +287,10 @@ export function optimizeSingleParameter<InputBarT extends IBar, IndicatorBarT ex
         ++iterationIndex;
     }
 
+    if (iterationResults.length <= 0) {
+        throw new Error(`Optimization of parameter ${parameter.name} from ${parameter.startingValue} to ${parameter.endingValue} in steps of size ${parameter.stepSize} produced no optimization iterations!`);
+    }
+
     const bestIterationIndex = pickBestStrategy(new DataFrame(iterationResults), options.numBuckets || defaultNumBuckets, options.searchDirection)
 
     return {
@@ -292,6 +321,22 @@ export function optimize<InputBarT extends IBar, IndicatorBarT extends InputBarT
     options?: IOptimizationOptions
         ): IMultiParameterOptimizationResult<ParameterT> {
 
+    if (!isObject(strategy)) {
+        throw new Error("Expected 'strategy' argument to 'optimize' to be an object that defines the trading strategy to be optimized.");
+    }
+
+    if (!isArray(parameters)) {
+        throw new Error("Expected 'parameters' argument to 'optimize' to be an array that defines the various strategy parameters to be optimized.");
+    }
+
+    if (!isFunction(objectiveFn)) {
+        throw new Error("Expected 'objectiveFn' argument to 'optimize' to be a function that computes an objective function for a set of trades.");
+    }
+
+    if (!isObject(inputSeries)) {
+        throw new Error("Expected 'inputSeries' argument to 'optimize' to be a Data-Forge DataFrame object that provides the input data for optimization.");
+    }
+        
     if (!options) {
         options = {};
     }
@@ -303,7 +348,9 @@ export function optimize<InputBarT extends IBar, IndicatorBarT extends InputBarT
     const workingStrategy = Object.assign({}, strategy);
     workingStrategy.parameters = Object.assign({}, strategy.parameters);
 
-    for (const parameter of parameters) {
+    //TODO: Should pass back the metrics for each run of parameters.
+    
+    for (const parameter of parameters) { //TODO: Maybe want a higher level loop that continues to optimize until we get a stable result.
         const singleParameterResult = optimizeSingleParameter(workingStrategy, parameter, objectiveFn, inputSeries, options);
         (workingStrategy.parameters as any)[parameter.name] = singleParameterResult.bestIterationResult.parameterValue;
     }

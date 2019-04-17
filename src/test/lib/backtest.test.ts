@@ -3,7 +3,7 @@ import { backtest } from '../../lib/backtest';
 import { DataFrame, IDataFrame } from 'data-forge';
 import { IBar } from '../../lib/bar';
 import { IStrategy, EnterPositionFn, ExitPositionFn, IEntryRuleArgs } from '../../lib/strategy';
-import * as moment from 'moment';
+import * as moment from 'dayjs';
 
 describe("backtest", () => {
 

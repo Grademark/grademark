@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import { computeEquityCurve } from '../../lib/compute-equity-curve';
 import { DataFrame, IDataFrame } from 'data-forge';
-import * as moment from 'moment';
+import * as moment from 'dayjs';
 import { ITrade } from '../..';
 
 describe("compute equity curve", () => {

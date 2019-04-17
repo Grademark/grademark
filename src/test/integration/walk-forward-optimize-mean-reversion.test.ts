@@ -19,7 +19,7 @@ describe("walk forward optimize mean reversion", function (this: any) {
 
     let inputSeries = dataForge.readFileSync(path.join(__dirname, "data/STW.csv"))
         .parseCSV()
-        .parseDates("date", "DD/MM/YYYY")
+        .parseDates("date", "dd/MM/YYYY")
         .parseFloats(["open", "high", "low", "close", "volume"])
         .setIndex("date") // Index so we can later merge on date.
         .renameSeries({ date: "time" });

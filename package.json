@@ -39,9 +39,10 @@
     "homepage": "https://github.com/ashleydavis/grademark#readme",
     "dependencies": {
         "CBuffer": "^2.0.0",
+        "dayjs": "^1.8.12",
         "mathjs": "^5.4.0",
         "mersennetwister": "^0.2.3",
-        "moment": "2.22.2"
+        "typy": "^3.0.2"
     },
     "peerDependencies": {
         "data-forge": "^1.6.9"
