@@ -5,8 +5,7 @@ import { DataFrame } from 'data-forge';
 import { IBar } from '../../lib/bar';
 import { IStrategy, EnterPositionFn, IEntryRuleArgs } from '../../lib/strategy';
 import { ITrade } from '../../lib/trade';
-import * as moment from 'moment';
-import { transformDataFrames } from '../integration/check-object';
+import * as moment from 'dayjs';
 
 describe("optimize", () => {
 

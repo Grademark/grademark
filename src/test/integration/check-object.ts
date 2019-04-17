@@ -3,9 +3,9 @@ import * as Sugar from 'sugar';
 import * as fs from 'fs';
 import * as path from 'path';
 import { IDataFrame } from 'data-forge';
-import { ISerializedDataFrame } from 'data-forge/build/lib/dataframe';
 import { DataFrame } from 'data-forge';
 import 'data-forge-fs';
+import { ISerializedDataFrame } from '@data-forge/serialization';
 
 //
 // TODO: Make an npm lib out of this.

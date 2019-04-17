@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import { analyze } from '../../lib/analyze';
 import { DataFrame, IDataFrame } from 'data-forge';
-import * as moment from 'moment';
+import * as moment from 'dayjs';
 import { ITrade } from '../..';
 
 describe("analyze", () => {

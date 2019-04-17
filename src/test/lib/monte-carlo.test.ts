@@ -1,6 +1,5 @@
 import { assert, expect } from 'chai';
 import { monteCarlo } from '../../lib/monte-carlo';
-import * as moment from 'moment';
 import { ITrade, backtest } from '../..';
 import { DataFrame } from 'data-forge';
 

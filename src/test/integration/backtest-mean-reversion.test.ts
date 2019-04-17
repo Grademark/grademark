@@ -5,7 +5,6 @@ import * as path from 'path';
 import { IStrategy, backtest, IBar, ITrade } from '../..';
 import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
-import { ISerializedDataFrame } from 'data-forge/build/lib/dataframe';
 import { checkArray, checkDataFrameExpectations, checkArrayExpectations } from './check-object';
 import { Stream } from 'stream';
 import { StopLossFn, ProfitTargetFn, EntryRuleFn, ExitRuleFn } from '../../lib/strategy';
@@ -20,7 +19,7 @@ describe("backtest mean reversion", function (this: any) {
 
     let inputSeries = dataForge.readFileSync(path.join(__dirname, "data/STW.csv"))
         .parseCSV()
-        .parseDates("date", "DD/MM/YYYY")
+        .parseDates("date", "dd/MM/YYYY")
         .parseFloats(["open", "high", "low", "close", "volume"])
         .setIndex("date") // Index so we can later merge on date.
         .renameSeries({ date: "time" });

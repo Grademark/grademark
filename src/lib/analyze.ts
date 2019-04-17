@@ -2,11 +2,20 @@ import { IDataFrame } from "data-forge";
 import { ITrade } from "./trade";
 import * as math from 'mathjs';
 import { IAnalysis } from "./analysis";
+import { isNumber, isObject } from "./utils";
 
 /**
  * Analyse a sequence of trades and compute their performance.
  */
 export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<IndexT, ITrade>): IAnalysis {
+
+    if (!isNumber(startingCapital) || startingCapital <= 0) {
+        throw new Error("Expected 'startingCapital' argument to 'analyze' to be a positive number that specifies the amount of capital used to simulate trading.");
+    }
+
+    if (!isObject(trades) && trades.count() > 0) {
+        throw new Error("Expected 'trades' argument to 'analyze' to be a Data-Forge DataFrame that contains a set of trades to be analyzed.");
+    }
 
     let workingCapital = startingCapital;
     let barCount = 0;
