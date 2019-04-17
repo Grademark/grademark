@@ -29,14 +29,14 @@
                 "profit": "number",
                 "profitPct": "number",
                 "growth": "number",
-                "riskPct": "unsupported",
-                "riskSeries": "unsupported",
-                "rmultiple": "unsupported",
+                "riskPct": "undefined",
+                "riskSeries": "undefined",
+                "rmultiple": "undefined",
                 "holdingPeriod": "number",
                 "exitReason": "string",
-                "stopPrice": "unsupported",
-                "stopPriceSeries": "unsupported",
-                "profitTarget": "unsupported"
+                "stopPrice": "undefined",
+                "stopPriceSeries": "undefined",
+                "profitTarget": "undefined"
             },
             "index": {
                 "type": "number",
@@ -90,14 +90,14 @@
                     "profit": "number",
                     "profitPct": "number",
                     "growth": "number",
-                    "riskPct": "unsupported",
-                    "riskSeries": "unsupported",
-                    "rmultiple": "unsupported",
+                    "riskPct": "undefined",
+                    "riskSeries": "undefined",
+                    "rmultiple": "undefined",
                     "holdingPeriod": "number",
                     "exitReason": "string",
-                    "stopPrice": "unsupported",
-                    "stopPriceSeries": "unsupported",
-                    "profitTarget": "unsupported"
+                    "stopPrice": "undefined",
+                    "stopPriceSeries": "undefined",
+                    "profitTarget": "undefined"
                 },
                 "index": {
                     "type": "number",
@@ -222,14 +222,14 @@
                     "profit": "number",
                     "profitPct": "number",
                     "growth": "number",
-                    "riskPct": "unsupported",
-                    "riskSeries": "unsupported",
-                    "rmultiple": "unsupported",
+                    "riskPct": "undefined",
+                    "riskSeries": "undefined",
+                    "rmultiple": "undefined",
                     "holdingPeriod": "number",
                     "exitReason": "string",
-                    "stopPrice": "unsupported",
-                    "stopPriceSeries": "unsupported",
-                    "profitTarget": "unsupported"
+                    "stopPrice": "undefined",
+                    "stopPriceSeries": "undefined",
+                    "profitTarget": "undefined"
                 },
                 "index": {
                     "type": "number",
@@ -306,14 +306,14 @@
                     "profit": "number",
                     "profitPct": "number",
                     "growth": "number",
-                    "riskPct": "unsupported",
-                    "riskSeries": "unsupported",
-                    "rmultiple": "unsupported",
+                    "riskPct": "undefined",
+                    "riskSeries": "undefined",
+                    "rmultiple": "undefined",
                     "holdingPeriod": "number",
                     "exitReason": "string",
-                    "stopPrice": "unsupported",
-                    "stopPriceSeries": "unsupported",
-                    "profitTarget": "unsupported"
+                    "stopPrice": "undefined",
+                    "stopPriceSeries": "undefined",
+                    "profitTarget": "undefined"
                 },
                 "index": {
                     "type": "number",

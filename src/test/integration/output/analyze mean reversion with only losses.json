@@ -12,5 +12,6 @@
     "expectency": -1,
     "rmultipleStdDev": 0,
     "profitFactor": 0,
-    "percentProfitable": 0
+    "percentProfitable": 0,
+    "returnOnAccount": -1
 }

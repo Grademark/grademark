@@ -24,13 +24,13 @@
         "profit": "number",
         "profitPct": "number",
         "growth": "number",
-        "riskPct": "unsupported",
-        "riskSeries": "unsupported",
-        "rmultiple": "unsupported",
+        "riskPct": "undefined",
+        "riskSeries": "undefined",
+        "rmultiple": "undefined",
         "holdingPeriod": "number",
         "exitReason": "string",
-        "stopPrice": "unsupported",
-        "stopPriceSeries": "unsupported",
+        "stopPrice": "undefined",
+        "stopPriceSeries": "undefined",
         "profitTarget": "number"
     },
     "index": {
