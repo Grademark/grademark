@@ -108,7 +108,7 @@ This example loads a CSV file, but feel free to load your data from REST API, da
 ```javascript
 let inputSeries = dataForge.readFileSync("STW.csv")
     .parseCSV()
-    .parseDates("date", "DD/MM/YYYY")
+    .parseDates("date", "D/MM/YYYY")
     .parseFloats(["open", "high", "low", "close", "volume"])
     .setIndex("date") // Index so we can later merge on date.
     .renameSeries({ date: "time" });
