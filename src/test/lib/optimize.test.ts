@@ -3,7 +3,7 @@ import { IParameterDef, OptimizeSearchDirection, optimizeSingleParameter } from 
 import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
 import { IBar } from '../../lib/bar';
-import { IStrategy, EnterPositionFn } from '../../lib/strategy';
+import { IStrategy, EnterPositionFn, IEntryRuleArgs } from '../../lib/strategy';
 import { ITrade } from '../../lib/trade';
 import * as moment from 'moment';
 import { transformDataFrames } from '../integration/check-object';
@@ -38,7 +38,7 @@ describe("optimize", () => {
         return new DataFrame<number, IBar>(bars.map(makeBar));
     }
 
-    function unconditionalEntry(enterPosition: EnterPositionFn, bar: IBar, lookback: IDataFrame<number, IBar>) {
+    function unconditionalEntry(enterPosition: EnterPositionFn, args: IEntryRuleArgs<IBar, {}>) {
         enterPosition(); // Unconditionally enter position at market price.
     };
 

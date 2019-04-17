@@ -10,21 +10,29 @@ To learn more about working with data in JavaScript please read my book [Data Wr
 
 For news and updates see my blog [The Data Wrangler](http://www.the-data-wrangler.com/).
 
-## Example output
+## BREAKING CHANGES
 
-From the [Grademark first example](https://github.com/ashleydavis/grademark-first-example) here's some example output. 
+v0.0.1
+
+Arguments to functions for strategy rules have changed. Instead of having individual arguments to each function, arguments are now bundled in objects for future expandability and better auto-competion.
+
+Please see what this looks like in [the Grademark first example](https://github.com/grademark/grademark-first-example) and the unit tests in this repo.
+
+## First example
+
+From the [Grademark first example](https://github.com/grademark/grademark-first-example) here's some example output. [Click to see the first example as a notebook.](https://grademark.github.io/grademark-first-example/)
 
 Analysis of a sequence of trades looks like this:
 
-![Analysis of trades screenshot](https://raw.githubusercontent.com/ashleydavis/grademark-first-example/master/output/analysis-screenshot.png)
+![Analysis of trades screenshot](https://raw.githubusercontent.com/grademark/grademark-first-example/master/output/analysis-screenshot.png)
 
 Here's a chart that visualizes the equity curve for the example strategy:
 
-![Equity curve](https://raw.githubusercontent.com/ashleydavis/grademark-first-example/master/output/my-equity-curve-pct.png)
+![Equity curve](https://raw.githubusercontent.com/grademark/grademark-first-example/master/output/my-equity-curve-pct.png)
 
 Here's another chart, this one is a visualization of the drawdown for the example strategy:
 
-![Drawdown](https://raw.githubusercontent.com/ashleydavis/grademark-first-example/master/output/my-drawdown-pct.png)
+![Drawdown](https://raw.githubusercontent.com/grademark/grademark-first-example/master/output/my-drawdown-pct.png)
 
 ## Pre-requisites
 
@@ -40,36 +48,38 @@ Here's another chart, this one is a visualization of the drawdown for the exampl
 - Compute and plot equity curve and drawdown charts.
 - Throughly covered by automated tests.
 
-## Coming soon
+## Latest features
+
+Not yet documented sorry. [Blog posts](http://www.the-data-wrangler.com/), examples and [videos](https://www.youtube.com/channel/UCOxw0jy384_wFRwspgq7qMQ) coming soon!
 
 - Calculation of risk and rmultiples.
 - Intrabar profit target.
 - Intrabar trailing stop loss.
-- Plot a chart of trailing stop loss.
 - Conditional buy on price level (intrabar).
-- Parameters.
+- Monte carlo simulation.
 - Optimization based on permutations of parameters.
-- Monte Carlo simulation.
-- Walk-forward backtesting.
+- Walk forward optimization and backtesting.
+- Plot a chart of trailing stop loss.
+
+If you need help with new features please reach out!
+
+## Coming soon
+
 - Plot a chart of risk over time.
 
 ## Maybe coming later
 
 - Support for precise decimal numbers.
-
-## Not coming soon
-
-Due to this being a simple API there is no support (at least not yet) for:
-
 - Fees.
 - Slippage.
 - Position sizing.
 - Testing multiple instruments / portfolio simulation / ranking instruments.
 - Short selling.
+- Market filters.
 
 ## Complete examples
 
-For a ready to go example please see the repo [grademark-first-example](https://github.com/ashleydavis/grademark-first-example).
+For a ready to go example please see the repo [grademark-first-example](https://github.com/grademark/grademark-first-example).
 
 ## Usage
 
@@ -83,6 +93,7 @@ Instructions here are for JavaScript, but this library is written in TypeScript 
 
 ```javascript
 const dataForge = require('data-forge');
+require('data-forge-fs'); // For file loading capability.
 require('data-forge-indicators'); // For the moving average indicator.
 require('data-forge-plot'); // For rendering charts.
 const { backtest, analyze, computeEquityCurve, computeDrawdown } = require('grademark');
@@ -102,7 +113,7 @@ let inputSeries = dataForge.readFileSync("STW.csv")
     .setIndex("date") // Index so we can later merge on date.
     .renameSeries({ date: "time" });
 ```
-The example data file is available in [the example repo](https://github.com/ashleydavis/grademark-first-example).
+The example data file is available in [the example repo](https://github.com/grademark/grademark-first-example).
 
 ### Add indicators
 
@@ -124,20 +135,20 @@ This is a very simple and very naive mean reversion strategy:
 
 ```javascript
 const strategy = {
-    entryRule: (enterPosition, bar, lookback) => {
-        if (bar.close < bar.sma) { // Buy when price is below average.
+    entryRule: (enterPosition, args) => {
+        if (args.bar.close < args.bar.sma) { // Buy when price is below average.
             enterPosition();
         }
     },
 
-    exitRule: (exitPosition, position, bar, lookback) => {
-        if (bar.close > bar.sma) {
+    exitRule: (exitPosition, args) => {
+        if (args.bar.close > args.bar.sma) {
             exitPosition(); // Sell when price is above average.
         }
     },
 
-    stopLoss: (entryPrice, latestBar, lookback) => { // Optional intrabar stop loss.
-        return entryPrice * (5/100); // Stop out on 5% loss from entry price.
+    stopLoss: args => { // Optional intrabar stop loss.
+        return args.entryPrice * (5/100); // Stop out on 5% loss from entry price.
     },
 };
 ```
@@ -171,18 +182,7 @@ computeDrawdown(trades)
 
 ## Advanced backtesting
 
-We are only just getting started here and in future notebooks, videos and blog posts we'll explore some of the more advanced aspects of backtesting including:
-
-- Market filters
-- Ranking and portfolio simulation
-- Position sizing
-- Optimization
-- Walk-forward testing
-- Monte-carlo testing
-- Comparing systems
-- Eliminating bias
-
-Follow my [blog](http://www.the-data-wrangler.com/) and [YouTube channel](https://www.youtube.com/channel/UCOxw0jy384_wFRwspgq7qMQ) to keep up.
+We are only just getting started in this example to learn more please follow my [blog](http://www.the-data-wrangler.com/) and [YouTube channel](https://www.youtube.com/channel/UCOxw0jy384_wFRwspgq7qMQ).
 
 ## Resources
 

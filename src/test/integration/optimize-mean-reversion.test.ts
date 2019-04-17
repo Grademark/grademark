@@ -41,25 +41,25 @@ describe("optimize mean reversion", function (this: any) {
                 SMA: 30,
             },
 
-            prepIndicators: (parameters, inputSeries) => {
-                const movingAverage = inputSeries
+            prepIndicators: args => {
+                const movingAverage = args.inputSeries
                     .deflate(bar => bar.close)
-                    .sma(parameters.SMA);
+                    .sma(args.parameters.SMA);
                 
-                return inputSeries
+                return args.inputSeries
                     .withSeries("sma", movingAverage)
-                    .skip(parameters.SMA)
+                    .skip(args.parameters.SMA)
                     .cast<MyBar>();
             },
 
-            entryRule: (enterPosition, bar, lookback) => {
-                if (bar.close < bar.sma) {
+            entryRule: (enterPosition, args) => {
+                if (args.bar.close < args.bar.sma) {
                     enterPosition();
                 }
             },
     
-            exitRule: (exitPosition, position, bar, lookback) => {
-                if (bar.close > bar.sma) {
+            exitRule: (exitPosition, args) => {
+                if (args.bar.close > args.bar.sma) {
                     exitPosition();
                 }
             },
