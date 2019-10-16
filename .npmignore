@@ -9,3 +9,4 @@ build/test/
 todo.txt
 .nyc_output/
 tsconfig.json
+images/
