@@ -8,8 +8,6 @@ WORK IN PROGRESS: The API is fairly stable, but there are features yet to be imp
 
 This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from [Data-Forge Notebook](http://www.data-forge-notebook.com/) (making it easy to plot charts and visualize).
 
-To learn more about working with data in JavaScript please read my book [Data Wrangling with JavaScript](http://bit.ly/2t2cJu2).
-
 For news and updates see my blog [The Data Wrangler](http://www.the-data-wrangler.com/).
 
 ## BREAKING CHANGES
