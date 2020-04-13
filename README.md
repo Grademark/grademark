@@ -10,6 +10,8 @@ This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from
 
 For news and updates see my blog [The Data Wrangler](http://www.the-data-wrangler.com/).
 
+<a href="#support-the-developer">Skip to the end to see how you can **support the developer.**</a>
+
 ## BREAKING CHANGES
 
 v0.0.1
@@ -190,3 +192,13 @@ We are only just getting started in this example to learn more please follow my 
 
 - [Data-Forge](http://data-forge-js.com/)
 - [Data-Forge Notebook](http://www.data-forge-notebook.com/)
+
+## Support the developer 
+
+You can help support my work in any of the following ways:
+
+- Star this repository (and my other repos [here](https://github.com/data-forge), [here](https://github.com/grademark) and [here](https://github.com/data-forge-notebook)).
+- Share links to my work on Twitter and other social media.
+- [Sponsor me on GitHub](https://github.com/sponsors/ashleydavis).
+- Purchase [Data-Forge Notebook](https://www.data-forge-notebook.com/).
+- Purchase either of my books [Data Wrangling with JavaScript](http://bit.ly/2t2cJu2) or [Bootsrapping Microservices](http://bit.ly/2o0aDsP).
