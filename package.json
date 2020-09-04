@@ -1,6 +1,6 @@
 {
     "name": "grademark",
-    "version": "0.1.9",
+    "version": "0.2.0",
     "description": "API for backtesting trading strategies in JavaScript and TypeScript.",
     "main": "build/index.js",
     "types": "build/index.d.ts",
@@ -10,6 +10,7 @@
         "b": "npm run build",
         "build": "tsc",
         "clean-build": "rm -rf build/* && tsc",
+        "bw": "npm run build:watch",
         "build:watch": "tsc --watch",
         "clean-build:watch": "rm -rf build/* && tsc --watch",
         "t": "npm run test",
