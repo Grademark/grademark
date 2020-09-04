@@ -1,13 +1,14 @@
-import { assert, expect } from 'chai';
 import { analyze } from '../../lib/analyze';
 import { IBar } from '../../lib/bar';
 import * as dataForge from 'data-forge';
+import 'data-forge-fs';
 import 'data-forge-indicators';
 import * as path from 'path';
 import { EntryRuleFn, ExitRuleFn, StopLossFn, ProfitTargetFn, IStrategy } from '../../lib/strategy';
-import { checkDataFrameExpectations, checkObjectExpectations } from '../integration/check-object';
+import { checkObjectExpectations } from '../integration/check-object';
 import { walkForwardOptimize } from '../../lib/walk-forward-optimize';
 import { OptimizeSearchDirection } from '../../lib/optimize';
+
 
 interface MyBar extends IBar {
     sma: number;

@@ -1,6 +1,5 @@
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import { analyze } from '../../lib/analyze';
-import { DataFrame, IDataFrame } from 'data-forge';
 import * as moment from 'dayjs';
 import { ITrade } from '../..';
 
@@ -15,38 +14,38 @@ describe("analyze", () => {
     }
 
     it("analysis records starting capital", () => {
-        const analysis1 = analyze(1000, new DataFrame<number, ITrade>());
+        const analysis1 = analyze(1000, []);
         expect(analysis1.startingCapital).to.eql(1000);
 
-        const analysis2 = analyze(1200, new DataFrame<number, ITrade>());
+        const analysis2 = analyze(1200, []);
         expect(analysis2.startingCapital).to.eql(1200);
     });
 
     it("analysis of zero trades has zero profit", () => {
-        const analysis = analyze(1000, new DataFrame<number, ITrade>());
+        const analysis = analyze(1000, []);
         expect(analysis.profit).to.eql(0);
         expect(analysis.profitPct).to.eql(0);
         expect(analysis.growth).to.eql(1);
     });
 
     it("analysis of zero trades has no drawdown", () => {
-        const analysis = analyze(1000, new DataFrame<number, ITrade>());
+        const analysis = analyze(1000, []);
         expect(analysis.maxDrawdown).to.eql(0);
         expect(analysis.maxDrawdownPct).to.eql(0);
     });
 
     it("analysis of zero trades has zero bar count", () => {
-        const analysis = analyze(1000, new DataFrame<number, ITrade>());
+        const analysis = analyze(1000, []);
         expect(analysis.barCount).to.eql(0);
     });
 
     it("analysis of zero trades has undefined risk", () => {
-        const analysis = analyze(1000, new DataFrame<number, ITrade>());
+        const analysis = analyze(1000, []);
         expect(analysis.maxRiskPct).to.eql(undefined);
     });
 
     it("analysis of zero trades records final capital to be the same as starting capital", () => {
-        const analysis = analyze(2000, new DataFrame<number, ITrade>());
+        const analysis = analyze(2000, []);
         expect(analysis.finalCapital).to.eql(2000);
     });
 
@@ -65,7 +64,7 @@ describe("analyze", () => {
     };
 
     it("can analyze single trade with profit", () => {
-        const analysis = analyze(10, new DataFrame<number, ITrade>([ aProfit ] ));
+        const analysis = analyze(10, [ aProfit ]);
         expect(analysis.startingCapital).to.eql(10);
         expect(analysis.finalCapital).to.eql(20);
         expect(analysis.profit).to.eql(10);
@@ -90,7 +89,7 @@ describe("analyze", () => {
     };
 
     it("can analyze single trade with loss", () => {
-        const analysis = analyze(10, new DataFrame<number, ITrade>([ aLoss ] ));
+        const analysis = analyze(10, [ aLoss ] );
         expect(analysis.startingCapital).to.eql(10);
         expect(analysis.finalCapital).to.eql(5);
         expect(analysis.profit).to.eql(-5);
@@ -130,7 +129,7 @@ describe("analyze", () => {
     ];
 
     it("can analyze multiple trades with profit", () => {
-        const analysis = analyze(10, new DataFrame<number, ITrade>(twoProfits));
+        const analysis = analyze(10, twoProfits);
         expect(analysis.startingCapital).to.eql(10);
         expect(analysis.finalCapital).to.eql(60);
         expect(analysis.profit).to.eql(50);
@@ -170,7 +169,7 @@ describe("analyze", () => {
     ];
 
     it("can analyze multiple trades with loss", () => {
-        const analysis = analyze(20, new DataFrame<number, ITrade>(twoLosses));
+        const analysis = analyze(20, twoLosses);
         expect(analysis.startingCapital).to.eql(20);
         expect(analysis.finalCapital).to.eql(8);
         expect(analysis.profit).to.eql(-12);
@@ -210,7 +209,7 @@ describe("analyze", () => {
     ];
 
     it("can analyze multiple trades with profit and loss", () => {
-        const analysis = analyze(10, new DataFrame<number, ITrade>(aProfitThenALoss));
+        const analysis = analyze(10, aProfitThenALoss);
         expect(analysis.startingCapital).to.eql(10);
         expect(analysis.finalCapital).to.eql(10);
         expect(analysis.profit).to.eql(0);
@@ -250,7 +249,7 @@ describe("analyze", () => {
     ];
 
     it("can analyze multiple trades with loss and profit", () => {
-        const analysis = analyze(20, new DataFrame<number, ITrade>(aLossThenAProfit));
+        const analysis = analyze(20, aLossThenAProfit);
         expect(analysis.startingCapital).to.eql(20);
         expect(analysis.finalCapital).to.eql(20);
         expect(analysis.profit).to.eql(0);
@@ -262,21 +261,21 @@ describe("analyze", () => {
 
 
     it("single trade with profit has no drawdown", () => {
-        const analysis = analyze(10, new DataFrame<number, ITrade>([ aProfit ] ));
+        const analysis = analyze(10, [ aProfit ]);
         expect(analysis.maxDrawdown).to.eql(0);
         expect(analysis.maxDrawdownPct).to.eql(0);
     });
 
     it("single trade with loss sets the drawdown to the loss", () => {
 
-        const analysis = analyze(10, new DataFrame<number, ITrade>([ aLoss ] ));
+        const analysis = analyze(10, [ aLoss ] );
         expect(analysis.maxDrawdown).to.eql(-5);
         expect(analysis.maxDrawdownPct).to.eql(-50);
     });
     
     it("drawdown from first loss is not override by subsequent profit", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(aLossThenAProfit));
+        const analysis = analyze(20, aLossThenAProfit);
         expect(analysis.maxDrawdown).to.eql(-10);
         expect(analysis.maxDrawdownPct).to.eql(-50);
     });
@@ -366,80 +365,80 @@ describe("analyze", () => {
     ];
 
     it("drawdown resets on peak", () => {
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
+        const analysis = analyze(20, threeSampleTradesEndingInALoss);
         expect(analysis.maxDrawdown).to.eql(-15);
         expect(analysis.maxDrawdownPct).to.eql(-50);
     });
 
     it("total number of trades is recorded", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
+        const analysis = analyze(20, threeSampleTradesEndingInALoss);
         expect(analysis.totalTrades).to.eql(3);
     });
     
     it("percent profitable is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
+        const analysis = analyze(20, threeSampleTradesEndingInALoss);
         expect(round(analysis.percentProfitable)).to.eql(33.33);
     });
 
     it("profit factor is computed with profits and losses", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
+        const analysis = analyze(20, threeSampleTradesEndingInALoss);
         expect(analysis.profitFactor).to.eql(0.8);
     });
 
     it("profit factor is computed with only a profit", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>([ aProfit ]));
+        const analysis = analyze(20, [ aProfit ]);
         expect(analysis.profitFactor).to.eql(undefined);
     });
 
     it("profit factor is computed with only a loss", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>([ aLoss ]));
+        const analysis = analyze(20, [ aLoss ]);
         expect(analysis.profitFactor).to.eql(0);
     });
 
     it("expectency is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
+        const analysis = analyze(20, threeSampleTradesEndingInALoss);
         expect(round(analysis.expectency!)).to.eql(0.67);
     });
 
     it("rmultiple std dev is computed", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
+        const analysis = analyze(20, threeSampleTradesEndingInALoss);
         expect(round(analysis.rmultipleStdDev!)).to.eql(2.89);
     });
 
     it("system quality is computed with profits and lossses", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
+        const analysis = analyze(20, threeSampleTradesEndingInALoss);
         expect(round(analysis.systemQuality!)).to.eql(0.23);
     });
 
     it("system quality is undefined with only a single profit", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>([ aProfit ]));
+        const analysis = analyze(20, [ aProfit ]);
         expect(analysis.systemQuality).to.eql(undefined);
     });
 
     it("system quality is undefined with only a single loss", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>([ aLoss ]));
+        const analysis = analyze(20, [ aLoss ]);
         expect(analysis.systemQuality).to.eql(undefined);
     });
 
     it("return on account is computed for a profit", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInAProfit));
+        const analysis = analyze(20, threeSampleTradesEndingInAProfit);
         expect(analysis.returnOnAccount).to.eql(4);
     });
 
     it("return on account is computed for a loss", () => {
 
-        const analysis = analyze(20, new DataFrame<number, ITrade>(threeSampleTradesEndingInALoss));
+        const analysis = analyze(20, threeSampleTradesEndingInALoss);
         expect(analysis.returnOnAccount).to.eql(-0.5);
     });
 });

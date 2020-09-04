@@ -1,5 +1,5 @@
-import { assert, expect } from 'chai';
-import { IParameterDef, OptimizeSearchDirection, optimizeSingleParameter } from '../../lib/optimize';
+import { expect } from 'chai';
+import { OptimizeSearchDirection, optimizeSingleParameter } from '../../lib/optimize';
 import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
 import { IBar } from '../../lib/bar';
@@ -70,8 +70,7 @@ describe("optimize", () => {
 
         const mockPerformanceMetrics = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
         let mockPerformanceMetricIndex = 0;
-        const objectiveFn = (trades: IDataFrame<number, ITrade>) => mockPerformanceMetrics[mockPerformanceMetricIndex]++;
-
+        const objectiveFn = (trades: ITrade[]) => mockPerformanceMetrics[mockPerformanceMetricIndex]++;
         const result = optimizeSingleParameter(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Highest });
         expect(result.iterationResults.length).to.eql(10);
     });
@@ -92,8 +91,7 @@ describe("optimize", () => {
 
         const mockPerformanceMetrics = [5, 6, 2];
         let mockPerformanceMetricIndex = 0;
-        const objectiveFn = (trades: IDataFrame<number, ITrade>) => mockPerformanceMetrics[mockPerformanceMetricIndex++];
-
+        const objectiveFn = (trades: ITrade[]) => mockPerformanceMetrics[mockPerformanceMetricIndex++];
         const result = optimizeSingleParameter(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Highest });
         expect(result.bestIterationResult.iterationIndex).to.eql(1);
     });
@@ -114,11 +112,9 @@ describe("optimize", () => {
 
         const mockPerformanceMetrics = [5, 6, 2];
         let mockPerformanceMetricIndex = 0;
-        const objectiveFn = (trades: IDataFrame<number, ITrade>) => mockPerformanceMetrics[mockPerformanceMetricIndex++];
-
+        const objectiveFn = (trades: ITrade[]) => mockPerformanceMetrics[mockPerformanceMetricIndex++];
         const result = optimizeSingleParameter(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Lowest });
         expect(result.bestIterationResult.iterationIndex).to.eql(2);
-
     });
 
 });

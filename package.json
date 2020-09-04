@@ -43,6 +43,7 @@
         "dayjs": "^1.8.12",
         "mathjs": "^5.4.0",
         "mersennetwister": "^0.2.3",
+        "moment": "^2.27.0",
         "typy": "^3.0.2"
     },
     "peerDependencies": {

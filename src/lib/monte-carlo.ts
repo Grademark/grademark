@@ -1,6 +1,5 @@
-import { IDataFrame, ISeries, DataFrame, Series } from "data-forge";
 import { ITrade } from "..";
-import { isNumber, isObject, isArray } from "./utils";
+import { isNumber, isArray } from "./utils";
 const MersenneTwister = require('mersennetwister');
 
 //https://stackoverflow.com/a/1527820/25868
@@ -18,11 +17,10 @@ function getRandomInt (random: any, min: number, max: number): number {
  * X = numIterators.
  * Y = numSamples
  */
-export function monteCarlo(trades: IDataFrame<number, ITrade>, numIterations: number, numSamples: number):
-    ISeries<number, IDataFrame<number, ITrade>> {
+export function monteCarlo(trades: ITrade[], numIterations: number, numSamples: number): ITrade[][] {
 
-    if (!isObject(trades) && trades.count() > 0) {
-        throw new Error("Expected 'trades' argument to 'monteCarlo' to be a Data-Forge DataFrame that contains a population of trades to sample during monte carlo simulation.");
+    if (!isArray(trades)) {
+        throw new Error("Expected 'trades' argument to 'monteCarlo' to be an array that contains a population of trades to sample during monte carlo simulation.");
     }
 
     if (!isNumber(numIterations) || numIterations < 1) {
@@ -33,25 +31,24 @@ export function monteCarlo(trades: IDataFrame<number, ITrade>, numIterations: nu
         throw new Error("Expected 'numSamples' argument to 'monteCarlo' to be a number >= 1 that specifies the size of the sample to create for each iteration of the monte carlo simulation.");
     }
     
-    const tradesArray = trades.toArray();
-    const numTrades = tradesArray.length;
+    const numTrades = trades.length;
     if (numTrades === 0) {
-        return new Series<number, IDataFrame<number, ITrade>>();
+        return [];
     }
 
     const random = new MersenneTwister(0);
-    const samples: IDataFrame<number, ITrade>[] = [];
+    const samples: ITrade[][] = [];
 
     for (let iterationIndex = 0; iterationIndex < numIterations; ++iterationIndex) {
         const sample: ITrade[] = [];
 
         for (var tradeIndex = 0; tradeIndex < numSamples; ++tradeIndex) {
             var tradeCopyIndex = getRandomInt(random, 0, numTrades-1);
-            sample.push(tradesArray[tradeCopyIndex]);
+            sample.push(trades[tradeCopyIndex]);
         }
 
-        samples.push(new DataFrame<number, ITrade>(sample));
+        samples.push(sample);
     }
 
-    return new Series<number, IDataFrame<number, ITrade>>(samples);
+    return samples;
 }

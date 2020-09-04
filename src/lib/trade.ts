@@ -1,4 +1,3 @@
-import { IDataFrame } from "data-forge";
 
 /**
  * Represents a value at a particular time.
@@ -67,7 +66,7 @@ export interface ITrade {
     /**
      * The series of risk% recorded over the holding period of the trade (if recording of this is enabled).
      */
-    riskSeries?: IDataFrame<number, ITimestampedValue>;
+    riskSeries?: ITimestampedValue[];
     
     /**
      * Number of bars the position was held for.
@@ -87,7 +86,7 @@ export interface ITrade {
     /**
      * The series of stop prices recorded over the holding period of the trade (if recording of this is enabled).
      */
-    stopPriceSeries?: IDataFrame<number, ITimestampedValue>;
+    stopPriceSeries?: ITimestampedValue[];
 
     /**
      * Price where profit target exit is triggered.

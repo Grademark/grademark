@@ -1,12 +1,8 @@
-import { assert, expect } from 'chai';
 import * as dataForge from 'data-forge';
 import 'data-forge-indicators';
 import * as path from 'path';
 import { IStrategy, backtest, IBar, ITrade } from '../..';
-import { IDataFrame } from 'data-forge';
-import { DataFrame } from 'data-forge';
-import { checkArray, checkDataFrameExpectations, checkArrayExpectations } from './check-object';
-import { Stream } from 'stream';
+import { checkArrayExpectations } from './check-object';
 import { StopLossFn, ProfitTargetFn, EntryRuleFn, ExitRuleFn } from '../../lib/strategy';
 
 interface MyBar extends IBar {
@@ -65,7 +61,7 @@ describe("backtest mean reversion", function (this: any) {
     it("basic strategy", function  (this: any) {
         const strategy = meanReversionStrategy();    
         const trades = backtest(strategy, inputSeries);
-        checkDataFrameExpectations(trades, this.test);
+        checkArrayExpectations(trades, this.test);
     });
 
     it("with stop loss", function  (this: any) {
@@ -74,7 +70,7 @@ describe("backtest mean reversion", function (this: any) {
         });
 
         const trades = backtest(strategy, inputSeries);
-        checkDataFrameExpectations(trades, this.test);
+        checkArrayExpectations(trades, this.test);
     });
 
     it("with trailing stop", function  (this: any) {
@@ -83,7 +79,7 @@ describe("backtest mean reversion", function (this: any) {
         });
     
         const trades = backtest(strategy, inputSeries);
-        checkDataFrameExpectations(trades, this.test);
+        checkArrayExpectations(trades, this.test);
     });
 
     it("with profit target", function  (this: any) {
@@ -92,7 +88,7 @@ describe("backtest mean reversion", function (this: any) {
         });
     
         const trades = backtest(strategy, inputSeries);
-        checkDataFrameExpectations(trades, this.test);
+        checkArrayExpectations(trades, this.test);
     });
 
     it("with conditional buy", function  (this: any) {
@@ -103,7 +99,7 @@ describe("backtest mean reversion", function (this: any) {
         });
     
         const trades = backtest(strategy, inputSeries);
-        checkDataFrameExpectations(trades, this.test);
+        checkArrayExpectations(trades, this.test);
     });
 
     it("with maximum holding period", function  (this: any) {
@@ -116,7 +112,7 @@ describe("backtest mean reversion", function (this: any) {
         });
 
         const trades = backtest(strategy, inputSeries);
-        checkDataFrameExpectations(trades, this.test);
+        checkArrayExpectations(trades, this.test);
     });
 
     it("can record trailing stop", function  (this: any) {
@@ -125,8 +121,8 @@ describe("backtest mean reversion", function (this: any) {
         });
 
         const trades = backtest(strategy, inputSeries, { recordStopPrice: true });
-        const stopPrice = trades.deflate().selectMany(trade => trade.stopPriceSeries!);
-        checkArrayExpectations(stopPrice.toArray(), this.test);
+        const stopPrice = trades.map(trade => trade.stopPriceSeries!).flat();
+        checkArrayExpectations(stopPrice, this.test);
     });
 
     it("can record risk", function  (this: any) {
@@ -135,7 +131,7 @@ describe("backtest mean reversion", function (this: any) {
         });
 
         const trades = backtest(strategy, inputSeries, { recordRisk: true });
-        const risk = trades.deflate().selectMany(trade => trade.riskSeries!);
-        checkArrayExpectations(risk.toArray(), this.test);
+        const risk = trades.map(trade => trade.riskSeries!).flat();
+        checkArrayExpectations(risk, this.test);
     });
 });

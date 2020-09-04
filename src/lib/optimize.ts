@@ -13,7 +13,7 @@ const defaultNumBuckets = 10;
 /**
  * Defines a function that selects an objective value to measure the performance of a set of trades.
  */
-export type ObjectiveFn = (trades: IDataFrame<number, ITrade>) => number;
+export type ObjectiveFn = (trades: ITrade[]) => number;
 
 /**
  * What is the best value of the objective function?
@@ -77,7 +77,7 @@ export interface IOptimizationIterationResult {
     /**
      * Records the trades for each iteration of optimization, if recordTrades is enabled in the options.
      */
-    trades?: IDataFrame<number, ITrade>;
+    trades?: ITrade[];
 }
 
 /**

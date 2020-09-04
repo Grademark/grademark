@@ -1,4 +1,4 @@
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import * as Sugar from 'sugar';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -6,38 +6,7 @@ import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
 import 'data-forge-fs';
 import { ISerializedDataFrame } from '@data-forge/serialization';
-
-//
-// TODO: Make an npm lib out of this.
-// Output testing tools.
-// Need to make this file independent of chai.
-//
-
-export function transformDataFrames(obj: any): any {
-    if (Sugar.Object.isArray(obj)) {
-        return obj.map(el => transformDataFrames(el));
-    } 
-    else if (typeof obj === "object") {
-        if (typeof obj.getTypeCode === "function") {
-            if (obj.getTypeCode() === "dataframe") {
-                return transformDataFrames(obj.serialize());
-            }
-            else if (obj.getTypeCode() === "series") {
-                return transformDataFrames(obj.toPairs()); //todo: would be good to be able to serialize a series!
-            }
-        }
-
-        //todo: Must be a nice way to do this with ramda!
-        const clone = Object.assign({}, obj);
-        for (const key of Object.keys(clone)) {
-            clone[key] = transformDataFrames(clone[key]);
-        }
-        return clone;
-    }
-    else {
-        return obj;
-    }
-}
+import * as moment from "moment";
 
 export function writeDataFrame(filePath: string, dataFrame: IDataFrame<any, any>): void {
     const serializedDataFrame = dataFrame.serialize();
@@ -52,53 +21,62 @@ export function readDataFrame<IndexT = any, ValueT = any>(filePath: string): IDa
 }
 
 export function checkArrayExpectations<T>(array: T[], test: any) {
-    const transformed = transformDataFrames(array); 
     const filePath = path.join(__dirname, "output", test.fullTitle() + ".json");
     if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify(transformed, null, 4));
+        console.log(`Generated: ${filePath}`);
+        fs.writeFileSync(filePath, JSON.stringify(array, null, 4));
     }
+
+    // console.log("Actual:");
+    // console.log(array);
+    // console.log("Loaded: " + filePath);
 
     const expectedArray = JSON.parse(fs.readFileSync(filePath, "utf8"));;
-    checkArray(transformed, expectedArray);
-}
 
-export function checkDataFrameExpectations<ValueT>(trades: IDataFrame<number, ValueT>, test: any) {
-    const filePath = path.join(__dirname, "output", test.fullTitle() + ".dataframe");
-    if (!fs.existsSync(filePath)) {
-        writeDataFrame(filePath, trades);
-    }
+    // console.log("Expected:");
+    // console.log(expectedArray);
 
-    const expectedTrades = readDataFrame<number, ValueT>(filePath);
-    checkArray(trades.toArray(), expectedTrades.toArray());
+    checkArray(array, expectedArray);
 }
 
 export function checkObjectExpectations(obj: any, test: any) {
-    const transformed = transformDataFrames(obj); 
     const filePath = path.join(__dirname, "output", test.fullTitle() + ".json");
     if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify(transformed, null, 4));
+        console.log(`Generated: ${filePath}`);
+        fs.writeFileSync(filePath, JSON.stringify(obj, null, 4));
     }
 
+    // console.log("Actual:");
+    // console.log(obj);
+    // console.log("Loaded: " + filePath);
+
     const expectedObj = JSON.parse(fs.readFileSync(filePath, "utf8"));;
-    checkObject(transformed, expectedObj);
+
+    // console.log("Expected:");
+    // console.log(expectedObj);
+
+    checkObject(obj, expectedObj);
 }
 
 //
 // Check an array to ensure that each element matches the specification.
 //
 export function checkArray (array: any[], spec: any[], fieldPath: string = "") {
+
+    // console.log(`Checking array "${fieldPath}"`);
+
     expect(array.length).to.equal(spec.length);
 
-    for (var i = 0; i < array.length; ++i) {
-        var el = array[i];
-        var expected = spec[i];
-        var elPath = fieldPath + "[" + i + "]";
+    for (let i = 0; i < array.length; ++i) {
+        const el = array[i];
+        const expected = spec[i];
+        const elPath = fieldPath + "[" + i + "]";
         if (Sugar.Object.isObject(el)) {
             checkObject(el, expected, elPath);
         }
         else {
             expect(el, elPath).to.eql(expected);
-        }            
+        }
     }
 };
 
@@ -107,16 +85,19 @@ export function checkArray (array: any[], spec: any[], fieldPath: string = "") {
 // It must contain at least the subset of elements in 'spec'.
 //
 export function checkObject (obj: any, spec: any, fieldPath: string = "") {
-    var keysToCheck = Object.keys(spec);
-    for (var i = 0; i < keysToCheck.length; ++i) {
-        var key = keysToCheck[i];
-        var val = obj[key];
-        var expected = spec[key];
+
+    // console.log(`Checking object "${fieldPath}"`);
+
+    const keysToCheck = Object.keys(spec);
+    for (let i = 0; i < keysToCheck.length; ++i) {
+        const key = keysToCheck[i];
+        let val = obj[key];
+        const expected = spec[key];
         if (val === undefined) {
             throw new Error("Missing key in array: " + key);
         }
 
-        var valuePath = fieldPath + "." + key;
+        const valuePath = fieldPath + "." + key;
         if (Sugar.Object.isArray(val)) {
             checkArray(val, expected, valuePath);
         } 
@@ -124,6 +105,15 @@ export function checkObject (obj: any, spec: any, fieldPath: string = "") {
             checkObject(val, expected, valuePath);
         }
         else {
+            if (Sugar.Object.isDate(val)) {
+                // Check dates by string.
+                val = moment(val).toISOString();
+            }
+    
+            // console.log(`Checking value "${valuePath}"`);
+
+            // This would be good, but the following expectation is more useful.
+            // expect(typeof(val), `Type of ${valuePath}`).to.eql(typeof(expected));
             expect(val, valuePath).to.eql(expected);
         }
     }

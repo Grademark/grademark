@@ -1,4 +1,3 @@
-import { assert, expect } from 'chai';
 import { OptimizeSearchDirection, optimizeSingleParameter } from '../../lib/optimize';
 import { analyze } from '../../lib/analyze';
 import { IBar } from '../../lib/bar';
@@ -6,7 +5,7 @@ import * as dataForge from 'data-forge';
 import 'data-forge-indicators';
 import * as path from 'path';
 import { EntryRuleFn, ExitRuleFn, StopLossFn, ProfitTargetFn, IStrategy } from '../../lib/strategy';
-import { checkDataFrameExpectations, checkObjectExpectations } from '../integration/check-object';
+import { checkObjectExpectations } from '../integration/check-object';
 
 interface MyBar extends IBar {
     sma: number;

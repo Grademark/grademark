@@ -7,8 +7,8 @@ describe("monte-carlo", () => {
 
     it("zero trades produces zero samples", () => {
         const trades: ITrade[] = [];
-        const samples = monteCarlo(new DataFrame(trades), 2, 2);
-        expect(samples.count()).to.eql(0);
+        const samples = monteCarlo(trades, 2, 2);
+        expect(samples.length).to.eql(0);
     });
 
     it("can produce sequence of samples from population of one", () => {
@@ -17,23 +17,23 @@ describe("monte-carlo", () => {
                 entryPrice: 5
             } as ITrade,
         ];
-        const samples = monteCarlo(new DataFrame(trades), 3, 2);
-        expect(samples.count()).to.eql(3);
+        const samples = monteCarlo(trades, 3, 2);
+        expect(samples.length).to.eql(3);
         
-        const first = samples.first();
-        expect(first.count()).to.eql(2);
-        expect(first.first().entryPrice).to.eql(5);
-        expect(first.skip(1).first().entryPrice).to.eql(5);
+        const first = samples[0];
+        expect(first.length).to.eql(2);
+        expect(first[0].entryPrice).to.eql(5);
+        expect(first[1].entryPrice).to.eql(5);
 
-        const second = samples.skip(1).first();
-        expect(second.count()).to.eql(2);
-        expect(second.first().entryPrice).to.eql(5);
-        expect(second.skip(1).first().entryPrice).to.eql(5);
+        const second = samples[1];
+        expect(second.length).to.eql(2);
+        expect(second[0].entryPrice).to.eql(5);
+        expect(second[1].entryPrice).to.eql(5);
         
-        const third = samples.skip(2).first();
-        expect(third.count()).to.eql(2);
-        expect(third.first().entryPrice).to.eql(5);
-        expect(third.skip(1).first().entryPrice).to.eql(5);
+        const third = samples[2];
+        expect(third.length).to.eql(2);
+        expect(third[0].entryPrice).to.eql(5);
+        expect(third[1].entryPrice).to.eql(5);
     });
 
     it("can produce sequence of samples from population", () => {
@@ -51,10 +51,10 @@ describe("monte-carlo", () => {
                 entryPrice: 4
             } as ITrade,
         ];
-        const samples = monteCarlo(new DataFrame(trades), 4, 3);
-        expect(samples.count()).to.eql(4);
+        const samples = monteCarlo(trades, 4, 3);
+        expect(samples.length).to.eql(4);
 
-        expect(samples.select(trades => trades.toArray()).toArray()).to.eql(
+        expect(samples).to.eql(
             [                            
                 [                        
                     {                    

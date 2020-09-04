@@ -1,20 +1,20 @@
-import { IDataFrame } from "data-forge";
 import { ITrade } from "./trade";
 import * as math from 'mathjs';
 import { IAnalysis } from "./analysis";
-import { isNumber, isObject } from "./utils";
+import { isNumber, isArray } from "./utils";
+import { Series } from "data-forge";
 
 /**
  * Analyse a sequence of trades and compute their performance.
  */
-export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<IndexT, ITrade>): IAnalysis {
+export function analyze(startingCapital: number, trades: ITrade[]): IAnalysis {
 
     if (!isNumber(startingCapital) || startingCapital <= 0) {
         throw new Error("Expected 'startingCapital' argument to 'analyze' to be a positive number that specifies the amount of capital used to simulate trading.");
     }
 
-    if (!isObject(trades) && trades.count() > 0) {
-        throw new Error("Expected 'trades' argument to 'analyze' to be a Data-Forge DataFrame that contains a set of trades to be analyzed.");
+    if (!isArray(trades)) {
+        throw new Error("Expected 'trades' argument to 'analyze' to be an array that contains a set of trades to be analyzed.");
     }
 
     let workingCapital = startingCapital;
@@ -59,12 +59,12 @@ export function analyze<IndexT>(startingCapital: number, trades: IDataFrame<Inde
     }
 
    const rmultiples = trades
-            .where(trade => trade.rmultiple !== undefined)
-            .deflate<number>(trade => trade.rmultiple!);
-    
-    const expectency = rmultiples.any() ? rmultiples.average() : undefined;
-    const rmultipleStdDev = rmultiples.any()
-        ? math.std(rmultiples.toArray())
+        .filter(trade => trade.rmultiple !== undefined)
+        .map(trade => trade.rmultiple!);
+
+    const expectency = rmultiples.length > 0 ? new Series(rmultiples).average() : undefined;
+    const rmultipleStdDev = rmultiples.length > 0
+        ? math.std(rmultiples)
         : undefined;
     
     let systemQuality: number | undefined;

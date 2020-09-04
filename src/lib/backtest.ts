@@ -1,8 +1,7 @@
-import { ITrade, ITimestampedValue } from "./trade";
+import { ITrade } from "./trade";
 import { IDataFrame, DataFrame } from 'data-forge';
 import { IStrategy, IBar, IPosition } from "..";
 import { assert } from "chai";
-import { open } from "inspector";
 import { IEnterPositionOptions } from "./strategy";
 import { isObject } from "./utils";
 const CBuffer = require('CBuffer');
@@ -47,16 +46,12 @@ function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number
         profitPct: (profit / position.entryPrice) * 100,
         growth: exitPrice / position.entryPrice,
         riskPct: position.initialRiskPct,
-        riskSeries: position.riskSeries
-            ? new DataFrame<number, ITimestampedValue>(position.riskSeries)
-            : undefined,
+        riskSeries: position.riskSeries,
         rmultiple: rmultiple,
         holdingPeriod: position.holdingPeriod,
         exitReason: exitReason,
         stopPrice: position.initialStopPrice,
-        stopPriceSeries: position.stopPriceSeries 
-            ? new DataFrame<number, ITimestampedValue>(position.stopPriceSeries)
-            : undefined,
+        stopPriceSeries: position.stopPriceSeries,
         profitTarget: position.profitTarget,
     };
 }
@@ -92,7 +87,7 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
     strategy: IStrategy<InputBarT, IndicatorBarT, ParametersT, IndexT>, 
     inputSeries: IDataFrame<IndexT, InputBarT>,
     options?: IBacktestOptions): 
-        IDataFrame<number, ITrade> {
+    ITrade[] {
 
     if (!isObject(strategy)) {
         throw new Error("Expected 'strategy' argument to 'backtest' to be an object that defines the trading strategy to backtest.");
@@ -375,6 +370,6 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
         completedTrades.push(lastTrade);
     }
 
-    return new DataFrame<number, ITrade>(completedTrades);
+    return completedTrades;
 }
 

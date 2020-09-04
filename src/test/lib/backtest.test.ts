@@ -1,8 +1,8 @@
-import { assert, expect } from 'chai';
+import { expect } from 'chai';
 import { backtest } from '../../lib/backtest';
 import { DataFrame, IDataFrame } from 'data-forge';
 import { IBar } from '../../lib/bar';
-import { IStrategy, EnterPositionFn, ExitPositionFn, IEntryRuleArgs } from '../../lib/strategy';
+import { IStrategy, EnterPositionFn, IEntryRuleArgs } from '../../lib/strategy';
 import * as moment from 'dayjs';
 
 describe("backtest", () => {
@@ -82,7 +82,7 @@ describe("backtest", () => {
     it("generates no trades when no entry is ever taken", ()  => {
 
         const trades = backtest(mockStrategy(), makeDataSeries([mockBar()]));
-        expect(trades.count()).to.eql(0);
+        expect(trades.length).to.eql(0);
     });
 
     it("must pass in 1 or more bars", () => {
@@ -93,13 +93,13 @@ describe("backtest", () => {
     it('unconditional entry rule with no exit creates single trade', () => {
 
         const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
     });
     
     it('unconditional entry rule enters position on day after signal', () => {
 
         const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.entryTime).to.eql(makeDate("2018/10/21"));
     });
 
@@ -112,16 +112,16 @@ describe("backtest", () => {
         ]);
         
         const trades = backtest(strategyWithUnconditionalEntry, inputSeries);
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.entryPrice).to.eql(3);
     });
 
     it('unconditional entry rule creates single trade that is finalized at end of trading period', () => {
 
         const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
         
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/22"));
         expect(singleTrade.exitReason).to.eql("finalize");
     });
@@ -129,7 +129,7 @@ describe("backtest", () => {
     it('open position is finalized on the last day of the trading period', () => {
 
         const trades = backtest(strategyWithUnconditionalEntry, simpleInputSeries);
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/22"));
     });
     
@@ -142,7 +142,7 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategyWithUnconditionalEntry, inputSeries);
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitPrice).to.eql(6);
     });
 
@@ -155,7 +155,7 @@ describe("backtest", () => {
         ]);
        
         const trades = backtest(strategyWithUnconditionalEntry, inputData);
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.profit).to.eql(5);
         expect(singleTrade.profitPct).to.eql(100);
         expect(singleTrade.growth).to.eql(2);
@@ -182,9 +182,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.entryTime).to.eql(makeDate("2018/10/23"));
     });
 
@@ -209,7 +209,7 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.entryPrice).to.eql(7);
     });
 
@@ -226,7 +226,7 @@ describe("backtest", () => {
         };
 
         const trades = backtest(strategy, longerDataSeries);
-        expect(trades.count()).to.eql(0);
+        expect(trades.length).to.eql(0);
     });
 
     it("can conditionally exit before end of trading period", () => {
@@ -250,9 +250,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
         expect(singleTrade.exitReason).to.eql("exit-rule");
     });
@@ -278,7 +278,7 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitPrice).to.eql(7);
     });
 
@@ -302,9 +302,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputData);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
         expect(singleTrade.profit).to.eql(5);
         expect(singleTrade.profitPct).to.eql(100);
@@ -331,9 +331,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputData);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
         expect(singleTrade.exitPrice).to.eql(10);
     });
@@ -360,9 +360,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputData);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/25"));
         expect(singleTrade.exitPrice).to.eql(6);
     });
@@ -400,7 +400,7 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(2);
+        expect(trades.length).to.eql(2);
     });
 
     interface CustomBar extends IBar {
@@ -434,9 +434,9 @@ describe("backtest", () => {
 
         const inputSeries = new DataFrame<number, CustomBar>(bars);
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.entryTime).to.eql(makeDate("2018/10/22"));
         expect(singleTrade.entryPrice).to.eql(5);
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/24"));
@@ -485,7 +485,7 @@ describe("backtest", () => {
             });
 
         const trades = backtest(strategy, augumentedInputSeries);
-        expect(trades.count()).to.eql(2);
+        expect(trades.length).to.eql(2);
     });
 
     it("passes through exception in entry rule", ()  => {
@@ -579,9 +579,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.stopPrice).to.eql(80);
         expect(singleTrade.exitReason).to.eql("stop-loss");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
@@ -603,9 +603,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitPrice).to.eql(80);
     });
 
@@ -625,9 +625,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitReason).to.eql("finalize");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/24"));
     });
@@ -648,9 +648,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.profitTarget).to.eql(110);
         expect(singleTrade.exitReason).to.eql("profit-target");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
@@ -672,9 +672,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitPrice).to.eql(110);
     });
 
@@ -694,9 +694,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitReason).to.eql("finalize");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/24"));
     });
@@ -717,9 +717,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitReason).to.eql("stop-loss");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
     });
@@ -740,9 +740,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitReason).to.eql("stop-loss");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/23"));
     });
@@ -763,9 +763,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitPrice).to.eql(80);
     });
 
@@ -785,9 +785,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.exitReason).to.eql("finalize");
         expect(singleTrade.exitTime).to.eql(makeDate("2018/10/24"));
     });
@@ -811,10 +811,10 @@ describe("backtest", () => {
 
         const trades = backtest(strategy, inputSeries, { recordStopPrice: true });
 
-        expect(trades.count()).to.eql(1);
-        const singleTrade = trades.first();
+        expect(trades.length).to.eql(1);
+        const singleTrade = trades[0];
 
-        expect(singleTrade.stopPriceSeries!.toArray()).to.eql([
+        expect(singleTrade.stopPriceSeries!).to.eql([
             {
                 time: makeDate("2018/10/21"),
                 value: 100,
@@ -861,9 +861,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.entryTime).to.eql(makeDate("2018/10/23"));
     });
     
@@ -886,7 +886,7 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(0);
+        expect(trades.length).to.eql(0);
     });
 
     it("computes risk from initial stop", () => {
@@ -903,9 +903,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.riskPct).to.eql(20);
     });
 
@@ -923,9 +923,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.rmultiple).to.eql(1);
     });
 
@@ -943,9 +943,9 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries);
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
         expect(singleTrade.rmultiple).to.eql(-1);
     });
 
@@ -967,14 +967,11 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries, { recordRisk: true });
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
 
-        const output = singleTrade.riskSeries!
-            .transformSeries({ value: round })
-            .toArray();
-
+        const output = singleTrade.riskSeries!.map(risk => ({ time: risk.time, value: round(risk.value) }));
         expect(output).to.eql([
             {
                 time: makeDate("2018/10/21"),
@@ -1021,14 +1018,11 @@ describe("backtest", () => {
         ]);
 
         const trades = backtest(strategy, inputSeries, { recordRisk: true });
-        expect(trades.count()).to.eql(1);
+        expect(trades.length).to.eql(1);
 
-        const singleTrade = trades.first();
+        const singleTrade = trades[0];
 
-        const output = singleTrade.riskSeries!
-            .transformSeries({ value: round })
-            .toArray();
-
+        const output = singleTrade.riskSeries!.map(risk => ({ time: risk.time, value: round(risk.value) }));
         expect(output).to.eql([
             {
                 time: makeDate("2018/10/21"),

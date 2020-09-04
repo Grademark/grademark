@@ -2,9 +2,7 @@ import { IBar } from "./bar";
 import { IDataFrame } from "data-forge";
 import { ITrade } from "./trade";
 import { IStrategy } from "./strategy";
-import { ISeries } from "data-forge";
 import { backtest } from "./backtest";
-import { DataFrame } from "data-forge";
 import { IParameterDef, ObjectiveFn, OptimizeSearchDirection, optimize } from "./optimize";
 import { isObject, isArray, isFunction, isNumber } from "./utils";
 
@@ -32,7 +30,7 @@ export interface IOptimizationResult {
     /**
      * Records the out of sample trades from the walk forward optimization.
      */
-    trades: IDataFrame<number, ITrade>;
+    trades: ITrade[];
 }
 
 /**
@@ -81,7 +79,7 @@ export function walkForwardOptimize<InputBarT extends IBar, IndicatorBarT extend
     }
 
     let workingDataOffset = 0;
-    let trades: IDataFrame<number, ITrade> = new DataFrame<number, ITrade>();
+    let trades: ITrade[] = []
 
     while (true) {
         const inSampleSeries = inputSeries.skip(workingDataOffset).take(inSampleSize).bake();
@@ -118,6 +116,6 @@ export function walkForwardOptimize<InputBarT extends IBar, IndicatorBarT extend
     }
 
     return {
-        trades: trades.resetIndex().bake(),
+        trades: trades,
     };
 }
