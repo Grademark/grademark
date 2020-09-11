@@ -1,4 +1,4 @@
-# grademark
+# Grademark
 
 API for backtesting financial trading strategies in JavaScript and TypeScript.
 
