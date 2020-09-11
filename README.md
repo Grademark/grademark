@@ -2,8 +2,6 @@
 
 API for backtesting financial trading strategies in JavaScript and TypeScript.
 
-<a target="_blank" href="https://www.data-forge-notebook.com/"><img align="right" src="images/support1.png"></a>
-
 This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from [Data-Forge Notebook](http://www.data-forge-notebook.com/) (making it easy to plot charts and visualize).
 
 For news and updates see my blog [The Data Wrangler](http://www.the-data-wrangler.com/).
@@ -13,8 +11,6 @@ Check out the [release notes](release-notes.md) to see updates and breaking chan
 <a href="#support-the-developer">Skip to the end to see how you can **support the developer.**</a>
 
 Please see what this looks like in [the Grademark first example](https://github.com/grademark/grademark-first-example) and the unit tests in this repo.
-
-<a target="_blank" href="https://www.data-forge-notebook.com/"><img align="right" src="images/support2.png"></a>
 
 ## First example
 
@@ -196,3 +192,8 @@ You can help support my work in any of the following ways:
 - [Sponsor me on GitHub](https://github.com/sponsors/ashleydavis).
 - Purchase [Data-Forge Notebook](https://www.data-forge-notebook.com/).
 - Purchase either of my books [Data Wrangling with JavaScript](http://bit.ly/2t2cJu2) or [Bootsrapping Microservices](http://bit.ly/2o0aDsP).
+
+<a target="_blank" href="https://www.data-forge-notebook.com/"><img src="images/support1.png"></a>
+
+<a target="_blank" href="https://www.data-forge-notebook.com/"><img src="images/support2.png"></a>
+
