@@ -40,25 +40,25 @@
     },
     "homepage": "https://github.com/ashleydavis/grademark#readme",
     "dependencies": {
-        "CBuffer": "^2.0.0",
-        "dayjs": "^1.8.12",
-        "mathjs": "^5.4.0",
+        "CBuffer": "^2.1.0",
+        "dayjs": "^1.8.35",
+        "mathjs": "^5.10.3",
         "mersennetwister": "^0.2.3",
         "moment": "^2.27.0",
-        "typy": "^3.0.2"
+        "typy": "^3.3.0"
     },
     "peerDependencies": {
-        "data-forge": "^1.6.9"
+        "data-forge": "^1.8.11"
     },
     "devDependencies": {
-        "@data-forge/serialization": "^1.0.0",
+        "@data-forge/serialization": "^1.0.1",
         "@types/chai": "4.1.6",
-        "@types/mathjs": "^4.4.4",
+        "@types/mathjs": "^4.4.5",
         "@types/mocha": "5.2.5",
         "@types/node": "10.11.4",
         "chai": "4.2.0",
-        "data-forge-fs": "0.0.3",
-        "data-forge-indicators": "^0.1.7",
+        "data-forge-fs": "0.0.8",
+        "data-forge-indicators": "^0.2.5",
         "mocha": "5.2.0",
         "nyc": "13.0.1",
         "source-map-support": "0.5.9",
