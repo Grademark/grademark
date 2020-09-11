@@ -2,13 +2,10 @@ import { IBar } from "./bar";
 import { IDataFrame } from "data-forge";
 import { ITrade } from "./trade";
 import { IStrategy } from "./strategy";
-import { ISeries } from "data-forge";
 import { backtest } from "./backtest";
-import { DataFrame } from "data-forge";
-import * as math from 'mathjs';
-import { isObject, isNumber, isArray, isFunction } from "./utils";
-
-const defaultNumBuckets = 10;
+import { isObject, isArray, isFunction } from "./utils";
+import { performance } from "perf_hooks";
+import { Random } from "./random";
 
 /**
  * Defines a function that selects an objective value to measure the performance of a set of trades.
@@ -18,17 +15,7 @@ export type ObjectiveFn = (trades: ITrade[]) => number;
 /**
  * What is the best value of the objective function?
  */
-export enum OptimizeSearchDirection { //TODO: This should be a string for JS compatibility.
-    //
-    // Select the optimization iteration with the highest value from the objective function.
-    //
-    Highest,
-
-    // 
-    // Select the optimization iteration with the lowest value from the objective function.
-    //
-    Lowest
-}
+export type OptimizeSearchDirection = "max" | "min";
 
 /**
  * Defines the parameter to optimize for.
@@ -55,47 +42,10 @@ export interface IParameterDef {
     stepSize: number;
 }
 
-/**
- * Result from a single optimization iteration.
- */
-export interface IOptimizationIterationResult {
-    /**
-     * The index of the iteration.
-     */
-    iterationIndex: number;
-
-    /**
-     * The particular parameter value that was backtested and analyzed.
-     */
-    parameterValue: number;
-
-    /**
-     * The output of the object function recorded for the particular parameter value.
-     */
-    performanceMetric: number;
-
-    /**
-     * Records the trades for each iteration of optimization, if recordTrades is enabled in the options.
-     */
-    trades?: ITrade[];
-}
-
-/**
- * Records the result of an optimization.
- */
-export interface IOptimizationResult {
-
-    /**
-     * Results of the best iteration of optimization.
-     */
-    bestIterationResult: IOptimizationIterationResult;
-
-    /**
-     * Records the result from each optimization iteration.
-     * Indicies of the dataframe line up with optimization iteration indicies.
-     */
-    iterationResults: IOptimizationIterationResult[];
-}
+//
+// Sets the type of algoritm used for optimization.
+//
+export type OptimizationType = "grid" | "hill-climb";
 
 /**
  * Options to the optimize function.
@@ -105,221 +55,355 @@ export interface IOptimizationOptions {
     /**
      * Determine the direction we are optimizating for when looking out the object function.
      */
-    searchDirection?: OptimizeSearchDirection; //TODO: This should be part of the objective function??
+    searchDirection?: OptimizeSearchDirection;
 
     /**
-     * Record trades for each iteration of the optimization.
+     * Sets the type of algoritm used for optimization.
+     * Defaults to "hill-climb".
      */
-    recordTrades?: boolean;
+    optimizationType?: OptimizationType;
 
     /**
-     * Number of buckets for evaluating performance stability.
+     * Record all results from all iterations.
      */
-    numBuckets?: number; //TODO: This should be part of the objective function??
+    recordAllResults?: boolean;
+
+    /**
+     * Starting seed for the random number generator.
+     */
+    randomSeed?: number;
+
+    /**
+     * The number of starting points to consider for the hill climb algorithm.
+     * The more starting point the better chance of getting an optimal result, but it also makes the algo run slower.
+     */
+    numStartingPoints?: number;
+
+    /**
+     * Record the duration of the optimization algorithm.
+     */
+    recordDuration?: boolean;
 }
 
 //
-// Bucket nearby iteration results so we can determine how stable the result is.
+// Records the result of an iteration of optimization.
 //
-interface IIterationResultsBucket {
-    //
-    // Index of the bucket.
-    //
-    bucketIndex: number;
-
-    //
-    // Rank of the bucket. 
-    // Average performance / std dev.
-    //
-    bucketRank: number; 
-
-    //
-    // Each result that falls in this bucket.
-    //
-    iterationResults: ISeries<number, IOptimizationIterationResult>;
-}
-
-/**
- * Organise all values in the series into the specified number of buckets.
- * 
- * @param {int} numBuckets - The number of buckets to create.
- * 
- * @returns {DataFrame} Returns a dataframe containing bucketed data. The input values are divided up into these buckets.
- */
-function bucket(optimizationIterationResults: IDataFrame<number, IOptimizationIterationResult>, numBuckets: number, searchDirection: OptimizeSearchDirection): IDataFrame<number, IIterationResultsBucket> {
-
-    if (optimizationIterationResults.none()) {
-        return new DataFrame();
-    }
-
-    const totalValues = optimizationIterationResults.count();
-    const parameterValues = optimizationIterationResults.deflate(iterationResult => iterationResult.parameterValue).bake();
-    const min = parameterValues.min();
-    const max = parameterValues.max();
-    const range = max - min;
-    return optimizationIterationResults
-        .select(iterationResult => {
-            const bucketIndex = Math.floor(((iterationResult.parameterValue - min) / range) * (numBuckets-1));
-            return {
-                bucketIndex: bucketIndex,
-                iterationResult: iterationResult,
-            };
-        })
-        .groupBy(bucket => bucket.bucketIndex)
-        .select(group => {
-            const performanceMetrics = group.select(bucket => bucket.iterationResult.performanceMetric).toArray();
-            const bucketPerformance = math.mean(performanceMetrics);
-            const bucketPerformanceStdDev = math.std(performanceMetrics);
-            const invertedPerformance = searchDirection === OptimizeSearchDirection.Highest ? bucketPerformance : -bucketPerformance;
-            const bucketRank = bucketPerformanceStdDev > 0
-                ? invertedPerformance / bucketPerformanceStdDev
-                : invertedPerformance;
-            return {
-                bucketIndex: group.first().bucketIndex,
-                bucketRank: bucketRank,
-                iterationResults: group.select(bucket => bucket.iterationResult),
-            };
-        })
-        .inflate();
-};    
-
-//
-// Pick the most optimized version strategy of the selected according to the objective function and search direction.
-// Returns the iteration index of the strategy.
-//
-function pickBestStrategy(optimizationIterationResults: IDataFrame<number, IOptimizationIterationResult>, numBuckets: number, searchDirection: OptimizeSearchDirection): number {
-
-    //
-    // Find the best bucket based on average metric value penalised by standard deviation.
-    // Dividing by standard deviation reduces the metric as std dev grows. 
-    //
-    // If we are looking for the lowest value then the average is inverted before taking the ratio.
-    //
-    const bucketed = bucket(optimizationIterationResults, numBuckets, searchDirection);
-    const orderedBuckets = bucketed
-        .orderByDescending(bucket => bucket.bucketRank)
-        .bake();
-    const bestBucket = orderedBuckets.first(); // Looking for highest average performance penalized by std dev. 
-    let orderedResults = bestBucket.iterationResults
-        .orderBy(result => result.performanceMetric)
-        .bake();
-
-    if (searchDirection === OptimizeSearchDirection.Highest) {
-        return orderedResults.first().iterationIndex;
-    }
-    else {
-        return orderedResults.last().iterationIndex;
-    }
-}
-
-/**
- * Perform an optimization over a single parameter.
- */
-export function optimizeSingleParameter<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParameterT, IndexT>(
-    strategy: IStrategy<InputBarT, IndicatorBarT, ParameterT, IndexT>, 
-    parameter: IParameterDef,
-    objectiveFn: ObjectiveFn,
-    inputSeries: IDataFrame<IndexT, InputBarT>,
-    options?: IOptimizationOptions
-        ): IOptimizationResult {
-
-    if (!isObject(strategy)) {
-        throw new Error("Expected 'strategy' argument to 'optimizeSingleParameter' to be an object that defines the strategy to be optimized.");
-    }
-
-    if (!isObject(parameter)) {
-        throw new Error("Expected 'parameter' argument to 'optimizeSingleParameter' to be an object that defines the strategy parameter to be optimized.");
-    }
-
-    if (!isNumber(parameter.startingValue)) {
-        throw new Error("Expected 'startingValue' field of 'parameter' argument to be a number that specifies the starting value of the strategy parameter to be optimized.");
-    }
-
-    if (!isNumber(parameter.endingValue)) {
-        throw new Error("Expected 'endingValue' field of 'parameter' argument to be a number that specifies the starting value of the strategy parameter to be optimized.");
-    }
-
-    if (!isNumber(parameter.stepSize)) {
-        throw new Error("Expected 'stepSize' field of 'parameter' argument to be a number that specifies the starting value of the strategy parameter to be optimized.");
-    }
-
-    if (!isObject(inputSeries)) {
-        throw new Error("Expected 'inputSeries' argument to 'optimizeSingleParameter' to be a Data-Forge DataFrame object that provides the input data for optimization.");
-    }
-
-    if (!options) {
-        options = {};
-    }
-
-    if (options.searchDirection === undefined) {
-        options.searchDirection = OptimizeSearchDirection.Highest;
-    }
-
-    const iterationResults: IOptimizationIterationResult[] = [];
-
-    let iterationIndex = 0;
-    let workingParameter = parameter.startingValue;
-    while (workingParameter <= parameter.endingValue) {
-
-        const parameterOverride: any = {};
-        parameterOverride[parameter.name] = workingParameter;
-
-        const strategyClone = Object.assign({}, strategy);
-        strategyClone.parameters = Object.assign({}, strategy.parameters, parameterOverride);
-
-        // Run a back test with this parameter value.
-        const iterationTrades = backtest<InputBarT, IndicatorBarT, ParameterT, IndexT>(strategyClone, inputSeries);
-
-        // Use objective function to compute performance metric.
-        const iterationResult: IOptimizationIterationResult = {
-            iterationIndex: iterationIndex,
-            parameterValue: workingParameter,
-            performanceMetric: objectiveFn(iterationTrades),
-        };
-
-        if (options.recordTrades) {
-            iterationResult.trades = iterationTrades;
-        }
-
-        iterationResults.push(iterationResult);
-        
-        workingParameter += parameter.stepSize;
-        ++iterationIndex;
-    }
-
-    if (iterationResults.length <= 0) {
-        throw new Error(`Optimization of parameter ${parameter.name} from ${parameter.startingValue} to ${parameter.endingValue} in steps of size ${parameter.stepSize} produced no optimization iterations!`);
-    }
-
-    const bestIterationIndex = pickBestStrategy(new DataFrame(iterationResults), options.numBuckets || defaultNumBuckets, options.searchDirection)
-
-    return {
-        bestIterationResult: iterationResults[bestIterationIndex],
-        iterationResults: iterationResults,
-    };
-}
+export type IterationResult<ParameterT> = (ParameterT & { result: number });
 
 /**
  * Result of a multi-parameter optimisation.
  */
-export interface IMultiParameterOptimizationResult<ParameterT> {
+export interface IOptimizationResult<ParameterT> {
+
+    /**
+     * The best result that was found in the parameter space.
+     */
+    bestResult: number;
 
     /**
      * Best parameter values produced by this optimization.
      */
     bestParameterValues: ParameterT;
+    
+    /**
+     * Results of all iterations of optimizations.
+     */
+    allResults?: IterationResult<ParameterT>[]; 
+
+    /**
+     * The time taken (in milliseconds) by the optimization algorithm.
+     */
+    durationMS?: number;
+}
+
+//
+// Performs a single iteration of optimization and returns the result.
+//
+function optimizationIteration<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParameterT, IndexT>(
+    strategy: IStrategy<InputBarT, IndicatorBarT, ParameterT, IndexT>, 
+    parameters: IParameterDef[],
+    objectiveFn: ObjectiveFn,
+    inputSeries: IDataFrame<IndexT, InputBarT>,
+    coordinates: number[]
+        ): number {
+
+    const parameterOverride: any = {};
+    for (let parameterIndex = 0; parameterIndex < parameters.length; ++parameterIndex) {
+        const parameter = parameters[parameterIndex];
+        parameterOverride[parameter.name] = coordinates[parameterIndex];
+    }
+
+    const strategyClone = Object.assign({}, strategy);
+    strategyClone.parameters = Object.assign({}, strategy.parameters, parameterOverride);
+    return objectiveFn(backtest<InputBarT, IndicatorBarT, ParameterT, IndexT>(strategyClone, inputSeries));
+}
+
+//
+// Get neighbours of a particular set of coordinates.
+//
+function* getNeighbours(coordinates: number[], parameters: IParameterDef[]): IterableIterator<number[]> {
+    // 
+    // Step forward.
+    //
+    for (let i = 0; i < parameters.length; ++i) {
+        const nextCoordinate = coordinates[i] += parameters[i].stepSize;
+        if (nextCoordinate <= parameters[i].endingValue) {
+            const nextCoordinates = coordinates.slice(); // Clone.
+            nextCoordinates[i] = nextCoordinate;
+            yield nextCoordinates;
+        }
+    }
+
+    // 
+    // Step backward.
+    //
+    for (let i = 0; i < parameters.length; ++i) {
+        const nextCoordinate = coordinates[i] -= parameters[i].stepSize;
+        if (nextCoordinate >= parameters[i].startingValue) {
+            const nextCoordinates = coordinates.slice(); // Clone.
+            nextCoordinates[i] = nextCoordinate;
+            yield nextCoordinates;
+        }
+    }
+}
+
+//
+// Extracts parameter values from the coordinate system.
+//
+function extractParameterValues<ParameterT>(parameters: IParameterDef[], workingCoordinates: number[]): ParameterT {
+    
+    const bestParameterValues: any = {};
+
+    for (let parameterIndex = 0; parameterIndex < parameters.length; ++parameterIndex) {
+        const parameter = parameters[parameterIndex];
+        bestParameterValues[parameter.name] = workingCoordinates[parameterIndex];
+    }
+
+    return bestParameterValues;
+}
+
+//
+// Packages the results of an iteration.
+//
+function packageIterationResult<ParameterT>(parameters: IParameterDef[], workingCoordinates: number[], result: number): IterationResult<ParameterT> {
+    const iterationResult: any = Object.assign(
+        {}, 
+        extractParameterValues(parameters, workingCoordinates), 
+        { result:  result }
+    );
+    return iterationResult;
+}
+
+//
+// Returns true to accept the current result or false to discard.
+//
+function acceptResult(workingResult: number, nextResult: number, options: IOptimizationOptions): boolean {
+
+    if (options.searchDirection === "max") {
+        if (nextResult > workingResult) { // Looking for maximum value.
+            return true;
+        }
+    }
+    else {
+        if (nextResult < workingResult) { // Looking for minimum value.
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//
+// Iterate a dimension in coordinate space.
+//
+function* iterateDimension(workingCoordinates: number[], parameterIndex: number, parameters: IParameterDef[]): IterableIterator<number[]> {
+    
+    const parameter = parameters[parameterIndex];
+    
+    for (let parameterValue = parameter.startingValue; parameterValue <= parameter.endingValue; parameterValue += parameter.stepSize) {
+
+        const coordinatesHere = [...workingCoordinates, parameterValue];
+
+        if (parameterIndex < parameters.length-1) {
+            //
+            // Recurse to higher dimensions.
+            //
+            for (const coordinates of iterateDimension(coordinatesHere, parameterIndex+1, parameters)) {
+                yield coordinates;
+            }
+        }
+        else {
+            //
+            // At the bottommost dimension.
+            // This is where we produce coordinates.
+            //
+            yield coordinatesHere;
+        }
+    }
+}
+
+//
+// Get all coordinates in a particualr coordinate space.
+//
+function* getAllCoordinates(parameters: IParameterDef[]): IterableIterator<number[]> {
+
+    for (const coordinates of iterateDimension([], 0, parameters)) {
+        yield coordinates;
+    }
+}
+
+//
+// Performs a fast but non-exhaustive hill climb optimization.
+//
+function hillClimbOptimization<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParameterT, IndexT>(
+    strategy: IStrategy<InputBarT, IndicatorBarT, ParameterT, IndexT>, 
+    parameters: IParameterDef[],
+    objectiveFn: ObjectiveFn,
+    inputSeries: IDataFrame<IndexT, InputBarT>,
+    options: IOptimizationOptions
+        ): IOptimizationResult<ParameterT> {
+
+    let bestResult: number | undefined;
+    let bestCoordinates: number[] | undefined;
+    const results: IterationResult<ParameterT>[] = [];
+
+    const startTime = performance.now();
+
+    const visitedCoordinates = new Map<number[], number>(); // Tracks coordinates that we have already visited and their value.
+
+    const random = new Random(options.randomSeed || 0);
+
+    const numStartingPoints = options.numStartingPoints || 4;
+    for (let startingPointIndex = 0; startingPointIndex < numStartingPoints; ++startingPointIndex) {
+
+        //
+        // Compute starting coordinates for this section.
+        //
+        let workingCoordinates: number[] = [];
+    
+        for (const parameter of parameters) {
+            const randomIncrement = random.getInt(0, (parameter.endingValue - parameter.startingValue) / parameter.stepSize);
+            const randomCoordinate = parameter.startingValue + randomIncrement * parameter.stepSize;
+            workingCoordinates.push(randomCoordinate);
+        }
+
+        if (visitedCoordinates.has(workingCoordinates)) {
+            // Already been here!
+            continue;
+        }
+
+        let workingResult = optimizationIteration(strategy, parameters, objectiveFn, inputSeries, workingCoordinates);
+        visitedCoordinates.set(workingCoordinates, workingResult);
+
+        if (bestResult === undefined) {
+            bestResult = workingResult;
+            bestCoordinates = workingCoordinates
+        }
+        else if (acceptResult(bestResult, workingResult, options)) {
+            bestResult = workingResult;
+            bestCoordinates = workingCoordinates;
+        }
+
+        if (options.recordAllResults) {
+            results.push(packageIterationResult(parameters, workingCoordinates, workingResult));
+        }
+    
+        while (true) {
+            let gotBetterResult = false;
+
+            //
+            // Visit all neighbouring coordinates.
+            //
+            let nextCoordinates: number[];
+            for (nextCoordinates of getNeighbours(workingCoordinates!, parameters)) {
+
+                const cachedResult = visitedCoordinates.get(workingCoordinates);                
+                const nextResult = cachedResult !== undefined ? cachedResult : optimizationIteration(strategy, parameters, objectiveFn, inputSeries, nextCoordinates);
+
+                if (options.recordAllResults) {
+                    results.push(packageIterationResult(parameters, workingCoordinates, workingResult));
+                }
+                
+                if (acceptResult(bestResult, workingResult, options)) {
+                    bestResult = workingResult;
+                    bestCoordinates = workingCoordinates;
+                }
+    
+                if (acceptResult(workingResult, nextResult, options)) {
+                    workingCoordinates = nextCoordinates; 
+                    workingResult = nextResult;
+                    gotBetterResult = true;
+
+                    break; // Move to this neighbour and start again.
+                }
+            }
+
+            if (!gotBetterResult) {
+                // There is no better neighbour, break out.
+                break;
+            }
+        }
+    }
+
+    return {
+        bestResult: bestResult!,
+        bestParameterValues: extractParameterValues(parameters, bestCoordinates!),
+        durationMS: options.recordDuration ? (performance.now() - startTime) : undefined,
+        allResults: options.recordAllResults ? results : undefined,
+    };
+}
+
+//
+// Performs a slow exhaustive grid search optimization.
+//
+function gridSearchOptimization<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParameterT, IndexT>(
+    strategy: IStrategy<InputBarT, IndicatorBarT, ParameterT, IndexT>, 
+    parameters: IParameterDef[],
+    objectiveFn: ObjectiveFn,
+    inputSeries: IDataFrame<IndexT, InputBarT>,
+    options: IOptimizationOptions
+        ): IOptimizationResult<ParameterT> {
+
+    let bestResult: number | undefined;
+    let bestCoordinates: number[] | undefined;
+    const results: IterationResult<ParameterT>[] = [];
+
+    const startTime = performance.now();
+
+    for (const coordinates of getAllCoordinates(parameters)) {
+        const iterationResult = optimizationIteration(strategy, parameters, objectiveFn, inputSeries, coordinates);
+        if (bestResult === undefined) {
+            bestResult = iterationResult;
+            bestCoordinates = coordinates;
+        }
+        else if (acceptResult(bestResult, iterationResult, options)) {
+            bestResult = iterationResult;
+            bestCoordinates = coordinates;
+        }
+
+        if (options.recordAllResults) {
+            results.push(packageIterationResult(parameters, coordinates, iterationResult));
+        }
+    }
+
+    return {
+        bestResult: bestResult!,
+        bestParameterValues: extractParameterValues(parameters, bestCoordinates!),
+        durationMS: options.recordDuration ? (performance.now() - startTime) : undefined,
+        allResults: options.recordAllResults ? results : undefined,
+    };
 }
 
 /**
  * Perform an optimization over multiple parameters.
  */
-export function optimize<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParameterT, IndexT>(
+export function optimize<InputBarT extends IBar, IndicatorBarT extends InputBarT, ParameterT, IndexT> (
     strategy: IStrategy<InputBarT, IndicatorBarT, ParameterT, IndexT>, 
     parameters: IParameterDef[],
     objectiveFn: ObjectiveFn,
     inputSeries: IDataFrame<IndexT, InputBarT>,
     options?: IOptimizationOptions
-        ): IMultiParameterOptimizationResult<ParameterT> {
+        ): IOptimizationResult<ParameterT> {
 
     if (!isObject(strategy)) {
         throw new Error("Expected 'strategy' argument to 'optimize' to be an object that defines the trading strategy to be optimized.");
@@ -340,22 +424,25 @@ export function optimize<InputBarT extends IBar, IndicatorBarT extends InputBarT
     if (!options) {
         options = {};
     }
+    else {
+        options = Object.assign({}, options); // Copy so we can change.
+    }
 
     if (options.searchDirection === undefined) {
-        options.searchDirection = OptimizeSearchDirection.Highest;
+        options.searchDirection = "max";
     }
 
-    const workingStrategy = Object.assign({}, strategy);
-    workingStrategy.parameters = Object.assign({}, strategy.parameters);
-
-    //TODO: Should pass back the metrics for each run of parameters.
-    
-    for (const parameter of parameters) { //TODO: Maybe want a higher level loop that continues to optimize until we get a stable result.
-        const singleParameterResult = optimizeSingleParameter(workingStrategy, parameter, objectiveFn, inputSeries, options);
-        (workingStrategy.parameters as any)[parameter.name] = singleParameterResult.bestIterationResult.parameterValue;
+    if (options.optimizationType === undefined) {
+        options.optimizationType = "grid";
     }
 
-    return {
-        bestParameterValues: workingStrategy.parameters,
-    };
+    if (options.optimizationType === "hill-climb") {
+        return hillClimbOptimization<InputBarT, IndicatorBarT, ParameterT, IndexT>(strategy, parameters, objectiveFn, inputSeries, options);
+    }
+    else if (options.optimizationType === "grid") {
+        return gridSearchOptimization<InputBarT, IndicatorBarT, ParameterT, IndexT>(strategy, parameters, objectiveFn, inputSeries, options);
+    }
+    else {
+        throw new Error(`Unexpected "optimizationType" field of "options" parameter to the "optimize" function. Expected "grid", or "hill-climb", Actual: "${options.optimizationType}".`);
+    }
 }

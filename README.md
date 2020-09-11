@@ -10,6 +10,8 @@ This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from
 
 For news and updates see my blog [The Data Wrangler](http://www.the-data-wrangler.com/).
 
+Check out the [release notes](release-notes.md) to see updates and breaking changes.
+
 <a href="#support-the-developer">Skip to the end to see how you can **support the developer.**</a>
 
 ## BREAKING CHANGES
@@ -54,14 +56,14 @@ Here's another chart, this one is a visualization of the drawdown for the exampl
 
 ## Latest features
 
-Not yet documented sorry. [Blog posts](http://www.the-data-wrangler.com/), examples and [videos](https://www.youtube.com/channel/UCOxw0jy384_wFRwspgq7qMQ) coming soon!
+Not fully documented yet, sorry. [Blog posts](http://www.the-data-wrangler.com/), examples and [videos](https://www.youtube.com/channel/UCOxw0jy384_wFRwspgq7qMQ) coming soon!
 
 - Calculation of risk and rmultiples.
 - Intrabar profit target.
 - Intrabar trailing stop loss.
 - Conditional buy on price level (intrabar).
 - Monte carlo simulation.
-- Optimization based on permutations of parameters.
+- Multiple parameter optimization based on permutations of parameters (using grid search and hill-climb algorithms).
 - Walk forward optimization and backtesting.
 - Plot a chart of trailing stop loss.
 

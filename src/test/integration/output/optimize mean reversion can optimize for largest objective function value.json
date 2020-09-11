@@ -1,164 +1,20 @@
 {
-    "bestIterationResult": {
-        "iterationIndex": 2,
-        "parameterValue": 25,
-        "performanceMetric": 0.7335838253712609,
-        "trades": [
-            {
-                "entryTime": "2017-12-05T14:00:00.000Z",
-                "entryPrice": 55.89,
-                "exitTime": "2017-12-07T14:00:00.000Z",
-                "exitPrice": 56.3,
-                "profit": 0.4099999999999966,
-                "profitPct": 0.7335838253712589,
-                "growth": 1.0073358382537125,
-                "holdingPeriod": 1,
-                "exitReason": "exit-rule"
-            }
-        ]
+    "bestResult": 0.7335838253712609,
+    "bestParameterValues": {
+        "SMA": 25
     },
-    "iterationResults": [
+    "allResults": [
         {
-            "iterationIndex": 0,
-            "parameterValue": 5,
-            "performanceMetric": 0.654892119305041,
-            "trades": [
-                {
-                    "entryTime": "2017-10-23T14:00:00.000Z",
-                    "entryPrice": 55.07,
-                    "exitTime": "2017-10-25T14:00:00.000Z",
-                    "exitPrice": 55.12,
-                    "profit": 0.04999999999999716,
-                    "profitPct": 0.09079353550026723,
-                    "growth": 1.0009079353550028,
-                    "holdingPeriod": 1,
-                    "exitReason": "exit-rule"
-                },
-                {
-                    "entryTime": "2017-10-29T14:00:00.000Z",
-                    "entryPrice": 55.4,
-                    "exitTime": "2017-10-31T14:00:00.000Z",
-                    "exitPrice": 55.38,
-                    "profit": -0.01999999999999602,
-                    "profitPct": -0.03610108303248379,
-                    "growth": 0.9996389891696752,
-                    "holdingPeriod": 1,
-                    "exitReason": "exit-rule"
-                },
-                {
-                    "entryTime": "2017-11-14T14:00:00.000Z",
-                    "entryPrice": 55.88,
-                    "exitTime": "2017-11-21T14:00:00.000Z",
-                    "exitPrice": 56.32,
-                    "profit": 0.4399999999999977,
-                    "profitPct": 0.7874015748031454,
-                    "growth": 1.0078740157480315,
-                    "holdingPeriod": 4,
-                    "exitReason": "exit-rule"
-                },
-                {
-                    "entryTime": "2017-11-28T14:00:00.000Z",
-                    "entryPrice": 56.57,
-                    "exitTime": "2017-12-03T14:00:00.000Z",
-                    "exitPrice": 56.34,
-                    "profit": -0.22999999999999687,
-                    "profitPct": -0.4065759236344297,
-                    "growth": 0.9959342407636557,
-                    "holdingPeriod": 2,
-                    "exitReason": "exit-rule"
-                },
-                {
-                    "entryTime": "2017-12-05T14:00:00.000Z",
-                    "entryPrice": 55.89,
-                    "exitTime": "2017-12-07T14:00:00.000Z",
-                    "exitPrice": 56.3,
-                    "profit": 0.4099999999999966,
-                    "profitPct": 0.7335838253712589,
-                    "growth": 1.0073358382537125,
-                    "holdingPeriod": 1,
-                    "exitReason": "exit-rule"
-                },
-                {
-                    "entryTime": "2017-12-17T14:00:00.000Z",
-                    "entryPrice": 56.65,
-                    "exitTime": "2017-12-19T14:00:00.000Z",
-                    "exitPrice": 56.9,
-                    "profit": 0.25,
-                    "profitPct": 0.441306266548985,
-                    "growth": 1.00441306266549,
-                    "holdingPeriod": 1,
-                    "exitReason": "exit-rule"
-                },
-                {
-                    "entryTime": "2017-12-27T14:00:00.000Z",
-                    "entryPrice": 57.11,
-                    "exitTime": "2017-12-28T14:00:00.000Z",
-                    "exitPrice": 56.57,
-                    "profit": -0.5399999999999991,
-                    "profitPct": -0.9455436876203802,
-                    "growth": 0.9905445631237962,
-                    "holdingPeriod": 1,
-                    "exitReason": "finalize"
-                }
-            ]
+            "SMA": 5,
+            "result": 0.654892119305041
         },
         {
-            "iterationIndex": 1,
-            "parameterValue": 15,
-            "performanceMetric": 0.391507239285238,
-            "trades": [
-                {
-                    "entryTime": "2017-11-15T14:00:00.000Z",
-                    "entryPrice": 55.68,
-                    "exitTime": "2017-11-19T14:00:00.000Z",
-                    "exitPrice": 55.73,
-                    "profit": 0.04999999999999716,
-                    "profitPct": 0.08979885057470753,
-                    "growth": 1.0008979885057472,
-                    "holdingPeriod": 1,
-                    "exitReason": "exit-rule"
-                },
-                {
-                    "entryTime": "2017-11-30T14:00:00.000Z",
-                    "entryPrice": 56.33,
-                    "exitTime": "2017-12-04T14:00:00.000Z",
-                    "exitPrice": 55.94,
-                    "profit": -0.39000000000000057,
-                    "profitPct": -0.692348659684006,
-                    "growth": 0.9930765134031599,
-                    "holdingPeriod": 1,
-                    "exitReason": "exit-rule"
-                },
-                {
-                    "entryTime": "2017-12-06T14:00:00.000Z",
-                    "entryPrice": 55.96,
-                    "exitTime": "2017-12-10T14:00:00.000Z",
-                    "exitPrice": 56.52,
-                    "profit": 0.5600000000000023,
-                    "profitPct": 1.0007147962830634,
-                    "growth": 1.0100071479628305,
-                    "holdingPeriod": 1,
-                    "exitReason": "exit-rule"
-                }
-            ]
+            "SMA": 15,
+            "result": 0.391507239285238
         },
         {
-            "iterationIndex": 2,
-            "parameterValue": 25,
-            "performanceMetric": 0.7335838253712609,
-            "trades": [
-                {
-                    "entryTime": "2017-12-05T14:00:00.000Z",
-                    "entryPrice": 55.89,
-                    "exitTime": "2017-12-07T14:00:00.000Z",
-                    "exitPrice": 56.3,
-                    "profit": 0.4099999999999966,
-                    "profitPct": 0.7335838253712589,
-                    "growth": 1.0073358382537125,
-                    "holdingPeriod": 1,
-                    "exitReason": "exit-rule"
-                }
-            ]
+            "SMA": 25,
+            "result": 0.7335838253712609
         }
     ]
 }

@@ -3,24 +3,9 @@ import { IDataFrame } from "data-forge";
 import { ITrade } from "./trade";
 import { IStrategy } from "./strategy";
 import { backtest } from "./backtest";
-import { IParameterDef, ObjectiveFn, OptimizeSearchDirection, optimize } from "./optimize";
+import { IParameterDef, ObjectiveFn, optimize, IOptimizationOptions } from "./optimize";
 import { isObject, isArray, isFunction, isNumber } from "./utils";
-
-/**
- * Options to the optimize function.
- */
-export interface IOptimizationOptions {
-
-    /**
-     * Determine the direction we are optimizating for when looking out the object function.
-     */
-    searchDirection?: OptimizeSearchDirection; //TODO: This should be part of the objective function??
-
-    /**
-     * Number of buckets for evaluating performance stability.
-     */
-    numBuckets?: number; //TODO: This should be part of the objective function??
-}
+import { Random } from "./random";
 
 /**
  * Records the result of an optimization.
@@ -73,10 +58,15 @@ export function walkForwardOptimize<InputBarT extends IBar, IndicatorBarT extend
     if (!options) {
         options = {};
     }
+    else {
+        options = Object.assign({}, options); // Copy so we can change.
+    }
 
     if (options.searchDirection === undefined) {
-        options.searchDirection = OptimizeSearchDirection.Highest;
+        options.searchDirection = "max";
     }
+
+    const random = new Random(options.randomSeed || 0);
 
     let workingDataOffset = 0;
     let trades: ITrade[] = []
@@ -89,9 +79,14 @@ export function walkForwardOptimize<InputBarT extends IBar, IndicatorBarT extend
         }
 
         //
+        // Choose a random seed for this iteration of optimziation.
+        //
+        options.randomSeed = random.getReal();
+
+        //
         // Optimize using in sample data.
         //
-        const optimizeResult = optimize(strategy, parameters, objectiveFn, inSampleSeries, { numBuckets: options.numBuckets, searchDirection: options.searchDirection });
+        const optimizeResult = optimize(strategy, parameters, objectiveFn, inSampleSeries, options);
 
         //
         // Construct a strategy using the optimal parameter values.

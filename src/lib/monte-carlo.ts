@@ -1,14 +1,15 @@
 import { ITrade } from "..";
 import { isNumber, isArray } from "./utils";
-const MersenneTwister = require('mersennetwister');
+import { Random } from "./random";
 
-//https://stackoverflow.com/a/1527820/25868
 /**
- * Returns a random integer between min (inclusive) and max (inclusive)
- * Using Math.round() will give you a non-uniform distribution!
+ * Options to the monteCarlo function.
  */
-function getRandomInt (random: any, min: number, max: number): number {
-    return Math.floor(random.real() * (max - min + 1)) + min;
+export interface IMonteCarloOptions {
+    /**
+     * Starting seed for the random number generator.
+     */
+    randomSeed?: number;
 }
 
 /**
@@ -17,7 +18,7 @@ function getRandomInt (random: any, min: number, max: number): number {
  * X = numIterators.
  * Y = numSamples
  */
-export function monteCarlo(trades: ITrade[], numIterations: number, numSamples: number): ITrade[][] {
+export function monteCarlo(trades: ITrade[], numIterations: number, numSamples: number, options?: IMonteCarloOptions): ITrade[][] {
 
     if (!isArray(trades)) {
         throw new Error("Expected 'trades' argument to 'monteCarlo' to be an array that contains a population of trades to sample during monte carlo simulation.");
@@ -36,14 +37,14 @@ export function monteCarlo(trades: ITrade[], numIterations: number, numSamples: 
         return [];
     }
 
-    const random = new MersenneTwister(0);
+    const random = new Random(options && options.randomSeed || 0);
     const samples: ITrade[][] = [];
 
     for (let iterationIndex = 0; iterationIndex < numIterations; ++iterationIndex) {
         const sample: ITrade[] = [];
 
         for (var tradeIndex = 0; tradeIndex < numSamples; ++tradeIndex) {
-            var tradeCopyIndex = getRandomInt(random, 0, numTrades-1);
+            var tradeCopyIndex = random.getInt(0, numTrades-1);
             sample.push(trades[tradeCopyIndex]);
         }
 

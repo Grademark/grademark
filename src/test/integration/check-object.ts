@@ -94,7 +94,7 @@ export function checkObject (obj: any, spec: any, fieldPath: string = "") {
         let val = obj[key];
         const expected = spec[key];
         if (val === undefined) {
-            throw new Error("Missing key in array: " + key);
+            throw new Error(`Missing key in object at ${fieldPath}.${key}`);
         }
 
         const valuePath = fieldPath + "." + key;

@@ -5,6 +5,7 @@
     "main": "build/index.js",
     "types": "build/index.d.ts",
     "scripts": {
+        "setup": "npm install --save=false data-forge",
         "c": "npm run clean",
         "clean": "rm -rf build/*",
         "b": "npm run build",

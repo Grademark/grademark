@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { OptimizeSearchDirection, optimizeSingleParameter } from '../../lib/optimize';
+import { optimize } from '../../lib/optimize';
 import { IDataFrame } from 'data-forge';
 import { DataFrame } from 'data-forge';
 import { IBar } from '../../lib/bar';
@@ -53,29 +53,8 @@ describe("optimize", () => {
         { time: "2018/10/28", close: 180 },
         { time: "2018/10/29", close: 190 },
     ]);
-    
-    it("can perform multiple optimization iterations", () => {
 
-        const strategy = {
-            entryRule: unconditionalEntry,
-
-        } as IStrategy;
-
-        const parameter = {
-             name: "MyParameter",
-             startingValue: 1,
-             endingValue: 10,
-             stepSize: 1,
-        };
-
-        const mockPerformanceMetrics = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-        let mockPerformanceMetricIndex = 0;
-        const objectiveFn = (trades: ITrade[]) => mockPerformanceMetrics[mockPerformanceMetricIndex]++;
-        const result = optimizeSingleParameter(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Highest });
-        expect(result.iterationResults.length).to.eql(10);
-    });
-
-    it("iteration with highest performance metric wins", () => {
+    it("parameter value with highest performance metric wins", () => {
 
         const strategy = {
             entryRule: unconditionalEntry,
@@ -92,8 +71,9 @@ describe("optimize", () => {
         const mockPerformanceMetrics = [5, 6, 2];
         let mockPerformanceMetricIndex = 0;
         const objectiveFn = (trades: ITrade[]) => mockPerformanceMetrics[mockPerformanceMetricIndex++];
-        const result = optimizeSingleParameter(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Highest });
-        expect(result.bestIterationResult.iterationIndex).to.eql(1);
+        const result = optimize(strategy, [parameter], objectiveFn, inputSeries, { searchDirection: "max", optimizationType: "grid" });
+        expect(result.bestParameterValues.MyParameter).to.eql(2);
+        expect(result.bestResult).to.eql(6);
     });
 
     it("iteration with lowest performance metric wins", () => {
@@ -113,8 +93,9 @@ describe("optimize", () => {
         const mockPerformanceMetrics = [5, 6, 2];
         let mockPerformanceMetricIndex = 0;
         const objectiveFn = (trades: ITrade[]) => mockPerformanceMetrics[mockPerformanceMetricIndex++];
-        const result = optimizeSingleParameter(strategy, parameter, objectiveFn, inputSeries, { searchDirection: OptimizeSearchDirection.Lowest });
-        expect(result.bestIterationResult.iterationIndex).to.eql(2);
+        const result = optimize(strategy, [parameter], objectiveFn, inputSeries, { searchDirection: "min", optimizationType: "grid" });
+        expect(result.bestParameterValues.MyParameter).to.eql(3);
+        expect(result.bestResult).to.eql(2);
     });
 
 });

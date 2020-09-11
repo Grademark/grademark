@@ -87,7 +87,9 @@ describe("walk forward optimize mean reversion", function (this: any) {
             90,
             30,
             {
-                searchDirection: OptimizeSearchDirection.Highest,
+                searchDirection: "max",
+                optimizationType: "grid",
+                recordAllResults: true,
             }
         );
 

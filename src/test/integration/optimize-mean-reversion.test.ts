@@ -1,4 +1,4 @@
-import { OptimizeSearchDirection, optimizeSingleParameter } from '../../lib/optimize';
+import { optimize } from '../../lib/optimize';
 import { analyze } from '../../lib/analyze';
 import { IBar } from '../../lib/bar';
 import * as dataForge from 'data-forge';
@@ -73,17 +73,18 @@ describe("optimize mean reversion", function (this: any) {
 
     it("can optimize for largest objective function value", function (this: any) {
         const strategy = meanReversionStrategy();
-        const result = optimizeSingleParameter(strategy, { 
+        const result = optimize(strategy, [{ 
                 name: "SMA", 
                 startingValue: 5, 
                 endingValue: 25, 
                 stepSize: 10,
-            },
+            }],
             trades => analyze(10000, trades).profitPct,
             inputSeries,
             {
-                searchDirection: OptimizeSearchDirection.Highest,
-                recordTrades: true,
+                searchDirection: "max",
+                optimizationType: "grid",
+                recordAllResults: true,
             }
         );
 
@@ -92,17 +93,18 @@ describe("optimize mean reversion", function (this: any) {
 
     it("larger optimization", function (this: any) {
         const strategy = meanReversionStrategy();
-        const result = optimizeSingleParameter(strategy, { 
+        const result = optimize(strategy, [{ 
                 name: "SMA", 
                 startingValue: 5, 
                 endingValue: 25, 
                 stepSize: 2,
-            },
+            }],
             trades => analyze(10000, trades).profitPct,
             inputSeries,
             {
-                searchDirection: OptimizeSearchDirection.Highest,
-                recordTrades: true,
+                searchDirection: "max",
+                optimizationType: "grid",
+                recordAllResults: true,
             }
         );
 
