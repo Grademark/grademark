@@ -1,6 +1,6 @@
 # Grademark release notes
 
-## 0.2.0
+## v0.2.0
 
 **BREAKING CHANGES** 
 
@@ -17,3 +17,9 @@
     - Instead of inputing a `DataFrame` call `toArray` on it instead to convert it to an array.
     - If you want output as a `DataFrame` just wrap the returned array in a new one, e.g. `const trades = new DataFrame(backtest(...))`;
   
+
+## v0.0.1
+
+**BREAKING CHANGES** 
+
+- Arguments to functions for strategy rules have changed. Instead of having individual arguments to each function, arguments are now bundled in objects for future expandability and better auto-competion.

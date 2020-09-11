@@ -4,8 +4,6 @@ API for backtesting financial trading strategies in JavaScript and TypeScript.
 
 <a target="_blank" href="https://www.data-forge-notebook.com/"><img align="right" src="images/support1.png"></a>
 
-WORK IN PROGRESS: The API is fairly stable, but there are features yet to be implemented.
-
 This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from [Data-Forge Notebook](http://www.data-forge-notebook.com/) (making it easy to plot charts and visualize).
 
 For news and updates see my blog [The Data Wrangler](http://www.the-data-wrangler.com/).
@@ -13,12 +11,6 @@ For news and updates see my blog [The Data Wrangler](http://www.the-data-wrangle
 Check out the [release notes](release-notes.md) to see updates and breaking changes.
 
 <a href="#support-the-developer">Skip to the end to see how you can **support the developer.**</a>
-
-## BREAKING CHANGES
-
-v0.0.1
-
-Arguments to functions for strategy rules have changed. Instead of having individual arguments to each function, arguments are now bundled in objects for future expandability and better auto-competion.
 
 Please see what this looks like in [the Grademark first example](https://github.com/grademark/grademark-first-example) and the unit tests in this repo.
 
