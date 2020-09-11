@@ -1,6 +1,6 @@
 # Grademark
 
-API for backtesting financial trading strategies in JavaScript and TypeScript.
+Toolkit for algo trading and backtesting in JavaScript and TypeScript.
 
 This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from [Data-Forge Notebook](http://www.data-forge-notebook.com/) (making it easy to plot charts and visualize).
 
