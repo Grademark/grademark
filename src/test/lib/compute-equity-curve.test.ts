@@ -12,9 +12,9 @@ describe("compute equity curve", () => {
 
     it("no trades results in equity curve with only starting capital", () => {
         const startingCapital = 1000;
-        const equityCurve = computeEquityCurve(startingCapital, new DataFrame<number, ITrade>());
-        expect(equityCurve.count()).to.eql(1);
-        expect(equityCurve.first()).to.eql(startingCapital);
+        const equityCurve = computeEquityCurve(startingCapital, []);
+        expect(equityCurve.length).to.eql(1);
+        expect(equityCurve[0]).to.eql(startingCapital);
     });
 
     it("can compute equity curve for single trade with profit", () => {
@@ -33,9 +33,9 @@ describe("compute equity curve", () => {
         };
 
         const startingCapital = 100;
-        const equityCurve = computeEquityCurve(startingCapital, new DataFrame<number, ITrade>([ singleTrade ]));
-        expect(equityCurve.count()).to.eql(2);
-        expect(equityCurve.skip(1).first()).to.eql(startingCapital * growth);
+        const equityCurve = computeEquityCurve(startingCapital, [ singleTrade ]);
+        expect(equityCurve.length).to.eql(2);
+        expect(equityCurve[1]).to.eql(startingCapital * growth);
     });
 
     it("can compute equity curve for single trade with loss", () => {
@@ -54,9 +54,9 @@ describe("compute equity curve", () => {
         };
 
         const startingCapital = 100;
-        const equityCurve = computeEquityCurve(startingCapital, new DataFrame<number, ITrade>([ singleTrade ]));
-        expect(equityCurve.count()).to.eql(2);
-        expect(equityCurve.skip(1).first()).to.eql(startingCapital * growth);
+        const equityCurve = computeEquityCurve(startingCapital, [ singleTrade ]);
+        expect(equityCurve.length).to.eql(2);
+        expect(equityCurve[1]).to.eql(startingCapital * growth);
     });
     
     it("can compute equity curve for multiple trades with profit", () => {
@@ -89,10 +89,10 @@ describe("compute equity curve", () => {
         ];
 
         const startingCapital = 10;
-        const equityCurve = computeEquityCurve(startingCapital, new DataFrame<number, ITrade>(trades));
-        expect(equityCurve.count()).to.eql(3);
-        expect(equityCurve.skip(1).first()).to.eql(startingCapital * growth1);
-        expect(equityCurve.skip(2).first()).to.eql(startingCapital * growth1 * growth2);
+        const equityCurve = computeEquityCurve(startingCapital, trades);
+        expect(equityCurve.length).to.eql(3);
+        expect(equityCurve[1]).to.eql(startingCapital * growth1);
+        expect(equityCurve[2]).to.eql(startingCapital * growth1 * growth2);
     });
 
     it("can compute equity curve for multiple trades with loss", () => {
@@ -125,10 +125,10 @@ describe("compute equity curve", () => {
         ];
 
         const startingCapital = 20;
-        const equityCurve = computeEquityCurve(startingCapital, new DataFrame<number, ITrade>(trades));
-        expect(equityCurve.count()).to.eql(3);
-        expect(equityCurve.skip(1).first()).to.eql(startingCapital * growth1);
-        expect(equityCurve.skip(2).first()).to.eql(startingCapital * growth1 * growth2);
+        const equityCurve = computeEquityCurve(startingCapital, trades);
+        expect(equityCurve.length).to.eql(3);
+        expect(equityCurve[1]).to.eql(startingCapital * growth1);
+        expect(equityCurve[2]).to.eql(startingCapital * growth1 * growth2);
     });
 
     it("can compute equity curve for multiple trades with profit and loss", () => {
@@ -161,10 +161,10 @@ describe("compute equity curve", () => {
         ];
 
         const startingCapital = 20;
-        const equityCurve = computeEquityCurve(startingCapital, new DataFrame<number, ITrade>(trades));
-        expect(equityCurve.count()).to.eql(3);
-        expect(equityCurve.skip(1).first()).to.eql(startingCapital * growth1);
-        expect(equityCurve.skip(2).first()).to.eql(startingCapital * growth1 * growth2);
+        const equityCurve = computeEquityCurve(startingCapital, trades);
+        expect(equityCurve.length).to.eql(3);
+        expect(equityCurve[1]).to.eql(startingCapital * growth1);
+        expect(equityCurve[2]).to.eql(startingCapital * growth1 * growth2);
     });
 
     it("can compute equity curve for multiple trades with loss and profit", () => {
@@ -197,9 +197,9 @@ describe("compute equity curve", () => {
         ];
 
         const startingCapital = 20;
-        const equityCurve = computeEquityCurve(startingCapital, new DataFrame<number, ITrade>(trades));
-        expect(equityCurve.count()).to.eql(3);
-        expect(equityCurve.skip(1).first()).to.eql(startingCapital * growth1);
-        expect(equityCurve.skip(2).first()).to.eql(startingCapital * growth1 * growth2);
+        const equityCurve = computeEquityCurve(startingCapital, trades);
+        expect(equityCurve.length).to.eql(3);
+        expect(equityCurve[1]).to.eql(startingCapital * growth1);
+        expect(equityCurve[2]).to.eql(startingCapital * growth1 * growth2);
     });
 });

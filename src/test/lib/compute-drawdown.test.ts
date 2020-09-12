@@ -12,9 +12,9 @@ describe("compute drawdown", () => {
 
     it("no trades results in just starting drawdown of zero", () => {
         const startingCapital = 1000;
-        const drawdown = computeDrawdown(startingCapital, new DataFrame<number, ITrade>());
-        expect(drawdown.count()).to.eql(1);
-        expect(drawdown.first()).to.eql(0);
+        const drawdown = computeDrawdown(startingCapital, []);
+        expect(drawdown.length).to.eql(1);
+        expect(drawdown[0]).to.eql(0);
     });
 
     it("can compute drawdown for single trade with profit", () => {
@@ -31,9 +31,9 @@ describe("compute drawdown", () => {
             exitReason: "Sell",
         };
 
-        const drawdown = computeDrawdown(10, new DataFrame<number, ITrade>([ singleTrade ]));
-        expect(drawdown.count()).to.eql(2);
-        expect(drawdown.skip(1).first()).to.eql(0);
+        const drawdown = computeDrawdown(10, [ singleTrade ]);
+        expect(drawdown.length).to.eql(2);
+        expect(drawdown[1]).to.eql(0);
     });
 
     it("can compute drawdown for single trade with loss", () => {
@@ -50,9 +50,9 @@ describe("compute drawdown", () => {
             exitReason: "Sell",
         };
 
-        const drawdown = computeDrawdown(10, new DataFrame<number, ITrade>([ singleTrade ]));
-        expect(drawdown.count()).to.eql(2);
-        expect(drawdown.skip(1).first()).to.eql(-5);
+        const drawdown = computeDrawdown(10, [ singleTrade ]);
+        expect(drawdown.length).to.eql(2);
+        expect(drawdown[1]).to.eql(-5);
     });
     
     it("can compute drawdown for multiple trades with profit", () => {
@@ -82,10 +82,10 @@ describe("compute drawdown", () => {
             },
         ];
 
-        const drawdown = computeDrawdown(10, new DataFrame<number, ITrade>(trades));
-        expect(drawdown.count()).to.eql(3);
-        expect(drawdown.skip(1).first()).to.eql(0);
-        expect(drawdown.skip(2).first()).to.eql(0);
+        const drawdown = computeDrawdown(10, trades);
+        expect(drawdown.length).to.eql(3);
+        expect(drawdown[1]).to.eql(0);
+        expect(drawdown[2]).to.eql(0);
     });
 
     it("can compute drawdown for multiple trades with loss", () => {
@@ -115,10 +115,10 @@ describe("compute drawdown", () => {
             },
         ];
 
-        const drawdown = computeDrawdown(20, new DataFrame<number, ITrade>(trades));
-        expect(drawdown.count()).to.eql(3);
-        expect(drawdown.skip(1).first()).to.eql(-10);
-        expect(drawdown.skip(2).first()).to.eql(-12);
+        const drawdown = computeDrawdown(20, trades);
+        expect(drawdown.length).to.eql(3);
+        expect(drawdown[1]).to.eql(-10);
+        expect(drawdown[2]).to.eql(-12);
     });
 
     it("can compute drawdown for multiple trades with profit and loss", () => {
@@ -148,10 +148,10 @@ describe("compute drawdown", () => {
             },
         ];
 
-        const drawdown = computeDrawdown(10, new DataFrame<number, ITrade>(trades));
-        expect(drawdown.count()).to.eql(3);
-        expect(drawdown.skip(1).first()).to.eql(0);
-        expect(drawdown.skip(2).first()).to.eql(-10);
+        const drawdown = computeDrawdown(10, trades);
+        expect(drawdown.length).to.eql(3);
+        expect(drawdown[1]).to.eql(0);
+        expect(drawdown[2]).to.eql(-10);
     });
 
     it("can compute drawdown for multiple trades with loss and profit", () => {
@@ -181,10 +181,10 @@ describe("compute drawdown", () => {
             },
         ];
 
-        const drawdown = computeDrawdown(20, new DataFrame<number, ITrade>(trades));
-        expect(drawdown.count()).to.eql(3);
-        expect(drawdown.skip(1).first()).to.eql(-10);
-        expect(drawdown.skip(2).first()).to.eql(0);
+        const drawdown = computeDrawdown(20, trades);
+        expect(drawdown.length).to.eql(3);
+        expect(drawdown[1]).to.eql(-10);
+        expect(drawdown[2]).to.eql(0);
     });
 
     it("drawdown resets on peak", () => {
@@ -225,10 +225,10 @@ describe("compute drawdown", () => {
             },
         ];
 
-        const drawdown = computeDrawdown(20, new DataFrame<number, ITrade>(trades));
-        expect(drawdown.count()).to.eql(4);
-        expect(drawdown.skip(1).first()).to.eql(-10);
-        expect(drawdown.skip(2).first()).to.eql(0);
-        expect(drawdown.skip(3).first()).to.eql(-15);
+        const drawdown = computeDrawdown(20, trades);
+        expect(drawdown.length).to.eql(4);
+        expect(drawdown[1]).to.eql(-10);
+        expect(drawdown[2]).to.eql(0);
+        expect(drawdown[3]).to.eql(-15);
     });
 });

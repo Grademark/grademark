@@ -243,7 +243,7 @@ function* iterateDimension(workingCoordinates: number[], parameterIndex: number,
 }
 
 //
-// Get all coordinates in a particualr coordinate space.
+// Get all coordinates in a particular coordinate space.
 //
 function* getAllCoordinates(parameters: IParameterDef[]): IterableIterator<number[]> {
 

@@ -4,9 +4,9 @@ Toolkit for algo trading and backtesting in JavaScript and TypeScript.
 
 This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from [Data-Forge Notebook](http://www.data-forge-notebook.com/) (making it easy to plot charts and visualize).
 
-For news and updates see my blog [The Data Wrangler](http://www.the-data-wrangler.com/).
-
 Check out the [release notes](release-notes.md) to see updates and breaking changes.
+
+[Follow the developer on Twitter](https://twitter.com/ashleydavis75)
 
 <a href="#support-the-developer">Skip to the end to see how you can **support the developer.**</a>
 
@@ -187,6 +187,7 @@ We are only just getting started in this example to learn more please follow my 
 
 You can help support my work in any of the following ways:
 
+- [Follow the developer on Twitter](https://twitter.com/ashleydavis75)
 - Star this repository (and my other repos [here](https://github.com/data-forge), [here](https://github.com/grademark) and [here](https://github.com/data-forge-notebook)).
 - Share links to my work on Twitter and other social media.
 - [Sponsor me on GitHub](https://github.com/sponsors/ashleydavis).
