@@ -3,6 +3,7 @@ import { computeEquityCurve } from '../../lib/compute-equity-curve';
 import { DataFrame, IDataFrame } from 'data-forge';
 import * as moment from 'dayjs';
 import { ITrade } from '../..';
+import { TradeDirection } from '../../lib/strategy';
 
 describe("compute equity curve", () => {
 
@@ -21,6 +22,7 @@ describe("compute equity curve", () => {
 
         const growth = 2;
         const singleTrade: ITrade = {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/10/25"),
             entryPrice: 10,
             exitTime: makeDate("2018/10/30"),
@@ -42,6 +44,7 @@ describe("compute equity curve", () => {
 
         const growth = 0.5;
         const singleTrade: ITrade = {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/10/25"),
             entryPrice: 10,
             exitTime: makeDate("2018/10/29"),
@@ -65,6 +68,7 @@ describe("compute equity curve", () => {
         const growth2 = 3;
         const trades: ITrade[] = [
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/10/25"),
                 entryPrice: 10,
                 exitTime: makeDate("2018/10/30"),
@@ -76,6 +80,7 @@ describe("compute equity curve", () => {
                 exitReason: "Sell",
             },
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/11/1"),
                 entryPrice: 20,
                 exitTime: makeDate("2018/11/10"),
@@ -101,6 +106,7 @@ describe("compute equity curve", () => {
         const growth2 = 0.8;
         const trades: ITrade[] = [
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/10/25"),
                 entryPrice: 20,
                 exitTime: makeDate("2018/10/30"),
@@ -112,6 +118,7 @@ describe("compute equity curve", () => {
                 exitReason: "Sell",
             },
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/11/1"),
                 entryPrice: 10,
                 exitTime: makeDate("2018/11/10"),
@@ -137,6 +144,7 @@ describe("compute equity curve", () => {
         const growth2 = 0.5;
         const trades: ITrade[] = [
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/10/25"),
                 entryPrice: 10,
                 exitTime: makeDate("2018/10/30"),
@@ -148,6 +156,7 @@ describe("compute equity curve", () => {
                 exitReason: "Sell",
             },
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/11/1"),
                 entryPrice: 20,
                 exitTime: makeDate("2018/11/10"),
@@ -173,6 +182,7 @@ describe("compute equity curve", () => {
         const growth2 = 2;
         const trades: ITrade[] = [
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/10/25"),
                 entryPrice: 20,
                 exitTime: makeDate("2018/10/30"),
@@ -184,6 +194,7 @@ describe("compute equity curve", () => {
                 exitReason: "Sell",
             },
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/11/1"),
                 entryPrice: 10,
                 exitTime: makeDate("2018/11/10"),

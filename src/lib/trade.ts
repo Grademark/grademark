@@ -1,3 +1,4 @@
+import { TradeDirection } from "./strategy";
 
 /**
  * Represents a value at a particular time.
@@ -18,6 +19,13 @@ export interface ITimestampedValue {
  * Interface that defines a trade.
  */
 export interface ITrade {
+
+    /**
+     * The direction of the trade.
+     * Long or short.
+     */
+    direction: TradeDirection;
+
     /***
      * Timestamp when the position was entered.
      */

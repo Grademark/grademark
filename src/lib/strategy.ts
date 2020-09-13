@@ -3,9 +3,38 @@ import { IDataFrame } from "data-forge";
 import { IPosition } from "./position";
 
 /**
+ * Specifies which direction we are trading.
+ * 
+ * Long:    We'll make a profit if the price of the instrument rises.
+ * Short:   We'll make a profit if the price of the instrument falls.
+ */
+export enum TradeDirection {
+    Long = "long",
+    Short = "short",
+}
+
+/**
  * Options to the enter position function.
  */
 export interface IEnterPositionOptions {
+    /**
+     * Determines which direction we are trading.
+     * Defaults to "long".
+     * 
+     * Long:    We'll make a profit if the price of the instrument rises.
+     * Short:   We'll make a profit if the price of the instrument falls.
+     */
+    direction?: TradeDirection;
+
+    /**
+     * The price open a position at.
+     * 
+     * Long:
+     *      Position will be opened in the bar after the bar where the high rises through this price.
+     * 
+     * Short:
+     *      Position will be opened in the bar after the bar where the low drops through this price.
+     */
     entryPrice?: number;
 }
 

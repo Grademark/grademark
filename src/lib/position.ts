@@ -1,9 +1,16 @@
 import { ITimestampedValue } from "./trade";
+import { TradeDirection } from "./strategy";
 
 /**
  * Interface that defines an open position.
  */
 export interface IPosition {
+
+    /**
+     * The direction of the position.
+     * Long or short.
+     */
+    direction: TradeDirection;
 
     /***
      * Timestamp when the position was entered.

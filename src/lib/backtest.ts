@@ -2,7 +2,7 @@ import { ITrade } from "./trade";
 import { IDataFrame, DataFrame } from 'data-forge';
 import { IStrategy, IBar, IPosition } from "..";
 import { assert } from "chai";
-import { IEnterPositionOptions } from "./strategy";
+import { IEnterPositionOptions, TradeDirection } from "./strategy";
 import { isObject } from "./utils";
 const CBuffer = require('CBuffer');
 
@@ -32,12 +32,15 @@ function updatePosition(position: IPosition, bar: IBar): void {
  * @param exitPrice The price of the instrument when the position was exited.
  */
 function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number, exitReason: string): ITrade {
-    const profit = exitPrice - position.entryPrice;
+    const profit = position.direction === TradeDirection.Long 
+        ? exitPrice - position.entryPrice
+        : position.entryPrice - exitPrice;
     let rmultiple;
     if (position.initialUnitRisk !== undefined) {
         rmultiple = profit / position.initialUnitRisk; 
     }
     return {
+        direction: position.direction,
         entryTime: position.entryTime,
         entryPrice: position.entryPrice,
         exitTime: exitTime,
@@ -138,6 +141,11 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
     let positionStatus: PositionStatus = PositionStatus.None;
 
     //
+    // Records the direction of a position/trade.
+    //
+    let positionDirection: TradeDirection = TradeDirection.Long;
+
+    //
     // Records the price for conditional intrabar entry.
     //
     let conditionalEntryPrice: number | undefined;
@@ -159,6 +167,7 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
         assert(positionStatus === PositionStatus.None, "Can only enter a position when not already in one.");
 
         positionStatus = PositionStatus.Enter; // Enter position next bar.
+        positionDirection = options && options.direction || TradeDirection.Long;
         conditionalEntryPrice = options && options.entryPrice;
     }
 
@@ -211,6 +220,7 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                 const entryPrice = bar.open;
                 
                 openPosition = {
+                    direction: positionDirection,
                     entryTime: bar.time,
                     entryPrice: entryPrice,
                     growth: 1,

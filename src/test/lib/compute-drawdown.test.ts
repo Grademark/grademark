@@ -3,6 +3,7 @@ import { computeDrawdown } from '../../lib/compute-drawdown';
 import { DataFrame, IDataFrame } from 'data-forge';
 import * as moment from 'dayjs';
 import { ITrade } from '../..';
+import { TradeDirection } from '../../lib/strategy';
 
 describe("compute drawdown", () => {
 
@@ -20,6 +21,7 @@ describe("compute drawdown", () => {
     it("can compute drawdown for single trade with profit", () => {
 
         const singleTrade: ITrade = {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/10/25"),
             entryPrice: 10,
             exitTime: makeDate("2018/10/30"),
@@ -39,6 +41,7 @@ describe("compute drawdown", () => {
     it("can compute drawdown for single trade with loss", () => {
 
         const singleTrade: ITrade = {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/10/25"),
             entryPrice: 10,
             exitTime: makeDate("2018/10/29"),
@@ -59,6 +62,7 @@ describe("compute drawdown", () => {
 
         const trades: ITrade[] = [
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/10/25"),
                 entryPrice: 10,
                 exitTime: makeDate("2018/10/30"),
@@ -70,6 +74,7 @@ describe("compute drawdown", () => {
                 exitReason: "Sell",
             },
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/11/1"),
                 entryPrice: 20,
                 exitTime: makeDate("2018/11/10"),
@@ -92,6 +97,7 @@ describe("compute drawdown", () => {
 
         const trades: ITrade[] = [
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/10/25"),
                 entryPrice: 20,
                 exitTime: makeDate("2018/10/30"),
@@ -103,6 +109,7 @@ describe("compute drawdown", () => {
                 exitReason: "Sell",
             },
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/11/1"),
                 entryPrice: 10,
                 exitTime: makeDate("2018/11/10"),
@@ -125,6 +132,7 @@ describe("compute drawdown", () => {
 
         const trades: ITrade[] = [
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/10/25"),
                 entryPrice: 10,
                 exitTime: makeDate("2018/10/30"),
@@ -136,6 +144,7 @@ describe("compute drawdown", () => {
                 exitReason: "Sell",
             },
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/11/1"),
                 entryPrice: 20,
                 exitTime: makeDate("2018/11/10"),
@@ -158,6 +167,7 @@ describe("compute drawdown", () => {
 
         const trades: ITrade[] = [
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/10/25"),
                 entryPrice: 20,
                 exitTime: makeDate("2018/10/30"),
@@ -169,6 +179,7 @@ describe("compute drawdown", () => {
                 exitReason: "Sell",
             },
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/11/1"),
                 entryPrice: 10,
                 exitTime: makeDate("2018/11/10"),
@@ -191,6 +202,7 @@ describe("compute drawdown", () => {
 
         const trades: ITrade[] = [
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/10/25"),
                 entryPrice: 20,
                 exitTime: makeDate("2018/10/30"),
@@ -202,6 +214,7 @@ describe("compute drawdown", () => {
                 exitReason: "Sell",
             },
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/11/1"),
                 entryPrice: 10,
                 exitTime: makeDate("2018/11/10"),
@@ -213,6 +226,7 @@ describe("compute drawdown", () => {
                 exitReason: "Sell",
             },
             {
+                direction: TradeDirection.Long,
                 entryTime: makeDate("2018/12/1"),
                 entryPrice: 30,
                 exitTime: makeDate("2018/12/5"),

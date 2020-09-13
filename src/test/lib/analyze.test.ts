@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { analyze } from '../../lib/analyze';
 import * as moment from 'dayjs';
 import { ITrade } from '../..';
+import { TradeDirection } from '../../lib/strategy';
 
 describe("analyze", () => {
 
@@ -50,6 +51,7 @@ describe("analyze", () => {
     });
 
     const aProfit: ITrade = {
+        direction: TradeDirection.Long,
         entryTime: makeDate("2018/10/25"),
         entryPrice: 10,
         exitTime: makeDate("2018/10/30"),
@@ -75,6 +77,7 @@ describe("analyze", () => {
     });
 
     const aLoss: ITrade = {
+        direction: TradeDirection.Long,
         entryTime: makeDate("2018/10/25"),
         entryPrice: 10,
         exitTime: makeDate("2018/10/29"),
@@ -101,6 +104,7 @@ describe("analyze", () => {
     
     const twoProfits: ITrade[] = [
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/10/25"),
             entryPrice: 10,
             exitTime: makeDate("2018/10/30"),
@@ -114,6 +118,7 @@ describe("analyze", () => {
             exitReason: "Sell",
         },
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/11/1"),
             entryPrice: 20,
             exitTime: makeDate("2018/11/10"),
@@ -141,6 +146,7 @@ describe("analyze", () => {
 
     const twoLosses: ITrade[] = [
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/10/25"),
             entryPrice: 20,
             exitTime: makeDate("2018/10/30"),
@@ -154,6 +160,7 @@ describe("analyze", () => {
             exitReason: "Sell",
         },
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/11/1"),
             entryPrice: 10,
             exitTime: makeDate("2018/11/10"),
@@ -181,6 +188,7 @@ describe("analyze", () => {
 
     const aProfitThenALoss: ITrade[] = [
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/10/25"),
             entryPrice: 10,
             exitTime: makeDate("2018/10/30"),
@@ -194,6 +202,7 @@ describe("analyze", () => {
             exitReason: "Sell",
         },
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/11/1"),
             entryPrice: 20,
             exitTime: makeDate("2018/11/10"),
@@ -221,6 +230,7 @@ describe("analyze", () => {
 
     const aLossThenAProfit: ITrade[] = [
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/10/25"),
             entryPrice: 20,
             exitTime: makeDate("2018/10/30"),
@@ -234,6 +244,7 @@ describe("analyze", () => {
             exitReason: "Sell",
         },
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/11/1"),
             entryPrice: 10,
             exitTime: makeDate("2018/11/10"),
@@ -282,6 +293,7 @@ describe("analyze", () => {
 
     const threeSampleTradesEndingInALoss: ITrade[] = [
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/10/25"),
             entryPrice: 20,
             exitTime: makeDate("2018/10/30"),
@@ -295,6 +307,7 @@ describe("analyze", () => {
             exitReason: "Sell",
         },
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/11/1"),
             entryPrice: 10,
             exitTime: makeDate("2018/11/10"),
@@ -308,6 +321,7 @@ describe("analyze", () => {
             exitReason: "Sell",
         },
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/12/1"),
             entryPrice: 30,
             exitTime: makeDate("2018/12/5"),
@@ -324,6 +338,7 @@ describe("analyze", () => {
 
     const threeSampleTradesEndingInAProfit: ITrade[] = [
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/10/25"),
             entryPrice: 20,
             exitTime: makeDate("2018/10/30"),
@@ -337,6 +352,7 @@ describe("analyze", () => {
             exitReason: "Sell",
         },
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/11/1"),
             entryPrice: 10,
             exitTime: makeDate("2018/11/10"),
@@ -350,6 +366,7 @@ describe("analyze", () => {
             exitReason: "Sell",
         },
         {
+            direction: TradeDirection.Long,
             entryTime: makeDate("2018/12/1"),
             entryPrice: 30,
             exitTime: makeDate("2018/12/5"),

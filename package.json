@@ -1,6 +1,6 @@
 {
     "name": "grademark",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Toolkit for algo trading and backtesting in JavaScript and TypeScript.",
     "main": "build/index.js",
     "types": "build/index.d.ts",

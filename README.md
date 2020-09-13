@@ -12,6 +12,8 @@ Check out the [release notes](release-notes.md) to see updates and breaking chan
 
 Please see what this looks like in [the Grademark first example](https://github.com/grademark/grademark-first-example) and the unit tests in this repo.
 
+Love this? Please star this repo!
+
 ## First example
 
 From the [Grademark first example](https://github.com/grademark/grademark-first-example) here's some example output. [Click to see the first example as a notebook.](https://grademark.github.io/grademark-first-example/)
