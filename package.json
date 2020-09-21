@@ -40,11 +40,11 @@
     },
     "homepage": "https://github.com/ashleydavis/grademark#readme",
     "dependencies": {
-        "CBuffer": "^2.1.0",
-        "dayjs": "^1.8.35",
+        "CBuffer": "^2.2.0",
+        "dayjs": "^1.8.36",
         "mathjs": "^5.10.3",
         "mersennetwister": "^0.2.3",
-        "moment": "^2.27.0",
+        "moment": "^2.28.0",
         "typy": "^3.3.0"
     },
     "peerDependencies": {
