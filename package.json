@@ -22,7 +22,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://ashleydavis@github.com/ashleydavis/grademark.git"
+        "url": "git+https://github.com/grademark/grademark.git"
     },
     "keywords": [
         "trading",
@@ -36,9 +36,9 @@
     "author": "ashley@codecapers.com.au",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/ashleydavis/grademark/issues"
+        "url": "https://github.com/grademark/grademark/issues"
     },
-    "homepage": "https://github.com/ashleydavis/grademark#readme",
+    "homepage": "https://github.com/grademark/grademark#readme",
     "dependencies": {
         "CBuffer": "^2.2.0",
         "dayjs": "^1.8.36",
