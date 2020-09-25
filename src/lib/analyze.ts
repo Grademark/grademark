@@ -25,7 +25,8 @@ export function analyze(startingCapital: number, trades: ITrade[]): IAnalysis {
     let maxDrawdownPct = 0;
     let totalProfits = 0;
     let totalLosses = 0;
-    let winningTrades = 0;
+    let numWinningTrades = 0;
+    let numLosingTrades = 0;
     let totalTrades = 0;
     let maxRiskPct = undefined;
 
@@ -48,10 +49,11 @@ export function analyze(startingCapital: number, trades: ITrade[]): IAnalysis {
 
         if (trade.profit > 0) {
             totalProfits += trade.profit;
-            ++winningTrades;
+            ++numWinningTrades;
         }
         else {
             totalLosses += trade.profit;
+            ++numLosingTrades;
         }
 
         maxDrawdown = Math.min(workingDrawdown, maxDrawdown);
@@ -80,11 +82,15 @@ export function analyze(startingCapital: number, trades: ITrade[]): IAnalysis {
     let profitFactor: number | undefined = undefined;
     const absTotalLosses = Math.abs(totalLosses);
     if (absTotalLosses > 0) {
-        profitFactor = totalProfits / absTotalLosses    ;
+        profitFactor = totalProfits / absTotalLosses;
     }
     
     const profit = workingCapital - startingCapital;
     const profitPct = (profit / startingCapital) * 100;
+    const proportionWinning = totalTrades > 0 ? numWinningTrades / totalTrades : 0;
+    const proportionLosing = totalTrades > 0 ? numLosingTrades / totalTrades : 0;
+    const averageWinningTrade = numWinningTrades > 0 ? totalProfits / numWinningTrades : 0;
+    const averageLosingTrade = numLosingTrades > 0 ? totalLosses / numLosingTrades : 0;
     const analysis: IAnalysis = {
         startingCapital: startingCapital,
         finalCapital: workingCapital,
@@ -100,8 +106,15 @@ export function analyze(startingCapital: number, trades: ITrade[]): IAnalysis {
         rmultipleStdDev: rmultipleStdDev,
         systemQuality: systemQuality,
         profitFactor: profitFactor,
-        percentProfitable: (winningTrades / totalTrades) * 100,
+        proportionProfitable: proportionWinning,
+        percentProfitable: proportionWinning * 100,
         returnOnAccount: profitPct / Math.abs(maxDrawdownPct),
+        averageProfitPerTrade: profit / totalTrades,
+        numWinningTrades: numWinningTrades,
+        numLosingTrades: numLosingTrades,
+        averageWinningTrade: averageWinningTrade,
+        averageLosingTrade: averageLosingTrade,
+        expectedValue: (proportionWinning * averageWinningTrade) + (proportionLosing * averageLosingTrade),
     };
 
     return analysis;

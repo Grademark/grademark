@@ -393,6 +393,12 @@ describe("analyze", () => {
         expect(analysis.totalTrades).to.eql(3);
     });
     
+    it("proportion profitable is computed", () => {
+
+        const analysis = analyze(20, threeSampleTradesEndingInALoss);
+        expect(round(analysis.proportionProfitable)).to.eql(0.33);
+    });
+
     it("percent profitable is computed", () => {
 
         const analysis = analyze(20, threeSampleTradesEndingInALoss);
@@ -457,5 +463,30 @@ describe("analyze", () => {
 
         const analysis = analyze(20, threeSampleTradesEndingInALoss);
         expect(analysis.returnOnAccount).to.eql(-0.5);
+    });
+
+    it("can compute average profit per trade", () => {
+        const analysis = analyze(10, twoProfits);
+        expect(analysis.averageProfitPerTrade).to.eql(25);
+    });
+
+    it("can compute average profit for winning trades", () => {
+        const analysis = analyze(10, twoProfits);
+        expect(analysis.averageWinningTrade).to.eql(25);
+    });
+
+    it("can compute average profit for losing trades", () => {
+        const analysis = analyze(10, twoLosses);
+        expect(analysis.averageLosingTrade).to.eql(-6);
+    });
+
+    it("can compute positive expected value", () => {
+        const analysis = analyze(10, twoProfits);
+        expect(analysis.expectedValue).to.eql(25);
+    });
+
+    it("can compute negative expected value", () => {
+        const analysis = analyze(10, twoLosses);
+        expect(analysis.expectedValue).to.eql(-6);
     });
 });

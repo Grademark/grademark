@@ -34,7 +34,7 @@ export interface IAnalysis {
 
     /**
      * Number of bars within trades.
-     * NOTE: Doesn't include days between trades (because that doesn't work with monte carlo simulation).
+     * NOTE: Doesn't include time/bars between trades (because that doesn't work with monte carlo simulation).
      */
     barCount: number;
 
@@ -93,7 +93,14 @@ export interface IAnalysis {
     profitFactor: number | undefined;
 
     /**
+     * The proportion of trades that were winners.
+     * A value in gthe range 0-1.
+     */
+    proportionProfitable: number;
+
+    /**
      * The percentage of trades that were winners.
+     * A value in the range 0-100.
      * This could also be called reliability or accuracy.
      */
     percentProfitable: number;
@@ -106,4 +113,42 @@ export interface IAnalysis {
      * http://www.investopedia.com/terms/c/calmarratio.asp
      */
     returnOnAccount: number;
+
+    /**
+     * The average profit per trade.
+     * 
+     * = profit / totalTrades
+     */
+    averageProfitPerTrade: number;
+
+    /**
+     * The number of trades in profit.
+     */
+    numWinningTrades: number;
+
+    /**
+     * The number of trades at a loss.
+     */
+    numLosingTrades: number;
+
+    /**
+     * Average profit from winning trades.
+     */
+    averageWinningTrade: number;
+
+    /**
+     * Average profit from losing trades.
+     */
+    averageLosingTrade: number;
+
+    /**
+     * Mathematical expectency.
+     * P29 Trading Systems.
+     * = % winning * avgh win + % losing * avg los
+     * Want this number to be positive.
+     * Can be used to rank trading strategies. Higher value is better.
+     * 
+     * https://en.wikipedia.org/wiki/Expected_value
+     */
+    expectedValue: number;
 }

@@ -59,7 +59,7 @@ export interface IOptimizationOptions {
 
     /**
      * Sets the type of algoritm used for optimization.
-     * Defaults to "hill-climb".
+     * Defaults to "grid".
      */
     optimizationType?: OptimizationType;
 
