@@ -88,7 +88,7 @@ export interface IOptimizationOptions {
 //
 // Records the result of an iteration of optimization.
 //
-export type IterationResult<ParameterT> = (ParameterT & { result: number });
+export type IterationResult<ParameterT> = (ParameterT & { result: number, numTrades: number });
 
 /**
  * Result of a multi-parameter optimisation.
@@ -116,6 +116,18 @@ export interface IOptimizationResult<ParameterT> {
     durationMS?: number;
 }
 
+interface OptimizationIterationResult {
+    //
+    // Metric used to compare iterations.
+    //
+    metric: number;
+
+    //
+    // Number of trades performed in this iteration.
+    //
+    numTrades: number;
+}
+
 //
 // Performs a single iteration of optimization and returns the result.
 //
@@ -125,7 +137,7 @@ function optimizationIteration<InputBarT extends IBar, IndicatorBarT extends Inp
     objectiveFn: ObjectiveFn,
     inputSeries: IDataFrame<IndexT, InputBarT>,
     coordinates: number[]
-        ): number {
+        ): OptimizationIterationResult {
 
     const parameterOverride: any = {};
     for (let parameterIndex = 0; parameterIndex < parameters.length; ++parameterIndex) {
@@ -135,7 +147,11 @@ function optimizationIteration<InputBarT extends IBar, IndicatorBarT extends Inp
 
     const strategyClone = Object.assign({}, strategy);
     strategyClone.parameters = Object.assign({}, strategy.parameters, parameterOverride);
-    return objectiveFn(backtest<InputBarT, IndicatorBarT, ParameterT, IndexT>(strategyClone, inputSeries));
+    const trades = backtest<InputBarT, IndicatorBarT, ParameterT, IndexT>(strategyClone, inputSeries)
+    return {
+        metric: objectiveFn(trades),
+        numTrades: trades.length,
+    };
 }
 
 //
@@ -185,11 +201,14 @@ function extractParameterValues<ParameterT>(parameters: IParameterDef[], working
 //
 // Packages the results of an iteration.
 //
-function packageIterationResult<ParameterT>(parameters: IParameterDef[], workingCoordinates: number[], result: number): IterationResult<ParameterT> {
+function packageIterationResult<ParameterT>(parameters: IParameterDef[], workingCoordinates: number[], result: OptimizationIterationResult): IterationResult<ParameterT> {
     const iterationResult: any = Object.assign(
         {}, 
         extractParameterValues(parameters, workingCoordinates), 
-        { result:  result }
+        { 
+            result: result.metric,
+            numTrades: result.numTrades, 
+        }
     );
     return iterationResult;
 }
@@ -269,7 +288,7 @@ function hillClimbOptimization<InputBarT extends IBar, IndicatorBarT extends Inp
 
     const startTime = performance.now();
 
-    const visitedCoordinates = new Map<number[], number>(); // Tracks coordinates that we have already visited and their value.
+    const visitedCoordinates = new Map<number[], OptimizationIterationResult>(); // Tracks coordinates that we have already visited and their value.
 
     const random = new Random(options.randomSeed || 0);
 
@@ -296,11 +315,11 @@ function hillClimbOptimization<InputBarT extends IBar, IndicatorBarT extends Inp
         visitedCoordinates.set(workingCoordinates, workingResult);
 
         if (bestResult === undefined) {
-            bestResult = workingResult;
+            bestResult = workingResult.metric;
             bestCoordinates = workingCoordinates
         }
-        else if (acceptResult(bestResult, workingResult, options)) {
-            bestResult = workingResult;
+        else if (acceptResult(bestResult, workingResult.metric, options)) {
+            bestResult = workingResult.metric;
             bestCoordinates = workingCoordinates;
         }
 
@@ -324,12 +343,12 @@ function hillClimbOptimization<InputBarT extends IBar, IndicatorBarT extends Inp
                     results.push(packageIterationResult(parameters, workingCoordinates, workingResult));
                 }
                 
-                if (acceptResult(bestResult, workingResult, options)) {
-                    bestResult = workingResult;
+                if (acceptResult(bestResult, workingResult.metric, options)) {
+                    bestResult = workingResult.metric;
                     bestCoordinates = workingCoordinates;
                 }
     
-                if (acceptResult(workingResult, nextResult, options)) {
+                if (acceptResult(workingResult.metric, nextResult.metric, options)) {
                     workingCoordinates = nextCoordinates; 
                     workingResult = nextResult;
                     gotBetterResult = true;
@@ -373,11 +392,11 @@ function gridSearchOptimization<InputBarT extends IBar, IndicatorBarT extends In
     for (const coordinates of getAllCoordinates(parameters)) {
         const iterationResult = optimizationIteration(strategy, parameters, objectiveFn, inputSeries, coordinates);
         if (bestResult === undefined) {
-            bestResult = iterationResult;
+            bestResult = iterationResult.metric;
             bestCoordinates = coordinates;
         }
-        else if (acceptResult(bestResult, iterationResult, options)) {
-            bestResult = iterationResult;
+        else if (acceptResult(bestResult, iterationResult.metric, options)) {
+            bestResult = iterationResult.metric;
             bestCoordinates = coordinates;
         }
 
