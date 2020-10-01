@@ -17,7 +17,9 @@ function updatePosition(position: IPosition, bar: IBar): void {
     position.profitPct = (position.profit / position.entryPrice) * 100;
     position.growth = bar.close / position.entryPrice;
     if (position.curStopPrice !== undefined) {
-        const unitRisk = bar.close - position.curStopPrice;
+        const unitRisk = position.direction === TradeDirection.Long
+            ? bar.close - position.curStopPrice
+            : position.curStopPrice - bar.close;
         position.curRiskPct = (unitRisk / bar.close) * 100;
         position.curRMultiple = position.profit / unitRisk;
     }
@@ -211,9 +213,16 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                 assert(openPosition === null, "Expected there to be no open position initialised yet!");
 
                 if (conditionalEntryPrice !== undefined) {
-                    if (bar.high < conditionalEntryPrice) {
-                        // Must breach conditional entry price before entering position.
-                        break;
+                    // Must breach conditional entry price before entering position.
+                    if (positionDirection === TradeDirection.Long) {
+                        if (bar.high < conditionalEntryPrice) {
+                            break;
+                        }
+                    }
+                    else {
+                        if (bar.low > conditionalEntryPrice) {
+                            break;
+                        }
                     }
                 }
 
@@ -237,7 +246,9 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                         lookback: new DataFrame<number, InputBarT>(lookbackBuffer.data), 
                         parameters: strategyParameters
                     });
-                    openPosition.initialStopPrice = entryPrice - initialStopDistance;
+                    openPosition.initialStopPrice = openPosition.direction === TradeDirection.Long
+                        ? entryPrice - initialStopDistance 
+                        : entryPrice + initialStopDistance;
                     openPosition.curStopPrice = openPosition.initialStopPrice;
                 }
 
@@ -249,12 +260,16 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                         lookback: new DataFrame<number, InputBarT>(lookbackBuffer.data), 
                         parameters: strategyParameters
                     });
-                    const trailingStopPrice = entryPrice - trailingStopDistance;
+                    const trailingStopPrice = openPosition.direction === TradeDirection.Long
+                        ? entryPrice - trailingStopDistance
+                        : entryPrice + trailingStopDistance;
                     if (openPosition.initialStopPrice === undefined) {
                         openPosition.initialStopPrice = trailingStopPrice;
                     }
                     else {
-                        openPosition.initialStopPrice = Math.max(openPosition.initialStopPrice, trailingStopPrice);
+                        openPosition.initialStopPrice = openPosition.direction === TradeDirection.Long
+                            ? Math.max(openPosition.initialStopPrice, trailingStopPrice)
+                            : Math.min(openPosition.initialStopPrice, trailingStopPrice);
                     }
 
                     openPosition.curStopPrice = openPosition.initialStopPrice;
@@ -269,8 +284,10 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                     }
                 }
 
-                if (openPosition.curStopPrice) {
-                    openPosition.initialUnitRisk = entryPrice - openPosition.curStopPrice;
+                if (openPosition.curStopPrice !== undefined) {
+                    openPosition.initialUnitRisk = openPosition.direction === TradeDirection.Long
+                        ? entryPrice - openPosition.curStopPrice
+                        : openPosition.curStopPrice - entryPrice;
                     openPosition.initialRiskPct = (openPosition.initialUnitRisk / entryPrice) * 100;
                     openPosition.curRiskPct = openPosition.initialRiskPct;
                     openPosition.curRMultiple = 0;
@@ -286,13 +303,16 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                 }
 
                 if (strategy.profitTarget) {
-                    openPosition.profitTarget = entryPrice + strategy.profitTarget({
+                    const profitDistance = strategy.profitTarget({
                         entryPrice: entryPrice, 
                         position: openPosition,
                         bar: bar, 
                         lookback: new DataFrame<number, InputBarT>(lookbackBuffer.data), 
                         parameters: strategyParameters
                     });
+                    openPosition.profitTarget = openPosition.direction === TradeDirection.Long
+                        ? entryPrice + profitDistance
+                        : entryPrice - profitDistance;
                 }
 
                 positionStatus = PositionStatus.Position;
@@ -302,10 +322,19 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                 assert(openPosition !== null, "Expected open position to already be initialised!");
 
                 if (openPosition!.curStopPrice !== undefined) {
-                    if (bar.low <= openPosition!.curStopPrice!) {
-                        // Exit intrabar due to stop loss.
-                        closePosition(bar, openPosition!.curStopPrice!, "stop-loss");
-                        break;
+                    if (openPosition!.direction === TradeDirection.Long) {
+                        if (bar.low <= openPosition!.curStopPrice!) {
+                            // Exit intrabar due to stop loss.
+                            closePosition(bar, openPosition!.curStopPrice!, "stop-loss");
+                            break;
+                        }
+                    }
+                    else {
+                        if (bar.high >= openPosition!.curStopPrice!) {
+                            // Exit intrabar due to stop loss.
+                            closePosition(bar, openPosition!.curStopPrice!, "stop-loss");
+                            break;
+                        }
                     }
                 }
 
@@ -320,9 +349,18 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                         lookback: new DataFrame<number, InputBarT>(lookbackBuffer.data), 
                         parameters: strategyParameters
                     });
-                    const newTrailingStopPrice = bar.close - trailingStopDistance;
-                    if (newTrailingStopPrice > openPosition!.curStopPrice!) {
-                        openPosition!.curStopPrice = newTrailingStopPrice;
+                    
+                    if (openPosition!.direction === TradeDirection.Long) {
+                        const newTrailingStopPrice = bar.close - trailingStopDistance;
+                        if (newTrailingStopPrice > openPosition!.curStopPrice!) {
+                            openPosition!.curStopPrice = newTrailingStopPrice;
+                        }
+                    }
+                    else {
+                        const newTrailingStopPrice = bar.close + trailingStopDistance;
+                        if (newTrailingStopPrice < openPosition!.curStopPrice!) {
+                            openPosition!.curStopPrice = newTrailingStopPrice;
+                        }
                     }
 
                     if (options.recordStopPrice) {
@@ -334,10 +372,19 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
                 }
 
                 if (openPosition!.profitTarget !== undefined) {
-                    if (bar.high >= openPosition!.profitTarget!) {
-                        // Exit intrabar due to profit target.
-                        closePosition(bar, openPosition!.profitTarget!, "profit-target");
-                        break;
+                    if (openPosition!.direction === TradeDirection.Long) {
+                        if (bar.high >= openPosition!.profitTarget!) {
+                            // Exit intrabar due to profit target.
+                            closePosition(bar, openPosition!.profitTarget!, "profit-target");
+                            break;
+                        }
+                    }
+                    else {
+                        if (bar.low <= openPosition!.profitTarget!) {
+                            // Exit intrabar due to profit target.
+                            closePosition(bar, openPosition!.profitTarget!, "profit-target");
+                            break;
+                        }
                     }
                 }
                 
