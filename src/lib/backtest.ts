@@ -15,7 +15,9 @@ const CBuffer = require('CBuffer');
 function updatePosition(position: IPosition, bar: IBar): void {
     position.profit = bar.close - position.entryPrice;
     position.profitPct = (position.profit / position.entryPrice) * 100;
-    position.growth = bar.close / position.entryPrice;
+    position.growth = position.direction === TradeDirection.Long
+        ? bar.close / position.entryPrice
+        : position.entryPrice / bar.close;
     if (position.curStopPrice !== undefined) {
         const unitRisk = position.direction === TradeDirection.Long
             ? bar.close - position.curStopPrice
@@ -49,7 +51,9 @@ function finalizePosition(position: IPosition, exitTime: Date, exitPrice: number
         exitPrice: exitPrice,
         profit: profit,
         profitPct: (profit / position.entryPrice) * 100,
-        growth: exitPrice / position.entryPrice,
+        growth: position.direction === TradeDirection.Long
+            ? exitPrice / position.entryPrice
+            : position.entryPrice / exitPrice,
         riskPct: position.initialRiskPct,
         riskSeries: position.riskSeries,
         rmultiple: rmultiple,

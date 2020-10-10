@@ -64,7 +64,7 @@ describe("backtest long", () => {
         exitPosition(); // Unconditionally exit position at market price.
     };
 
-    const strategyWithUnconditionalEntry: IStrategy = {
+    const longStrategyWithUnconditionalEntry: IStrategy = {
         entryRule: unconditionalLongEntry,
         exitRule: mockExit,
     };
@@ -566,4 +566,18 @@ describe("backtest long", () => {
         ]);
     });
 
+    it('profit is computed for long trade finalized at end of the trading period', () => {
+
+        const inputData = makeDataSeries([
+            { time: "2018/10/20", close: 5 },
+            { time: "2018/10/21", close: 5 },
+            { time: "2018/10/22", close: 10 },
+        ]);
+       
+        const trades = backtest(longStrategyWithUnconditionalEntry, inputData);
+        const singleTrade = trades[0];
+        expect(singleTrade.profit).to.eql(5);
+        expect(singleTrade.profitPct).to.eql(100);
+        expect(singleTrade.growth).to.eql(2);
+    });
 });
