@@ -34,6 +34,22 @@ Here's another chart, this one is a visualization of the drawdown for the exampl
 
 - Make sure your data is sorted in forward chronological order. 
 
+## Data format
+
+Your data needs to be loaded into memory in the following format:
+  
+```typescript
+interface IBar {
+    time: Date;
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+}
+
+const data: IBar[] = ... load your data ...
+```
+
 ## Features
 
 - Define a trading strategy with entry and exit rules.
@@ -43,11 +59,6 @@ Here's another chart, this one is a visualization of the drawdown for the exampl
 - Built-in intrabar stop loss.
 - Compute and plot equity curve and drawdown charts.
 - Throughly covered by automated tests.
-
-## Latest features
-
-Not fully documented yet, sorry. [Blog posts](http://www.the-data-wrangler.com/), examples and [videos](https://www.youtube.com/channel/UCOxw0jy384_wFRwspgq7qMQ) coming soon!
-
 - Calculation of risk and rmultiples.
 - Intrabar profit target.
 - Intrabar trailing stop loss.
@@ -56,12 +67,11 @@ Not fully documented yet, sorry. [Blog posts](http://www.the-data-wrangler.com/)
 - Multiple parameter optimization based on permutations of parameters (using grid search and hill-climb algorithms).
 - Walk forward optimization and backtesting.
 - Plot a chart of trailing stop loss.
+- Short selling.
+
+[Data-Forge Notebook](https://www.data-forge-notebook.com/) comes with example JavaScript notebooks that demonstrate many of these features.
 
 If you need help with new features please reach out!
-
-## Coming soon
-
-- Plot a chart of risk over time.
 
 ## Maybe coming later
 
@@ -70,7 +80,6 @@ If you need help with new features please reach out!
 - Slippage.
 - Position sizing.
 - Testing multiple instruments / portfolio simulation / ranking instruments.
-- Short selling.
 - Market filters.
 
 ## Complete examples
@@ -133,7 +142,7 @@ This is a very simple and very naive mean reversion strategy:
 const strategy = {
     entryRule: (enterPosition, args) => {
         if (args.bar.close < args.bar.sma) { // Buy when price is below average.
-            enterPosition();
+            enterPosition({ direction: "long" }); // Long is default, pass in "short" to short sell.
         }
     },
 
@@ -155,7 +164,7 @@ Backtest your strategy, then compute and print metrics:
 
 ```javascript
 const trades = backtest(strategy, inputSeries)
-console.log("Made " + trades.count() + " trades!");
+console.log("Made " + trades.length + " trades!");
 
 const startingCapital = 10000;
 const analysis = analyze(startingCapital, trades);
