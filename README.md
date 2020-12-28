@@ -8,7 +8,7 @@ Check out the [release notes](release-notes.md) to see updates and breaking chan
 
 [Follow the developer on Twitter](https://twitter.com/ashleydavis75)
 
-<a href="http://www.codecapers.com.au/#support-my-work">See how you can **support the developer.**</a>
+<a target="_blank" href="http://www.codecapers.com.au/#support-my-work">Click here to **support the developer.**</a>
 
 Please see what this looks like in [the Grademark first example](https://github.com/grademark/grademark-first-example) and the unit tests in this repo.
 
@@ -193,3 +193,7 @@ We are only just getting started in this example to learn more please follow my 
 
 - [Data-Forge](http://data-forge-js.com/)
 - [Data-Forge Notebook](http://www.data-forge-notebook.com/)
+
+## Support the developer 
+
+<a target="_blank" href="http://www.codecapers.com.au/#support-my-work">Click here to **support the developer.**</a>
