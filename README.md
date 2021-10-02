@@ -6,7 +6,7 @@ This API builds on [Data-Forge](http://data-forge-js.com/) and is best used from
 
 Check out the [release notes](release-notes.md) to see updates and breaking changes.
 
-<a target="_blank" href="http://www.codecapers.com.au/about#support-my-work">Click here to **support the developer.**</a>
+[Click here to support my work](https://www.codecapers.com.au/about#support-my-work)
 
 Please see what this looks like in [the Grademark first example](https://github.com/grademark/grademark-first-example) and the unit tests in this repo.
 
