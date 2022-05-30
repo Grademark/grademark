@@ -194,4 +194,4 @@ We are only just getting started in this example to learn more please follow my 
 
 ## Support the developer 
 
-<a target="_blank" href="http://www.codecapers.com.au/#support-my-work">Click here to **support the developer.**</a>
+<a target="_blank" href="https://www.codecapers.com.au/about#support-my-work">Click here to **support the developer.**</a>
