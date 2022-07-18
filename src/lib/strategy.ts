@@ -87,6 +87,12 @@ export interface IOpenPositionRuleArgs<BarT extends IBar, ParametersT> extends I
 }
 
 /**
+ * Computes the fees.
+ * Return the sum of maker fee and taker fee.
+ */
+export type FeesFn = () => number;
+
+/**
  * Arguments to a stop loss rule function.
  */
 export interface IStopLossArgs<BarT extends IBar, ParametersT> extends IOpenPositionRuleArgs<BarT, ParametersT> {
@@ -208,4 +214,10 @@ export interface IStrategy<InputBarT extends IBar = IBar, IndicatorsBarT extends
      * Return the amount of profit to trigger an exit.
      */
     profitTarget?: ProfitTargetFn<InputBarT, ParametersT>;
+
+    /**
+     * Function that computes the fees
+     * Return the sum of maker fee and taker fee.
+     */
+    fees: FeesFn;
 }
