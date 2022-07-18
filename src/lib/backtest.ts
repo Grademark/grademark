@@ -140,7 +140,7 @@ export function backtest<InputBarT extends IBar, IndicatorBarT extends InputBarT
     //
     // Sum of maker fee and taker fee.
     //
-    const fees = strategy.fees() || 0;
+    const fees = strategy.fees && strategy.fees() || 0;
 
     //
     // Tracks trades that have been closed.

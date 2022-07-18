@@ -219,5 +219,5 @@ export interface IStrategy<InputBarT extends IBar = IBar, IndicatorsBarT extends
      * Function that computes the fees
      * Return the sum of maker fee and taker fee.
      */
-    fees: FeesFn;
+    fees?: FeesFn;
 }
