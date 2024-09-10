@@ -4,7 +4,6 @@ import { ITrade } from "./trade";
 import { IStrategy } from "./strategy";
 import { backtest } from "./backtest";
 import { isObject, isArray, isFunction } from "./utils";
-import { performance } from "perf_hooks";
 import { Random } from "./random";
 
 /**
@@ -286,7 +285,7 @@ function hillClimbOptimization<InputBarT extends IBar, IndicatorBarT extends Inp
     let bestCoordinates: number[] | undefined;
     const results: IterationResult<ParameterT>[] = [];
 
-    const startTime = performance.now();
+    const startTime = Date.now();
 
     const visitedCoordinates = new Map<number[], OptimizationIterationResult>(); // Tracks coordinates that we have already visited and their value.
 
@@ -367,7 +366,7 @@ function hillClimbOptimization<InputBarT extends IBar, IndicatorBarT extends Inp
     return {
         bestResult: bestResult!,
         bestParameterValues: extractParameterValues(parameters, bestCoordinates!),
-        durationMS: options.recordDuration ? (performance.now() - startTime) : undefined,
+        durationMS: options.recordDuration ? (Date.now() - startTime) : undefined,
         allResults: options.recordAllResults ? results : undefined,
     };
 }
@@ -387,7 +386,7 @@ function gridSearchOptimization<InputBarT extends IBar, IndicatorBarT extends In
     let bestCoordinates: number[] | undefined;
     const results: IterationResult<ParameterT>[] = [];
 
-    const startTime = performance.now();
+    const startTime = Date.now();
 
     for (const coordinates of getAllCoordinates(parameters)) {
         const iterationResult = optimizationIteration(strategy, parameters, objectiveFn, inputSeries, coordinates);
@@ -408,7 +407,7 @@ function gridSearchOptimization<InputBarT extends IBar, IndicatorBarT extends In
     return {
         bestResult: bestResult!,
         bestParameterValues: extractParameterValues(parameters, bestCoordinates!),
-        durationMS: options.recordDuration ? (performance.now() - startTime) : undefined,
+        durationMS: options.recordDuration ? (Date.now() - startTime) : undefined,
         allResults: options.recordAllResults ? results : undefined,
     };
 }
